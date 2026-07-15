@@ -1,0 +1,393 @@
+/* Funnel pages — same tokens as quiz */
+@import url("./styles.css");
+
+.funnel-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 8px;
+  animation: enterUp 0.45s var(--ease) both;
+}
+
+.funnel-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.funnel-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: oklch(0.92 0.03 230);
+}
+
+.funnel-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.funnel-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, oklch(0.25 0.05 245 / 0.5), transparent 55%);
+}
+
+.funnel-badge {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 1;
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #1a1a1a;
+  background: var(--accent);
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+
+.funnel-badge.is-alert {
+  background: #fee2e2;
+  color: #9a3412;
+}
+
+.funnel-badge.is-ok {
+  background: oklch(0.92 0.05 160);
+  color: oklch(0.35 0.08 160);
+}
+
+.funnel-body {
+  padding: 16px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.funnel-kicker {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary-mid);
+}
+
+.funnel-body h1 {
+  margin: 0;
+  font-family: var(--font);
+  font-size: clamp(1.35rem, 5.5vw, 1.65rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--primary-deep);
+  text-wrap: balance;
+}
+
+.funnel-lead {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.funnel-muted {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.funnel-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.funnel-list li {
+  position: relative;
+  padding: 11px 12px 11px 36px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: oklch(0.985 0.01 230);
+  font-size: 0.9rem;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.funnel-list li::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 14px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, var(--accent-hot) 0 38%, transparent 40%),
+    oklch(0.94 0.04 70);
+  border: 1px solid oklch(0.85 0.08 70);
+}
+
+.funnel-list.is-check li::before {
+  background: oklch(0.55 0.12 150);
+  border-color: oklch(0.5 0.1 150);
+  box-shadow: inset 0 0 0 2px #fff;
+}
+
+.funnel-list.is-num {
+  counter-reset: funnel;
+}
+
+.funnel-list.is-num li {
+  padding-left: 42px;
+}
+
+.funnel-list.is-num li::before {
+  content: counter(funnel);
+  counter-increment: funnel;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  left: 10px;
+  top: 11px;
+  background: var(--primary-deep);
+  border: none;
+  color: #fff;
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-weight: 800;
+  border-radius: 6px;
+}
+
+.funnel-box {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: linear-gradient(165deg, oklch(0.96 0.03 90), oklch(0.97 0.02 230));
+}
+
+.funnel-box h3 {
+  margin: 0 0 6px;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--primary-deep);
+}
+
+.funnel-box p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.funnel-box.is-soft {
+  background: oklch(0.97 0.02 230);
+}
+
+.funnel-box.is-warn {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.funnel-box.is-warn h3 {
+  color: #9a3412;
+}
+
+.funnel-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.funnel-pills span {
+  font-family: var(--font);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: oklch(0.95 0.025 230);
+  color: var(--primary-deep);
+  border: 1px solid var(--line);
+}
+
+.btn-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.btn-decline {
+  min-height: 44px;
+  width: 100%;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.btn-decline:hover {
+  color: var(--primary-deep);
+  border-color: var(--primary-mid);
+}
+
+.funnel-price {
+  text-align: center;
+  margin: 0;
+}
+
+.funnel-price .was {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.funnel-price .now {
+  display: block;
+  font-family: var(--font);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--primary-deep);
+  letter-spacing: -0.03em;
+}
+
+.funnel-price .hint {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.funnel-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.funnel-step {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 10px;
+  align-items: start;
+  text-align: left;
+}
+
+.funnel-step-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--primary-deep);
+  color: #fff;
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: 0.85rem;
+  display: grid;
+  place-items: center;
+}
+
+.funnel-step h3 {
+  margin: 0 0 2px;
+  font-family: var(--font);
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--primary-deep);
+}
+
+.funnel-step p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.brand-mini {
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--primary-deep);
+  letter-spacing: 0.02em;
+  margin-right: auto;
+}
+
+.topbar .brand-mini {
+  margin-left: 4px;
+}
+
+.funnel-footer {
+  margin: 4px 0 0;
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.35;
+}
+
+/* Obrigado check animation */
+.thanks-check {
+  width: 72px;
+  height: 72px;
+  margin: 8px auto 4px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, oklch(0.92 0.05 160), oklch(0.75 0.1 160));
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 20px oklch(0.5 0.08 160 / 0.25);
+  animation: enterUp 0.5s var(--ease) both;
+}
+
+.thanks-check svg {
+  width: 36px;
+  height: 36px;
+  stroke: #fff;
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.thanks-check path {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: drawCheck 0.55s var(--ease) 0.2s forwards;
+}
+
+@keyframes drawCheck {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .funnel-main,
+  .thanks-check,
+  .thanks-check path {
+    animation: none !important;
+  }
+  .thanks-check path {
+    stroke-dashoffset: 0;
+  }
+}
