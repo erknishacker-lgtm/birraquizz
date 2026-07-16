@@ -5,12 +5,12 @@
 (() => {
   const I18N = window.FUNNEL_I18N;
 
-  /** Troque pelos links reais da Hotmart de cada produto */
+  /** Links Hotmart de cada produto do funil */
   const FUNNEL_LINKS = {
     main: "https://pay.hotmart.com/P106744435B",
-    upsell: "https://pay.hotmart.com/P106744435B", // TODO: link do upsell
-    downsell: "https://pay.hotmart.com/P106744435B", // TODO: link do downsell
-    obrigadoNext: "https://pay.hotmart.com/P106744435B", // opcional
+    upsell: "https://pay.hotmart.com/V106763193T",
+    downsell: "https://pay.hotmart.com/J106763231D",
+    obrigadoNext: "https://pay.hotmart.com/P106744435B",
   };
 
   const page = document.body.dataset.page || "obrigado";
