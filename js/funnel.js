@@ -5,18 +5,11 @@
 (() => {
   const I18N = window.FUNNEL_I18N;
 
-  /** Links Hotmart de cada produto do funil */
-  const FUNNEL_LINKS = {
-    main: "https://pay.hotmart.com/P106744435B",
-    upsell: "https://pay.hotmart.com/V106763193T",
-    downsell: "https://pay.hotmart.com/J106763231D",
-    obrigadoNext: "https://pay.hotmart.com/P106744435B",
-  };
-
   const page = document.body.dataset.page || "obrigado";
   const assetBase = document.body.dataset.assets || "../assets/images/";
+  const HOTMART_SCRIPT = "https://checkout.hotmart.com/lib/hotmart-checkout-elements.js";
 
-  const state = { lang: detectLang() };
+  const state = { lang: detectLang(), hotmartScriptLoading: null };
 
   const el = {
     langGroup: document.querySelector(".lang"),
@@ -160,7 +153,8 @@
             <span class="hint">${escapeHtml(c.common.secure)}</span>
           </p>
           <div class="btn-block">
-            <a class="btn-primary btn-accent" href="${FUNNEL_LINKS.upsell}" target="_blank" rel="noopener noreferrer">${escapeHtml(p.cta)}</a>
+            <!-- HOTMART - Sales Funnel Widget (upsell) -->
+            <div id="hotmart-sales-funnel" class="hotmart-sales-funnel" aria-label="${escapeHtml(p.cta)}"></div>
             <a class="btn-decline" href="../obrigado/">${escapeHtml(p.decline)}</a>
           </div>
           <p class="funnel-footer">${escapeHtml(p.footer)}</p>
@@ -207,7 +201,8 @@
             <span class="hint">${escapeHtml(c.common.secure)}</span>
           </p>
           <div class="btn-block">
-            <a class="btn-primary btn-accent" href="${FUNNEL_LINKS.downsell}" target="_blank" rel="noopener noreferrer">${escapeHtml(p.cta)}</a>
+            <!-- HOTMART - Sales Funnel Widget (downsell) -->
+            <div id="hotmart-sales-funnel" class="hotmart-sales-funnel" aria-label="${escapeHtml(p.cta)}"></div>
             <a class="btn-decline" href="../">${escapeHtml(p.decline)}</a>
           </div>
           <p class="funnel-footer">${escapeHtml(p.footer)}</p>
@@ -216,12 +211,57 @@
       </article>`;
   }
 
+  function loadHotmartScript() {
+    if (window.checkoutElements) return Promise.resolve();
+    if (state.hotmartScriptLoading) return state.hotmartScriptLoading;
+    state.hotmartScriptLoading = new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[src*="hotmart-checkout-elements"]');
+      if (existing) {
+        existing.addEventListener("load", () => resolve());
+        existing.addEventListener("error", reject);
+        if (window.checkoutElements) resolve();
+        return;
+      }
+      const s = document.createElement("script");
+      s.src = HOTMART_SCRIPT;
+      s.async = true;
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error("Hotmart script failed"));
+      document.body.appendChild(s);
+    });
+    return state.hotmartScriptLoading;
+  }
+
+  /** Monta o botão/widget do funil Hotmart (upsell ou downsell, conforme a URL no painel Hotmart) */
+  function mountHotmartSalesFunnel() {
+    if (page !== "upsell" && page !== "downsell") return;
+    const target = document.getElementById("hotmart-sales-funnel");
+    if (!target) return;
+
+    loadHotmartScript()
+      .then(() => {
+        if (!window.checkoutElements || typeof window.checkoutElements.init !== "function") {
+          console.warn("Hotmart checkoutElements não disponível");
+          return;
+        }
+        // Remonta no container limpo (troca de idioma recria o HTML)
+        target.innerHTML = "";
+        try {
+          window.checkoutElements.init("salesFunnel").mount("#hotmart-sales-funnel");
+        } catch (err) {
+          console.warn("Hotmart salesFunnel mount:", err);
+        }
+      })
+      .catch((err) => console.warn(err));
+  }
+
   function render() {
     const c = t();
     if (!el.main) return;
     if (page === "upsell") el.main.innerHTML = renderUpsell(c);
     else if (page === "downsell") el.main.innerHTML = renderDownsell(c);
     else el.main.innerHTML = renderObrigado(c);
+    mountHotmartSalesFunnel();
   }
 
   el.langBtns.forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));

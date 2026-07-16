@@ -231,6 +231,20 @@
   margin-top: 4px;
 }
 
+/* Hotmart Sales Funnel widget (botão de compra upsell/downsell) */
+.hotmart-sales-funnel {
+  width: 100%;
+  min-height: 52px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hotmart-sales-funnel iframe,
+.hotmart-sales-funnel > * {
+  max-width: 100%;
+}
+
 .btn-decline {
   min-height: 44px;
   width: 100%;
