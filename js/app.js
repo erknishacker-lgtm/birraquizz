@@ -151,6 +151,18 @@
     state.transitioning = false;
   }
 
+  function trackStepPageView() {
+    if (typeof window.metaTrackPageView !== "function" && typeof fbq !== "function") return;
+    var name = "quiz_" + state.step;
+    if (state.step === "question") name = "quiz_question_" + (state.qIndex + 1);
+    if (state.step === "news") name = "quiz_news_" + (state.pendingNewsId || "x");
+    if (typeof window.metaTrackPageView === "function") {
+      window.metaTrackPageView(name);
+    } else if (typeof fbq === "function") {
+      fbq("track", "PageView", { content_name: name });
+    }
+  }
+
   async function paint(opts = {}) {
     updateProgress();
     el.screen.classList.add("is-active");
@@ -161,6 +173,9 @@
     else if (state.step === "news") renderNewsShell();
     else if (state.step === "analyze") renderAnalyze();
     else if (state.step === "result") renderResult();
+
+    // Meta Pixel: PageView em toda tela do quiz (hero, pergunta, notícia, loading, resultado)
+    trackStepPageView();
 
     if (!opts.instant) {
       await M.enter(el.screen, opts.enterMode || "slide");
