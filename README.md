@@ -15,6 +15,7 @@ python3 -m http.server 8877
 | Obrigado | http://127.0.0.1:8877/obrigado/ |
 | Upsell | http://127.0.0.1:8877/upsell/ |
 | Downsell | http://127.0.0.1:8877/downsell/ |
+| **Dados do quiz (interno)** | http://127.0.0.1:8877/dadosquizz/ |
 
 ## Fluxo quiz
 
@@ -32,7 +33,12 @@ python3 -m http.server 8877
 | `/upsell/` | **Implementación Rápida** (complemento avançado) |
 | `/downsell/` | **Protocolo Núcleo 7 Minutos** (versão mínima) |
 
-Links de checkout do upsell/downsell: edite `FUNNEL_LINKS` em `js/funnel.js`.
+### Painel interno `/dadosquizz/`
+
+- Relatório de funil: visitas → cada pergunta → notícias → resultado → clique no checkout  
+- Senha padrão: veja `js/analytics-config.js` → `dashboardPassword` (troque!)  
+- `noindex` (não para clientes)  
+- Contadores via CounterAPI + espelho local
 
 ## Arquivos
 

@@ -163,6 +163,21 @@
     }
   }
 
+  /** Métricas internas (/dadosquizz) — 1 contagem por etapa por sessão */
+  function trackFunnel(key) {
+    if (window.QuizAnalytics && typeof window.QuizAnalytics.track === "function") {
+      window.QuizAnalytics.track(key, { oncePerSession: true });
+    }
+  }
+
+  function trackFunnelForStep() {
+    if (state.step === "hero") trackFunnel("visit");
+    else if (state.step === "question") trackFunnel("q" + (state.qIndex + 1));
+    else if (state.step === "news") trackFunnel("news_" + (state.pendingNewsId || "n1"));
+    else if (state.step === "analyze") trackFunnel("loading");
+    else if (state.step === "result") trackFunnel("result");
+  }
+
   async function paint(opts = {}) {
     updateProgress();
     el.screen.classList.add("is-active");
@@ -176,6 +191,8 @@
 
     // Meta Pixel: PageView em toda tela do quiz (hero, pergunta, notícia, loading, resultado)
     trackStepPageView();
+    // Funil interno
+    trackFunnelForStep();
 
     if (!opts.instant) {
       await M.enter(el.screen, opts.enterMode || "slide");
@@ -215,6 +232,7 @@
     M.pulseCta(document.getElementById("btn-start"));
     document.getElementById("btn-start").addEventListener("click", (e) => {
       M.ripple(e.currentTarget, e);
+      trackFunnel("start");
       go("question", () => {
         state.qIndex = 0;
         state.answers = [];
@@ -603,7 +621,13 @@
     `;
 
     M.stagger(el.screen, "[data-reveal]", 70);
-    M.pulseCta(document.getElementById("btn-hotmart"));
+    const ctaBtn = document.getElementById("btn-hotmart");
+    M.pulseCta(ctaBtn);
+    if (ctaBtn) {
+      ctaBtn.addEventListener("click", () => {
+        trackFunnel("cta_checkout");
+      });
+    }
 
     // Círculo de % animado
     const fg = document.getElementById("result-level-fg");

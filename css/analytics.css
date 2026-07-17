@@ -1,0 +1,256 @@
+/* Painel /dadosquizz */
+.dash-wrap {
+  width: min(100%, 720px);
+  margin: 0 auto;
+  padding: 12px 14px 40px;
+}
+
+.dash-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.dash-header h1 {
+  margin: 0;
+  flex: 1;
+  font-family: var(--font);
+  font-size: clamp(1.2rem, 4vw, 1.45rem);
+  font-weight: 800;
+  color: var(--primary-deep);
+  letter-spacing: -0.02em;
+}
+
+.dash-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-sm {
+  min-height: 40px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  color: var(--primary-deep);
+}
+
+.btn-sm.is-primary {
+  background: var(--primary-deep);
+  color: #fff;
+  border-color: var(--primary-deep);
+}
+
+.auth-card {
+  max-width: 400px;
+  margin: 48px auto;
+  padding: 24px 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.auth-card h1 {
+  margin: 0 0 8px;
+  font-family: var(--font);
+  font-size: 1.25rem;
+  color: var(--primary-deep);
+}
+
+.auth-card p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.auth-card input[type="password"] {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 12px;
+  border: 1.5px solid var(--line);
+  padding: 10px 14px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.auth-card .btn-primary {
+  width: 100%;
+}
+
+.auth-err {
+  color: #b91c1c;
+  font-size: 0.85rem;
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+
+.stat-label {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stat-value {
+  margin: 6px 0 0;
+  font-family: var(--font);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--primary-deep);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.stat-sub {
+  margin: 6px 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.dash-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px 12px 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+  overflow-x: auto;
+}
+
+.dash-panel h2 {
+  margin: 0 0 12px;
+  font-family: var(--font);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--primary-deep);
+  padding: 0 4px;
+}
+
+.funnel-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.funnel-table th {
+  text-align: left;
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  padding: 8px 6px;
+  border-bottom: 2px solid var(--line);
+}
+
+.funnel-table td {
+  padding: 10px 6px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+  color: var(--ink);
+}
+
+.step-idx {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: oklch(0.95 0.02 230);
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--primary-deep);
+  margin-right: 4px;
+}
+
+.col-num {
+  font-family: var(--font);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.col-pct {
+  min-width: 120px;
+}
+
+.col-pct span {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: var(--primary-deep);
+}
+
+.mini-bar {
+  height: 6px;
+  border-radius: 99px;
+  background: oklch(0.93 0.02 230);
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.mini-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-mid), var(--accent-hot));
+  border-radius: inherit;
+}
+
+.col-drop {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.col-drop.is-warn {
+  color: #b45309;
+}
+
+.col-drop.is-bad {
+  color: #b91c1c;
+}
+
+.load-status {
+  margin: 0 0 12px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.dash-note {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.4;
+  padding: 0 4px;
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="Painel interno de métricas do quiz — acesso restrito." />
+    <meta name="theme-color" content="#2a5f86" />
+    <title>Dados do quiz | interno</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/funnel.css" />
+    <link rel="stylesheet" href="../css/analytics.css" />
+  </head>
+  <body>
+    <div class="dash-wrap">
+      <!-- Login -->
+      <section id="auth-gate" class="auth-card">
+        <p class="funnel-kicker" style="margin-bottom: 8px">Área interna</p>
+        <h1>Dados do quiz</h1>
+        <p>Relatório de funil (visitas → checkout). Não compartilhe esta URL com clientes.</p>
+        <p id="auth-err" class="auth-err" hidden></p>
+        <form id="auth-form">
+          <input id="auth-pass" type="password" autocomplete="current-password" placeholder="Senha" required />
+          <button type="submit" class="btn-primary">Entrar</button>
+        </form>
+      </section>
+
+      <!-- Dashboard -->
+      <section id="dashboard" hidden>
+        <header class="dash-header">
+          <h1>Funil do quiz</h1>
+          <div class="dash-actions">
+            <button type="button" class="btn-sm is-primary" id="btn-refresh">Atualizar</button>
+            <button type="button" class="btn-sm" id="btn-logout">Sair</button>
+          </div>
+        </header>
+
+        <p class="load-status" id="load-status">—</p>
+        <div class="summary-grid" id="summary-cards"></div>
+        <div id="worst-drop"></div>
+
+        <div class="dash-panel">
+          <h2>Etapas · % que chegou · queda</h2>
+          <table class="funnel-table" id="funnel-table"></table>
+        </div>
+
+        <p class="dash-note">
+          Contadores globais (todos os visitantes). Cada pessoa conta no máximo 1 vez por etapa por sessão de
+          navegador. Senha em <code>js/analytics-config.js</code> (<code>dashboardPassword</code>).
+        </p>
+      </section>
+    </div>
+
+    <script src="../js/analytics-config.js"></script>
+    <script src="../js/analytics-dashboard.js"></script>
+  </body>
+</html>
