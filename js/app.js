@@ -476,11 +476,11 @@
   function renderCapture() {
     const u = ui();
     el.screen.innerHTML = `
-      <article class="funnel-card capture-card">
-        <div class="funnel-body">
-          <p class="funnel-kicker" data-reveal>Lead</p>
-          <h1 data-reveal>${escapeHtml(u.captureTitle)}</h1>
-          <p class="funnel-lead" data-reveal>${escapeHtml(u.captureLead)}</p>
+      <article class="hero-card capture-card">
+        <div class="hero-body">
+          <p class="block-chip" data-reveal>Lead</p>
+          <h1 data-reveal style="font-size:clamp(1.25rem,5vw,1.5rem)">${escapeHtml(u.captureTitle)}</h1>
+          <p class="lead" data-reveal>${escapeHtml(u.captureLead)}</p>
           <form id="lead-form" class="lead-form" data-reveal>
             <label><span>${escapeHtml(u.captureName)}</span>
               <input name="name" type="text" autocomplete="name" required /></label>
@@ -490,7 +490,7 @@
               <input name="phone" type="tel" autocomplete="tel" required /></label>
             <p class="lead-error" id="lead-error" hidden>${escapeHtml(u.captureError)}</p>
             <button type="submit" class="btn-primary btn-accent">${escapeHtml(u.captureCta)}</button>
-            <p class="funnel-footer">${escapeHtml(u.captureNote)}</p>
+            <p class="footer-note">${escapeHtml(u.captureNote)}</p>
           </form>
         </div>
       </article>`;
@@ -597,7 +597,7 @@
             ${(u.resultPoints || []).map((p) => `<li data-reveal>${escapeHtml(p)}</li>`).join("")}
           </ul>
 
-          <p class="funnel-kicker" data-reveal>${escapeHtml(u.pitchBadge)}</p>
+          <p class="block-chip" data-reveal>${escapeHtml(u.pitchBadge)}</p>
           <div class="pitch-grid">
             ${order
               .map((key, i) => {
