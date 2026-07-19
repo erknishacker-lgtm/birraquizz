@@ -1250,6 +1250,133 @@ button:disabled {
   }
 }
 
+/* Chip de bloco do funil (ice/pain/desire/bridge) */
+.block-chip {
+  margin: 0 0 4px;
+  display: inline-flex;
+  font-family: var(--font);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary-deep);
+  background: oklch(0.95 0.03 230);
+  border: 1px solid var(--line);
+  padding: 4px 9px;
+  border-radius: 999px;
+}
+
+/* Captura de lead */
+.capture-card .funnel-body {
+  padding: 18px 16px 20px;
+}
+.lead-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+.lead-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  font-family: var(--font);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--primary-deep);
+}
+.lead-form input {
+  min-height: 48px;
+  border-radius: 12px;
+  border: 1.5px solid var(--line);
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  background: #fff;
+}
+.lead-form input:focus {
+  outline: 2px solid var(--primary-mid);
+  border-color: var(--primary-mid);
+}
+.lead-error {
+  margin: 0;
+  color: #b91c1c;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* Pitch blocks */
+.pitch-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 4px 0 8px;
+}
+.pitch-block {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: oklch(0.99 0.008 230);
+  text-align: left;
+}
+.pitch-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--primary-deep);
+  color: #fff;
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: 0.85rem;
+  display: grid;
+  place-items: center;
+}
+.pitch-block h3 {
+  margin: 0 0 4px;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--primary-deep);
+}
+.pitch-block p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* Sticky CTA no pitch */
+body.has-sticky-cta {
+  padding-bottom: 76px;
+}
+.sticky-cta {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, oklch(0.99 0.01 230) 70%, transparent);
+  display: flex;
+  justify-content: center;
+}
+.sticky-cta .btn-primary {
+  width: min(100%, 430px);
+  margin: 0;
+  box-shadow: 0 8px 24px oklch(0.45 0.08 70 / 0.35);
+}
+
+.eval-card .result-body,
+.eval-card .result-hero {
+  padding-bottom: 18px;
+}
+
 /* Carga ~3s antes del resultado */
 .loading-screen {
   flex: 1;

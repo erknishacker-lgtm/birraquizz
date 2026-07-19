@@ -43,14 +43,16 @@ The result must push toward *wanting the solution hard*, independent of which an
 
 ## Product Surface
 
-### Quiz (root `/`)
+### Quiz (root `/`) — método funil completo
 
-1. Landing / hook (hero + start CTA)
-2. Language selector: **ES / PT / EN** (default ES)
-3. **12 questions** + images
-4. News interstitials after Q4 / Q8 / Q12
-5. Loading ~3s
-6. Result + CTA Hotmart
+1. Hero com **promessa + recompensa** clara (diagnóstico + plano)
+2. Idiomas **ES / PT / EN** (default ES)
+3. **~30 perguntas** em 4 blocos: quebra-gelo → dor → desejo → ponte
+4. **4 micros** intercalados (retenção / conteúdo)
+5. **Avaliação** personalizada (só depois das perguntas)
+6. **Captura de lead** (nome, e-mail, WhatsApp) — nunca antes do diagnóstico
+7. Loading → **Pitch** (7 blocos) + CTA sticky Hotmart
+8. Métricas em `/dadosquizz/`
 
 ### Funnel pages (same brand system)
 

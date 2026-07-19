@@ -1,17 +1,20 @@
+/**
+ * Funil de quiz — método completo:
+ * hero → etapas (ice/pain/desire/bridge + micros) → eval → capture → loading → pitch
+ */
 (() => {
-  const TOTAL_Q = 12;
-  const HOTMART = window.HOTMART_URL;
-  const IMG = window.IMG_BASE;
-  const I18N = window.QUIZ_I18N;
+  const FLOW = window.QUIZ_FLOW;
+  const HOTMART = window.HOTMART_URL || "https://pay.hotmart.com/P106744435B";
+  const IMG = window.IMG_BASE || "assets/images/";
   const M = window.QuizMotion;
 
   const state = {
     lang: detectLang(),
-    step: "hero",
-    qIndex: 0,
-    answers: [], // { qid, opt }
+    phase: "hero", // hero | step
+    stepIndex: 0,
+    answers: [],
     score: 0,
-    pendingNewsId: null, // id da matéria — sempre resolvida no idioma atual
+    lead: null,
     transitioning: false,
   };
 
@@ -23,17 +26,33 @@
     langGroup: document.querySelector(".lang"),
     metaDesc: document.querySelector('meta[name="description"]'),
     screen: document.getElementById("screen"),
+    sticky: null,
   };
 
-  /** Idioma principal sempre español; só muda se o usuário escolher (e salvar). */
   function detectLang() {
     const saved = localStorage.getItem("quiz-lang");
-    if (saved && I18N[saved]) return saved;
+    if (saved && FLOW[saved]) return saved;
     return "es";
   }
 
-  function t() {
-    return I18N[state.lang] || I18N.es;
+  function pack() {
+    return FLOW[state.lang] || FLOW.es;
+  }
+
+  function ui() {
+    return pack().ui;
+  }
+
+  function steps() {
+    return pack().steps || [];
+  }
+
+  function totalSteps() {
+    return steps().length;
+  }
+
+  function currentStep() {
+    return steps()[state.stepIndex] || null;
   }
 
   function localeTag() {
@@ -42,551 +61,519 @@
     return "es-ES";
   }
 
-  function todayLong() {
-    return new Date().toLocaleDateString(localeTag(), {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }
-
-  function todayShort() {
-    return new Date().toLocaleDateString(localeTag(), {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  }
-
-  /** Atualiza título, meta e aria do seletor — tudo no idioma atual */
-  function applyDocumentLang() {
-    const c = t();
-    document.documentElement.lang = localeTag();
-    document.title = c.metaTitle;
-    if (el.metaDesc && c.metaDescription) {
-      el.metaDesc.setAttribute("content", c.metaDescription);
-    }
-    if (el.langGroup && c.langAria) {
-      el.langGroup.setAttribute("aria-label", c.langAria);
-    }
-    el.langBtns.forEach((b) => {
-      b.setAttribute("aria-pressed", b.dataset.lang === state.lang ? "true" : "false");
-    });
-  }
-
-  function setLang(lang) {
-    if (!I18N[lang] || lang === state.lang) return;
-    state.lang = lang;
-    localStorage.setItem("quiz-lang", lang);
-    applyDocumentLang();
-    // Re-render completo no novo idioma (notícia/tags resolvidos de novo)
-    paint({ instant: true });
-  }
-
-  function updateProgress() {
-    const on = state.step !== "hero";
-    el.progressWrap.classList.toggle("is-on", on);
-    if (!on) {
-      el.progressBar.style.width = "0%";
-      el.progressCount.textContent = "";
-      return;
-    }
-    const shown =
-      state.step === "result" || state.step === "analyze" ? TOTAL_Q : state.qIndex + 1;
-    el.progressBar.style.width = `${Math.round((shown / TOTAL_Q) * 100)}%`;
-    el.progressCount.textContent = t()
-      .progressOf.replace("{n}", String(shown))
-      .replace("{total}", String(TOTAL_Q));
-  }
-
   function img(name) {
     return `${IMG}${name}`;
   }
 
   function escapeHtml(s) {
-    return String(s)
+    return String(s ?? "")
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
   }
 
-  /** Tags sempre no idioma atual (a partir das respostas salvas por id) */
-  function tagsForCurrentLang() {
-    const tags = [];
-    const seen = new Set();
-    state.answers.forEach((a) => {
-      const q = t().questions.find((item) => item.id === a.qid);
-      const opt = q?.options?.find((o) => o.id === a.opt);
-      (opt?.tags || []).forEach((tag) => {
-        if (!seen.has(tag)) {
-          seen.add(tag);
-          tags.push(tag);
-        }
-      });
+  function setLang(lang) {
+    if (!FLOW[lang]) return;
+    state.lang = lang;
+    localStorage.setItem("quiz-lang", lang);
+    applyChrome();
+    paint({ instant: true });
+  }
+
+  function applyChrome() {
+    const u = ui();
+    document.documentElement.lang = localeTag();
+    if (u.metaTitle) document.title = u.metaTitle;
+    if (el.metaDesc && u.metaDescription) el.metaDesc.setAttribute("content", u.metaDescription);
+    if (el.langGroup && u.langAria) el.langGroup.setAttribute("aria-label", u.langAria);
+    el.langBtns.forEach((b) => {
+      b.setAttribute("aria-pressed", b.dataset.lang === state.lang ? "true" : "false");
     });
-    return tags;
   }
 
-  function currentNews() {
-    if (!state.pendingNewsId) return null;
-    return t().news.find((n) => n.id === state.pendingNewsId) || null;
-  }
-
-  async function go(nextStep, patch) {
-    if (state.transitioning) return;
-    state.transitioning = true;
-    await M.leave(el.screen);
-    if (patch) patch();
-    state.step = nextStep;
-    await paint({
-      enterMode:
-        nextStep === "news"
-          ? "slam"
-          : nextStep === "result" || nextStep === "analyze"
-            ? "up"
-            : "slide",
-    });
-    state.transitioning = false;
-  }
-
-  function trackStepPageView() {
-    if (typeof window.metaTrackPageView !== "function" && typeof fbq !== "function") return;
-    var name = "quiz_" + state.step;
-    if (state.step === "question") name = "quiz_question_" + (state.qIndex + 1);
-    if (state.step === "news") name = "quiz_news_" + (state.pendingNewsId || "x");
-    if (typeof window.metaTrackPageView === "function") {
-      window.metaTrackPageView(name);
-    } else if (typeof fbq === "function") {
-      fbq("track", "PageView", { content_name: name });
+  function updateProgress() {
+    const on = state.phase === "step";
+    el.progressWrap.classList.toggle("is-on", on);
+    if (!on) {
+      el.progressBar.style.width = "0%";
+      el.progressCount.textContent = "";
+      return;
     }
+    const n = Math.min(state.stepIndex + 1, totalSteps());
+    const tot = totalSteps();
+    el.progressBar.style.width = `${Math.round((n / tot) * 100)}%`;
+    el.progressCount.textContent = (ui().progressOf || "{n}/{total}")
+      .replace("{n}", String(n))
+      .replace("{total}", String(tot));
   }
 
-  /** Métricas internas (/dadosquizz) — 1 contagem por etapa por sessão */
   function trackFunnel(key) {
     if (window.QuizAnalytics && typeof window.QuizAnalytics.track === "function") {
       window.QuizAnalytics.track(key, { oncePerSession: true });
     }
   }
 
-  function trackFunnelForStep() {
-    if (state.step === "hero") trackFunnel("visit");
-    else if (state.step === "question") trackFunnel("q" + (state.qIndex + 1));
-    else if (state.step === "news") trackFunnel("news_" + (state.pendingNewsId || "n1"));
-    else if (state.step === "analyze") trackFunnel("loading");
-    else if (state.step === "result") trackFunnel("result");
+  function trackStepAnalytics() {
+    if (state.phase === "hero") {
+      trackFunnel("visit");
+      return;
+    }
+    const s = currentStep();
+    if (!s) return;
+    if (s.type === "question") trackFunnel(s.id);
+    else if (s.type === "micro") trackFunnel(s.id);
+    else if (s.type === "eval") trackFunnel("eval");
+    else if (s.type === "capture") trackFunnel("capture");
+    else if (s.type === "loading") trackFunnel("loading");
+    else if (s.type === "pitch") trackFunnel("result");
+  }
+
+  function trackMeta() {
+    const name =
+      state.phase === "hero"
+        ? "quiz_hero"
+        : "quiz_" + (currentStep()?.id || currentStep()?.type || "step");
+    if (typeof window.metaTrackPageView === "function") window.metaTrackPageView(name);
+    else if (typeof fbq === "function") fbq("track", "PageView", { content_name: name });
+  }
+
+  function ensureSticky(show, label) {
+    let bar = document.getElementById("sticky-cta");
+    if (!show) {
+      if (bar) bar.remove();
+      document.body.classList.remove("has-sticky-cta");
+      return;
+    }
+    if (!bar) {
+      bar = document.createElement("div");
+      bar.id = "sticky-cta";
+      bar.className = "sticky-cta";
+      document.body.appendChild(bar);
+    }
+    document.body.classList.add("has-sticky-cta");
+    bar.innerHTML = `<a class="btn-primary btn-accent" href="${HOTMART}" target="_blank" rel="noopener noreferrer" id="sticky-hotmart">${escapeHtml(label)}</a>`;
+    document.getElementById("sticky-hotmart").addEventListener("click", () => trackFunnel("cta_checkout"));
+  }
+
+  async function goPhase(phase, patch) {
+    if (state.transitioning) return;
+    state.transitioning = true;
+    await M.leave(el.screen);
+    if (patch) patch();
+    state.phase = phase;
+    await paint({ enterMode: phase === "hero" ? "up" : "slide" });
+    state.transitioning = false;
+  }
+
+  async function goStep(index, enterMode) {
+    if (state.transitioning) return;
+    state.transitioning = true;
+    await M.leave(el.screen);
+    state.phase = "step";
+    state.stepIndex = index;
+    await paint({ enterMode: enterMode || "slide" });
+    state.transitioning = false;
+  }
+
+  function nextAfterAnswer() {
+    const next = state.stepIndex + 1;
+    if (next >= totalSteps()) return;
+    goStep(next);
   }
 
   async function paint(opts = {}) {
     updateProgress();
     el.screen.classList.add("is-active");
     el.screen.style.opacity = "1";
+    ensureSticky(false);
 
-    if (state.step === "hero") renderHero();
-    else if (state.step === "question") renderQuestion();
-    else if (state.step === "news") renderNewsShell();
-    else if (state.step === "analyze") renderAnalyze();
-    else if (state.step === "result") renderResult();
-
-    // Meta Pixel: PageView em toda tela do quiz (hero, pergunta, notícia, loading, resultado)
-    trackStepPageView();
-    // Funil interno
-    trackFunnelForStep();
-
-    if (!opts.instant) {
-      await M.enter(el.screen, opts.enterMode || "slide");
+    if (state.phase === "hero") {
+      renderHero();
+    } else {
+      const s = currentStep();
+      if (!s) {
+        state.phase = "hero";
+        renderHero();
+      } else if (s.type === "question") renderQuestion(s);
+      else if (s.type === "micro") renderMicro(s);
+      else if (s.type === "eval") renderEval();
+      else if (s.type === "capture") renderCapture();
+      else if (s.type === "loading") await renderLoading();
+      else if (s.type === "pitch") renderPitch();
     }
 
-    if (state.step === "news") {
-      if (opts.instant) {
-        fillNewsStatic();
+    trackMeta();
+    trackStepAnalytics();
+
+    if (!opts.instant) {
+      const mode =
+        currentStep()?.type === "micro"
+          ? "slam"
+          : currentStep()?.type === "pitch" || currentStep()?.type === "eval"
+            ? "up"
+            : opts.enterMode || "slide";
+      if (state.phase === "step" && currentStep()?.type === "loading") {
+        /* loading has own animation */
       } else {
-        await runNewsEffects();
+        await M.enter(el.screen, mode);
       }
+    }
+
+    if (state.phase === "step" && currentStep()?.type === "micro" && !opts.instant) {
+      await runMicroEffects();
     }
   }
 
   function renderHero() {
-    const c = t();
+    const u = ui();
     el.screen.innerHTML = `
       <article class="hero-card">
         <div class="hero-media" data-reveal>
           <img src="${img("scene-home.jpg")}" alt="" width="800" height="550" loading="eager" />
-          <span class="hero-kicker">${escapeHtml(c.heroKicker)}</span>
+          <span class="hero-kicker">${escapeHtml(u.heroKicker)}</span>
         </div>
         <div class="hero-body">
-          <h1 data-reveal>${escapeHtml(c.heroTitle)}</h1>
-          <p class="lead" data-reveal>${escapeHtml(c.heroLead)}</p>
-          <p class="sub" data-reveal>${escapeHtml(c.heroSub)}</p>
+          <h1 data-reveal>${escapeHtml(u.heroTitle)}</h1>
+          <p class="lead" data-reveal>${escapeHtml(u.heroLead)}</p>
+          <p class="sub" data-reveal>${escapeHtml(u.heroSub)}</p>
           <div class="trust-row" data-reveal>
-            <span>${escapeHtml(c.trust1)}</span>
-            <span>${escapeHtml(c.trust2)}</span>
-            <span>${escapeHtml(c.trust3)}</span>
+            <span>${escapeHtml(u.trust1)}</span>
+            <span>${escapeHtml(u.trust2)}</span>
+            <span>${escapeHtml(u.trust3)}</span>
           </div>
-          <button type="button" class="btn-primary" id="btn-start" data-reveal>${escapeHtml(c.startCta)}</button>
+          <button type="button" class="btn-primary" id="btn-start" data-reveal>${escapeHtml(u.startCta)}</button>
         </div>
-      </article>
-    `;
-    M.stagger(el.screen, "[data-reveal]", 85);
+      </article>`;
+    M.stagger(el.screen, "[data-reveal]", 70);
     M.pulseCta(document.getElementById("btn-start"));
     document.getElementById("btn-start").addEventListener("click", (e) => {
       M.ripple(e.currentTarget, e);
       trackFunnel("start");
-      go("question", () => {
-        state.qIndex = 0;
-        state.answers = [];
-        state.score = 0;
-        state.pendingNewsId = null;
-      });
+      goStep(0, "slide");
     });
   }
 
-  function renderQuestion() {
-    const c = t();
-    const q = c.questions[state.qIndex];
-    if (!q) {
-      goAnalyze();
-      return;
-    }
-    const caption = c.qCaption[q.caption] || "";
+  function blockLabel(block) {
+    const map = {
+      es: { ice: "Rompehielo", pain: "Dolor", desire: "Deseo", bridge: "Puente" },
+      pt: { ice: "Quebra-gelo", pain: "Dor", desire: "Desejo", bridge: "Ponte" },
+      en: { ice: "Icebreaker", pain: "Pain", desire: "Desire", bridge: "Bridge" },
+    };
+    return (map[state.lang] || map.es)[block] || "";
+  }
+
+  function renderQuestion(s) {
+    const u = ui();
+    const caption = (u.qCaption && u.qCaption[s.caption]) || "";
+    const bl = blockLabel(s.block);
     el.screen.innerHTML = `
       <article class="q-card">
         <div class="q-media" data-reveal>
-          <img src="${img(q.image)}" alt="" width="800" height="500" />
+          <img src="${img(s.image)}" alt="" width="800" height="500" />
           <span class="q-caption">${escapeHtml(caption)}</span>
         </div>
         <div class="q-body">
-          <h2 data-reveal>${escapeHtml(q.title)}</h2>
-          <p class="q-help" data-reveal>${escapeHtml(q.help)}</p>
-          <div class="options" role="group" aria-label="${escapeHtml(q.title)}">
-            ${q.options
+          ${bl ? `<p class="block-chip" data-reveal>${escapeHtml(bl)}</p>` : ""}
+          <h2 data-reveal>${escapeHtml(s.title)}</h2>
+          <p class="q-help" data-reveal>${escapeHtml(s.help)}</p>
+          <div class="options" role="group">
+            ${(s.options || [])
               .map(
-                (o, i) => `
-              <button type="button" class="option" data-opt="${i}" data-reveal>
-                ${escapeHtml(o.text)}
-              </button>`
+                (o, i) =>
+                  `<button type="button" class="option" data-opt="${i}" data-reveal>${escapeHtml(o.text)}</button>`
               )
               .join("")}
           </div>
         </div>
-      </article>
-    `;
-    M.stagger(el.screen, "[data-reveal]", 70);
-
+      </article>`;
+    M.stagger(el.screen, "[data-reveal]", 55);
     el.screen.querySelectorAll(".option").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         if (state.transitioning) return;
-        const opt = q.options[Number(btn.dataset.opt)];
+        const opt = s.options[Number(btn.dataset.opt)];
         M.ripple(btn, e);
-        M.pickPop(btn);
+        M.pickPop?.(btn);
         btn.classList.add("is-picked");
         el.screen.querySelectorAll(".option").forEach((b) => (b.disabled = true));
-        // Só ids — o texto/tags vêm sempre do idioma atual
-        state.answers.push({ qid: q.id, opt: opt.id });
-        state.score += opt.weight;
-        window.setTimeout(() => afterAnswer(), M.reduced() ? 60 : 380);
+        state.answers.push({ qid: s.id, opt: opt.id, block: s.block });
+        state.score += opt.weight || 0;
+        setTimeout(() => nextAfterAnswer(), M.reduced?.() ? 60 : 320);
       });
     });
   }
 
-  function afterAnswer() {
-    const justFinished = state.qIndex + 1;
-    const news = t().news.find((n) => n.afterQuestion === justFinished);
-    if (news) {
-      go("news", () => {
-        state.pendingNewsId = news.id;
-      });
-      return;
-    }
-    if (state.qIndex >= TOTAL_Q - 1) {
-      goAnalyze();
-      return;
-    }
-    go("question", () => {
-      state.qIndex += 1;
+  function renderMicro(s) {
+    // Reuse news card styles by layout
+    const dateShort = new Date().toLocaleDateString(localeTag(), {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
-  }
+    const dateLong = new Date().toLocaleDateString(localeTag(), {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    const region =
+      state.lang === "en" ? "Latin America" : "América Latina";
 
-  function statsHtml(stats) {
-    return (stats || [])
-      .map(
-        (s) => `
-      <div class="paper-stat">
-        <strong><span data-count="${s.value}" data-suffix="${escapeHtml(s.suffix || "")}">0</span></strong>
-        <span>${escapeHtml(s.label)}</span>
-      </div>`
-      )
-      .join("");
-  }
-
-  function newsSharedBody(n) {
-    return `
-      <h2 class="paper-headline" id="paper-headline"></h2>
-      <div class="paper-stats">${statsHtml(n.stats)}</div>
-      <p class="paper-lead" data-reveal>${escapeHtml(n.body)}</p>
-      <blockquote class="paper-quote" data-reveal>
-        <p>${escapeHtml(n.quote)}</p>
-        <cite>${escapeHtml(n.quoteBy)}</cite>
-      </blockquote>
-      <ul class="paper-bullets">
-        ${(n.bullets || []).map((b) => `<li data-reveal>${escapeHtml(b)}</li>`).join("")}
-      </ul>
-      <p class="paper-warning" data-reveal>${escapeHtml(n.warning)}</p>
-      <button type="button" class="btn-primary btn-accent" id="btn-news" data-reveal>
-        ${escapeHtml(n.cta)}
-      </button>`;
-  }
-
-  /** layout: paper | tv | magazine */
-  function renderNewsShell() {
-    const n = currentNews();
-    if (!n) {
-      advanceFromNews();
-      return;
-    }
-    const c = t();
-    const dateLong = todayLong();
-    const dateShort = todayShort();
-    const region = c.newsRegion || "";
-    const layout = n.layout || "paper";
-
-    if (layout === "tv") {
+    if (s.layout === "tv") {
       el.screen.innerHTML = `
         <article class="tv-card" id="news-root">
-          <div class="tv-bezel">
-            <div class="tv-screen">
-              <img src="${img(n.image)}" alt="" width="900" height="500" />
-              <div class="tv-scan" aria-hidden="true"></div>
-              <div class="tv-topbar">
-                <span class="tv-channel">${escapeHtml(n.paper)}</span>
-                <span class="tv-clock" id="paper-date">${escapeHtml(dateShort)}</span>
-              </div>
-              <div class="tv-lower">
-                <span class="tv-badge">${escapeHtml(n.stamp)}</span>
-                <span class="tv-cat">${escapeHtml(n.category)}</span>
-              </div>
-              <div class="tv-ticker-line">
-                <span>${escapeHtml(region)} · ${escapeHtml(dateLong)}</span>
-              </div>
-            </div>
-          </div>
+          <div class="tv-bezel"><div class="tv-screen">
+            <img src="${img(s.image)}" alt="" />
+            <div class="tv-scan"></div>
+            <div class="tv-topbar"><span class="tv-channel">${escapeHtml(s.paper || "")}</span>
+            <span class="tv-clock">${escapeHtml(dateShort)}</span></div>
+            <div class="tv-lower"><span class="tv-badge">${escapeHtml(s.stamp || "")}</span>
+            <span class="tv-cat">${escapeHtml(s.category || "")}</span></div>
+            <div class="tv-ticker-line"><span>${escapeHtml(region)} · ${escapeHtml(dateLong)}</span></div>
+          </div></div>
           <div class="tv-panel">
-            ${newsSharedBody(n)}
+            <h2 class="paper-headline" id="paper-headline"></h2>
+            <p class="paper-lead" data-reveal>${escapeHtml(s.body)}</p>
+            <blockquote class="paper-quote" data-reveal><p>${escapeHtml(s.quote || "")}</p>
+            <cite>${escapeHtml(s.quoteBy || "")}</cite></blockquote>
+            <ul class="paper-bullets">${(s.bullets || []).map((b) => `<li data-reveal>${escapeHtml(b)}</li>`).join("")}</ul>
+            <button type="button" class="btn-primary btn-accent" id="btn-micro" data-reveal>${escapeHtml(s.cta || ui().continueCta)}</button>
           </div>
         </article>`;
-    } else if (layout === "magazine") {
+    } else if (s.layout === "magazine") {
       el.screen.innerHTML = `
         <article class="mag-card" id="news-root">
           <div class="mag-cover">
-            <img src="${img(n.image)}" alt="" width="900" height="500" />
+            <img src="${img(s.image)}" alt="" />
             <div class="mag-cover-meta">
-              <span class="mag-issue" id="paper-date">${escapeHtml(dateShort)}</span>
-              <span class="mag-brand">${escapeHtml(n.paper)}</span>
+              <span class="mag-issue">${escapeHtml(dateShort)}</span>
+              <span class="mag-brand">${escapeHtml(s.paper || "")}</span>
             </div>
-            <span class="mag-sticker">${escapeHtml(n.stamp)}</span>
+            <span class="mag-sticker">${escapeHtml(s.stamp || "")}</span>
           </div>
           <div class="mag-body">
-            <p class="mag-kicker">${escapeHtml(n.category)} · ${escapeHtml(region)}</p>
-            ${newsSharedBody(n)}
+            <p class="mag-kicker">${escapeHtml(s.category || "")} · ${escapeHtml(region)}</p>
+            <h2 class="paper-headline" id="paper-headline"></h2>
+            <p class="paper-lead" data-reveal>${escapeHtml(s.body)}</p>
+            <blockquote class="paper-quote" data-reveal><p>${escapeHtml(s.quote || "")}</p>
+            <cite>${escapeHtml(s.quoteBy || "")}</cite></blockquote>
+            <ul class="paper-bullets">${(s.bullets || []).map((b) => `<li data-reveal>${escapeHtml(b)}</li>`).join("")}</ul>
+            <button type="button" class="btn-primary btn-accent" id="btn-micro" data-reveal>${escapeHtml(s.cta || ui().continueCta)}</button>
           </div>
         </article>`;
     } else {
+      // paper | insight
       el.screen.innerHTML = `
         <article class="paper" id="news-root">
           <header class="paper-head">
             <div class="paper-head-row">
-              <span class="paper-name">${escapeHtml(n.paper)}</span>
-              <span class="paper-date-badge" id="paper-date">${escapeHtml(dateShort)}</span>
+              <span class="paper-name">${escapeHtml(s.paper || s.source || "")}</span>
+              <span class="paper-date-badge">${escapeHtml(dateShort)}</span>
             </div>
             <p class="paper-date-long">${escapeHtml(dateLong)}</p>
-            <div class="paper-rule" aria-hidden="true"></div>
+            <div class="paper-rule"></div>
             <div class="paper-kicker">
-              <span class="paper-cat">${escapeHtml(n.category)}</span>
-              <span class="paper-dateline">${escapeHtml(region)} · ${escapeHtml(dateShort)}</span>
+              <span class="paper-cat">${escapeHtml(s.category || s.ribbon || "")}</span>
+              <span class="paper-dateline">${escapeHtml(region)}</span>
             </div>
           </header>
-          <div class="paper-media">
-            <img src="${img(n.image)}" alt="" width="900" height="500" />
-          </div>
+          <div class="paper-media"><img src="${img(s.image)}" alt="" /></div>
           <div class="paper-body">
-            ${newsSharedBody(n)}
+            <h2 class="paper-headline" id="paper-headline"></h2>
+            <p class="paper-lead" data-reveal>${escapeHtml(s.body)}</p>
+            <blockquote class="paper-quote" data-reveal><p>${escapeHtml(s.quote || "")}</p>
+            <cite>${escapeHtml(s.quoteBy || "")}</cite></blockquote>
+            <ul class="paper-bullets">${(s.bullets || []).map((b) => `<li data-reveal>${escapeHtml(b)}</li>`).join("")}</ul>
+            <button type="button" class="btn-primary btn-accent" id="btn-micro" data-reveal>${escapeHtml(s.cta || ui().continueCta)}</button>
           </div>
         </article>`;
     }
-
-    document.getElementById("btn-news").addEventListener("click", (e) => {
+    document.getElementById("btn-micro").addEventListener("click", (e) => {
       M.ripple(e.currentTarget, e);
-      advanceFromNews();
+      nextAfterAnswer();
     });
   }
 
-  /** Troca de idioma no meio da notícia: preenche tudo sem re-animar */
-  function fillNewsStatic() {
-    const n = currentNews();
+  async function runMicroEffects() {
+    const s = currentStep();
     const root = document.getElementById("news-root");
-    if (!n || !root) return;
     const headline = document.getElementById("paper-headline");
-    if (headline) headline.textContent = n.title;
-    root.querySelectorAll("[data-count]").forEach((node) => {
-      const val = node.dataset.count;
-      const suffix = node.dataset.suffix || "";
-      node.textContent = `${val}${suffix}`;
-    });
-  }
-
-  async function runNewsEffects() {
-    const n = currentNews();
-    const root = document.getElementById("news-root");
-    if (!n || !root) return;
-
-    M.pageFlash(root);
-    M.impactBar(root);
-    M.screenShake(el.screen);
-    M.stamp(root, n.stamp);
-
-    const badge = document.getElementById("paper-date");
-    if (badge && badge.animate && !M.reduced()) {
-      badge.animate(
-        [{ transform: "scale(1)" }, { transform: "scale(1.12)" }, { transform: "scale(1)" }],
-        { duration: 700, iterations: 2 }
-      );
+    if (headline && s?.title) {
+      if (M.typewriter) await M.typewriter(headline, s.title, 12);
+      else headline.textContent = s.title;
     }
-
-    await M.typewriter(document.getElementById("paper-headline"), n.title, 12);
-
-    root.querySelectorAll("[data-count]").forEach((node, i) => {
-      window.setTimeout(() => {
-        M.countUp(node, Number(node.dataset.count), {
-          suffix: node.dataset.suffix || "",
-          duration: 1100,
-        });
-      }, i * 160);
-    });
-
-    M.stagger(el.screen, "[data-reveal]", 100);
-    M.pulseCta(document.getElementById("btn-news"));
+    if (root && M.stamp && s?.stamp) M.stamp(root, s.stamp);
+    if (root && M.pageFlash) M.pageFlash(root);
+    M.stagger?.(el.screen, "[data-reveal]", 80);
+    M.pulseCta?.(document.getElementById("btn-micro"));
   }
 
-  function advanceFromNews() {
-    const n = currentNews();
-    const after = n?.afterQuestion || state.qIndex + 1;
-    state.pendingNewsId = null;
-    if (after >= TOTAL_Q) {
-      goAnalyze();
-      return;
-    }
-    go("question", () => {
-      state.qIndex = after;
+  function tagsFromAnswers() {
+    const tags = [];
+    const seen = new Set();
+    // rebuild from current lang questions
+    state.answers.forEach((a) => {
+      const q = steps().find((x) => x.type === "question" && x.id === a.qid);
+      const opt = q?.options?.find((o) => o.id === a.opt);
+      (opt?.tags || []).forEach((t) => {
+        if (!seen.has(t)) {
+          seen.add(t);
+          tags.push(t);
+        }
+      });
     });
+    const defaults = ui().resultTagsDefault || [];
+    while (tags.length < 3) tags.push(defaults[tags.length] || defaults[0] || "—");
+    return tags.slice(0, 6);
   }
 
-  /** Nível de atención 0–100 (siempre alto / urgencia) a partir del score */
   function attentionLevel() {
-    const base = 88 + Math.min(11, Math.floor((state.score || 24) / 4));
-    return Math.min(99, Math.max(86, base));
+    return Math.min(99, Math.max(86, 88 + Math.min(11, Math.floor((state.score || 24) / 8))));
   }
 
-  function goAnalyze() {
-    go("analyze").then(async () => {
-      await runLoadingTransition(3000);
-      await go("result");
+  function renderEval() {
+    const u = ui();
+    const tags = tagsFromAnswers();
+    const level = attentionLevel();
+    el.screen.innerHTML = `
+      <article class="result-card eval-card">
+        <div class="result-hero">
+          <span class="badge-critical" data-reveal>${escapeHtml(u.evalBadge)}</span>
+          <div class="result-level" data-reveal>
+            <div class="result-level-ring">
+              <svg viewBox="0 0 100 100">
+                <circle class="result-level-bg" cx="50" cy="50" r="42"></circle>
+                <circle class="result-level-fg" id="result-level-fg" cx="50" cy="50" r="42"></circle>
+              </svg>
+              <div class="result-level-core"><span id="result-level-pct">0</span><small>%</small></div>
+            </div>
+            <p class="result-level-label">${escapeHtml((u.meterLabels && u.meterLabels[2]) || "Urgencia")}</p>
+          </div>
+          <h2 data-reveal>${escapeHtml(u.evalTitle)}</h2>
+          <p data-reveal>${escapeHtml(u.evalLead)}</p>
+          <div class="tags" data-reveal>${tags.map((t) => `<span>${escapeHtml(t)}</span>`).join("")}</div>
+          <button type="button" class="btn-primary btn-accent" id="btn-eval" data-reveal>${escapeHtml(u.evalCta)}</button>
+        </div>
+      </article>`;
+    M.stagger(el.screen, "[data-reveal]", 70);
+    const fg = document.getElementById("result-level-fg");
+    const circ = 2 * Math.PI * 42;
+    if (fg) {
+      fg.style.strokeDasharray = String(circ);
+      fg.style.strokeDashoffset = String(circ);
+      requestAnimationFrame(() => {
+        fg.style.transition = "stroke-dashoffset 1.1s cubic-bezier(0.16,1,0.3,1)";
+        fg.style.strokeDashoffset = String(circ * (1 - level / 100));
+      });
+    }
+    M.countUp?.(document.getElementById("result-level-pct"), level, { duration: 1100 });
+    document.getElementById("btn-eval").addEventListener("click", (e) => {
+      M.ripple(e.currentTarget, e);
+      nextAfterAnswer();
     });
   }
 
-  /** Pantalla simple de carga ~3s → resultado */
-  function renderAnalyze() {
-    const c = t();
+  function renderCapture() {
+    const u = ui();
     el.screen.innerHTML = `
-      <div class="loading-screen" id="loading-root" role="status" aria-live="polite">
-        <div class="loading-spinner" aria-hidden="true"></div>
-        <p class="loading-kicker" id="loading-status">${escapeHtml(c.analyzeLoading)}</p>
-        <h2>${escapeHtml(c.analyzeTitle)}</h2>
-        <p class="loading-sub">${escapeHtml(c.analyzeText)}</p>
+      <article class="funnel-card capture-card">
+        <div class="funnel-body">
+          <p class="funnel-kicker" data-reveal>Lead</p>
+          <h1 data-reveal>${escapeHtml(u.captureTitle)}</h1>
+          <p class="funnel-lead" data-reveal>${escapeHtml(u.captureLead)}</p>
+          <form id="lead-form" class="lead-form" data-reveal>
+            <label><span>${escapeHtml(u.captureName)}</span>
+              <input name="name" type="text" autocomplete="name" required /></label>
+            <label><span>${escapeHtml(u.captureEmail)}</span>
+              <input name="email" type="email" autocomplete="email" required /></label>
+            <label><span>${escapeHtml(u.capturePhone)}</span>
+              <input name="phone" type="tel" autocomplete="tel" required /></label>
+            <p class="lead-error" id="lead-error" hidden>${escapeHtml(u.captureError)}</p>
+            <button type="submit" class="btn-primary btn-accent">${escapeHtml(u.captureCta)}</button>
+            <p class="funnel-footer">${escapeHtml(u.captureNote)}</p>
+          </form>
+        </div>
+      </article>`;
+    M.stagger(el.screen, "[data-reveal]", 60);
+    document.getElementById("lead-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const name = String(fd.get("name") || "").trim();
+      const email = String(fd.get("email") || "").trim();
+      const phone = String(fd.get("phone") || "").trim();
+      const err = document.getElementById("lead-error");
+      if (!name || !email || !phone) {
+        if (err) err.hidden = false;
+        return;
+      }
+      state.lead = { name, email, phone, ts: Date.now(), lang: state.lang };
+      try {
+        const leads = JSON.parse(localStorage.getItem("birra_leads") || "[]");
+        leads.push(state.lead);
+        localStorage.setItem("birra_leads", JSON.stringify(leads.slice(-200)));
+      } catch (_) {}
+      trackFunnel("lead_capture");
+      nextAfterAnswer();
+    });
+  }
+
+  async function renderLoading() {
+    const u = ui();
+    el.screen.innerHTML = `
+      <div class="loading-screen" id="loading-root">
+        <div class="loading-spinner"></div>
+        <p class="loading-kicker" id="loading-status">${escapeHtml(u.analyzeLoading)}</p>
+        <h2>${escapeHtml(u.analyzeTitle)}</h2>
+        <p class="loading-sub">${escapeHtml(u.analyzeText)}</p>
         <div class="loading-bar-wrap">
-          <div class="loading-bar-track">
-            <div class="loading-bar-fill" id="loading-bar-fill"></div>
-          </div>
+          <div class="loading-bar-track"><div class="loading-bar-fill" id="loading-bar-fill"></div></div>
           <span class="loading-bar-pct" id="loading-bar-pct">0%</span>
         </div>
-      </div>
-    `;
-  }
-
-  async function runLoadingTransition(ms = 3000) {
-    const c = t();
-    const reduced = M.reduced();
-    const duration = reduced ? 400 : ms;
+      </div>`;
+    const reduced = M.reduced?.() || false;
+    const duration = reduced ? 400 : 2800;
     const fill = document.getElementById("loading-bar-fill");
     const pct = document.getElementById("loading-bar-pct");
-    const status = document.getElementById("loading-status");
-    const phrases = [
-      c.analyzeLoading,
-      c.analyzeTitle,
-      (c.analyzeSteps && c.analyzeSteps[1]) || c.analyzeText,
-      c.analyzeDone,
-    ].filter(Boolean);
-
     const start = performance.now();
-    let phraseIdx = 0;
-
     await new Promise((resolve) => {
       function tick(now) {
         const p = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - p, 2);
-        const v = Math.round(eased * 100);
-        if (fill) fill.style.width = `${v}%`;
-        if (pct) pct.textContent = `${v}%`;
-
-        const nextPhrase = Math.min(phrases.length - 1, Math.floor(p * phrases.length));
-        if (status && nextPhrase !== phraseIdx) {
-          phraseIdx = nextPhrase;
-          status.textContent = phrases[phraseIdx];
-        }
-
+        const v = Math.round((1 - Math.pow(1 - p, 2)) * 100);
+        if (fill) fill.style.width = v + "%";
+        if (pct) pct.textContent = v + "%";
         if (p < 1) requestAnimationFrame(tick);
         else resolve();
       }
       requestAnimationFrame(tick);
     });
-
-    if (status) status.textContent = c.analyzeDone;
-    await M.wait(reduced ? 50 : 200);
+    nextAfterAnswer();
   }
 
-  function renderResult() {
-    const c = t();
+  function renderPitch() {
+    const u = ui();
+    const tags = tagsFromAnswers();
     const level = attentionLevel();
-    const labels = c.meterLabels || [];
-    const vals = [
-      Math.min(99, level - 2),
-      Math.min(99, level - 5),
-      Math.min(99, level + 1),
-    ];
-    const tagList = tagsForCurrentLang().slice(0, 5);
-    while (tagList.length < 3) {
-      tagList.push(c.resultTagsDefault[tagList.length] || c.resultTagsDefault[0]);
-    }
+    const blocks = u.pitchBlocks || {};
+    const order = ["promise", "authority", "mechanism", "anchor", "offer", "guarantee", "faq"];
+    const labels = u.meterLabels || [];
+    const vals = [Math.min(99, level - 2), Math.min(99, level - 5), Math.min(99, level)];
+
     el.screen.innerHTML = `
-      <article class="result-card" id="result-root">
+      <article class="result-card pitch-card" id="result-root">
         <div class="result-hero">
-          <span class="badge-critical" data-reveal>⚡ ${escapeHtml(c.resultBadge)}</span>
-
+          <span class="badge-critical" data-reveal>⚡ ${escapeHtml(u.resultBadge)}</span>
           <div class="result-level" data-reveal>
-            <div class="result-level-ring" aria-hidden="true">
+            <div class="result-level-ring">
               <svg viewBox="0 0 100 100">
-                <circle class="result-level-bg" cx="50" cy="50" r="42" />
-                <circle class="result-level-fg" id="result-level-fg" cx="50" cy="50" r="42" />
+                <circle class="result-level-bg" cx="50" cy="50" r="42"></circle>
+                <circle class="result-level-fg" id="result-level-fg" cx="50" cy="50" r="42"></circle>
               </svg>
-              <div class="result-level-core">
-                <span id="result-level-pct">0</span><small>%</small>
-              </div>
+              <div class="result-level-core"><span id="result-level-pct">0</span><small>%</small></div>
             </div>
-            <p class="result-level-label">${escapeHtml(c.analyzeRisk)}</p>
+            <p class="result-level-label">${escapeHtml(labels[2] || "Urgencia")}</p>
           </div>
-
-          <h2 data-reveal>${escapeHtml(c.resultTitle)}</h2>
-          <p data-reveal>${escapeHtml(c.resultLead)}</p>
+          <h2 data-reveal>${escapeHtml(u.resultTitle)}</h2>
+          <p data-reveal>${escapeHtml(u.resultLead)}</p>
         </div>
         <div class="result-body">
           <div class="result-meters" data-reveal>
@@ -605,58 +592,61 @@
               )
               .join("")}
           </div>
-          <div class="tags" data-reveal>
-            ${tagList.map((tag) => `<span>${escapeHtml(tag)}</span>`).join("")}
-          </div>
+          <div class="tags" data-reveal>${tags.map((t) => `<span>${escapeHtml(t)}</span>`).join("")}</div>
           <ul class="result-list">
-            ${c.resultPoints.map((p) => `<li data-reveal>${escapeHtml(p)}</li>`).join("")}
+            ${(u.resultPoints || []).map((p) => `<li data-reveal>${escapeHtml(p)}</li>`).join("")}
           </ul>
+
+          <p class="funnel-kicker" data-reveal>${escapeHtml(u.pitchBadge)}</p>
+          <div class="pitch-grid">
+            ${order
+              .map((key, i) => {
+                const b = blocks[key];
+                if (!b) return "";
+                return `<div class="pitch-block" data-reveal>
+                  <span class="pitch-num">${i + 1}</span>
+                  <div><h3>${escapeHtml(b.t)}</h3><p>${escapeHtml(b.d)}</p></div>
+                </div>`;
+              })
+              .join("")}
+          </div>
+
           <a class="btn-primary btn-accent" id="btn-hotmart" href="${HOTMART}" target="_blank" rel="noopener noreferrer" data-reveal>
-            ${escapeHtml(c.ctaSolution)}
+            ${escapeHtml(u.ctaSolution || u.stickyCta)}
           </a>
-          <p class="price-note" data-reveal>${escapeHtml(c.priceNote)}</p>
-          <p class="footer-note" data-reveal>${escapeHtml(c.footerNote)}</p>
+          <p class="price-note" data-reveal>${escapeHtml(u.priceNote || "")}</p>
+          <p class="footer-note" data-reveal>${escapeHtml(u.footerNote || "")}</p>
         </div>
-      </article>
-    `;
+      </article>`;
 
-    M.stagger(el.screen, "[data-reveal]", 70);
-    const ctaBtn = document.getElementById("btn-hotmart");
-    M.pulseCta(ctaBtn);
-    if (ctaBtn) {
-      ctaBtn.addEventListener("click", () => {
-        trackFunnel("cta_checkout");
-      });
-    }
+    ensureSticky(true, u.stickyCta || u.ctaSolution);
+    M.stagger(el.screen, "[data-reveal]", 55);
+    const cta = document.getElementById("btn-hotmart");
+    M.pulseCta?.(cta);
+    cta?.addEventListener("click", () => trackFunnel("cta_checkout"));
 
-    // Círculo de % animado
     const fg = document.getElementById("result-level-fg");
     const circ = 2 * Math.PI * 42;
     if (fg) {
       fg.style.strokeDasharray = String(circ);
       fg.style.strokeDashoffset = String(circ);
       requestAnimationFrame(() => {
-        fg.style.transition = "stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1)";
+        fg.style.transition = "stroke-dashoffset 1.2s cubic-bezier(0.16,1,0.3,1)";
         fg.style.strokeDashoffset = String(circ * (1 - level / 100));
       });
     }
-    M.countUp(document.getElementById("result-level-pct"), level, { duration: 1200 });
-
-    // Barras de nivel
+    M.countUp?.(document.getElementById("result-level-pct"), level, { duration: 1200 });
     el.screen.querySelectorAll("[data-meter]").forEach((m, i) => {
       const target = Number(m.dataset.meter) || 90;
-      window.setTimeout(() => {
-        m.style.width = `${target}%`;
+      setTimeout(() => {
+        m.style.width = target + "%";
         const valEl = el.screen.querySelectorAll("[data-mval]")[i];
-        if (valEl) M.countUp(valEl, target, { duration: 900, suffix: "%" });
-      }, 200 + i * 160);
+        if (valEl) M.countUp?.(valEl, target, { duration: 900, suffix: "%" });
+      }, 200 + i * 140);
     });
   }
 
-  el.langBtns.forEach((b) => {
-    b.addEventListener("click", () => setLang(b.dataset.lang));
-  });
-
-  applyDocumentLang();
-  paint({ enterMode: "up" });
+  el.langBtns.forEach((b) => b.addEventListener("click", () => setLang(b.dataset.lang)));
+  applyChrome();
+  paint({ enterMode: "up", instant: false });
 })();
