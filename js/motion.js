@@ -220,6 +220,256 @@ window.QuizMotion = (() => {
     );
   }
 
+  /**
+   * Contador de urgência (resultado final) — pulso, anel, brilho, contagem.
+   * @param {HTMLElement} root .result-level
+   * @param {number} target 0–100
+   * @param {{ duration?: number }} [opts]
+   */
+  function urgencyMeter(root, target, opts = {}) {
+    if (!root) return () => {};
+    const level = Math.max(0, Math.min(100, Number(target) || 0));
+    const duration = opts.duration ?? 1600;
+    const fg = root.querySelector(".result-level-fg") || root.querySelector("#result-level-fg");
+    const pctEl = root.querySelector("#result-level-pct") || root.querySelector(".result-level-core span");
+    const core = root.querySelector(".result-level-core");
+    const label = root.querySelector(".result-level-label");
+    const ringWrap = root.querySelector(".result-level-ring");
+    const r = 42;
+    const circ = 2 * Math.PI * r;
+
+    // cancel previous run
+    if (root._urgencyStop) {
+      try {
+        root._urgencyStop();
+      } catch (_) {}
+    }
+
+    // ensure pulse layers
+    let aura = root.querySelector(".urgency-aura");
+    if (!aura) {
+      aura = document.createElement("div");
+      aura.className = "urgency-aura";
+      aura.setAttribute("aria-hidden", "true");
+      root.insertBefore(aura, root.firstChild);
+    }
+    let ripples = root.querySelector(".urgency-ripples");
+    if (!ripples) {
+      ripples = document.createElement("div");
+      ripples.className = "urgency-ripples";
+      ripples.setAttribute("aria-hidden", "true");
+      ripples.innerHTML = '<i class="urgency-ripple"></i><i class="urgency-ripple"></i><i class="urgency-ripple"></i>';
+      root.insertBefore(ripples, root.firstChild);
+    }
+
+    root.classList.add("is-urgency-live");
+    root.setAttribute("aria-live", "polite");
+
+    if (fg) {
+      fg.style.strokeDasharray = String(circ);
+      fg.style.strokeDashoffset = String(circ);
+      fg.style.transition = "none";
+    }
+    if (pctEl) pctEl.textContent = "0";
+
+    if (reduced()) {
+      if (fg) fg.style.strokeDashoffset = String(circ * (1 - level / 100));
+      if (pctEl) pctEl.textContent = String(Math.round(level));
+      root.classList.add("is-urgency-static");
+      return () => {
+        root.classList.remove("is-urgency-live", "is-urgency-static");
+      };
+    }
+
+    let raf = 0;
+    let liveRaf = 0;
+    let stopped = false;
+    const start = performance.now();
+    const anims = [];
+
+    // Entrance: scale-in slam
+    if (root.animate) {
+      anims.push(
+        root.animate(
+          [
+            { transform: "scale(0.82)", opacity: 0.4, filter: "blur(6px)" },
+            { transform: "scale(1.06)", opacity: 1, filter: "blur(0px)", offset: 0.72 },
+            { transform: "scale(1)", opacity: 1, filter: "blur(0px)" },
+          ],
+          { duration: 700, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "both" }
+        )
+      );
+    }
+
+    // Count + ring fill with overshoot
+    function fillFrame(now) {
+      if (stopped) return;
+      const p = Math.min(1, (now - start) / duration);
+      // ease-out expo + slight overshoot near end
+      const eased = 1 - Math.pow(1 - p, 4);
+      let val = level * eased;
+      if (p > 0.82 && p < 1) {
+        const o = Math.sin((p - 0.82) / 0.18 * Math.PI);
+        val = Math.min(100, level + o * 2.2);
+      }
+      if (p >= 1) val = level;
+
+      if (pctEl) pctEl.textContent = String(Math.round(val));
+      if (fg) {
+        const t = Math.min(1, val / 100);
+        fg.style.strokeDashoffset = String(circ * (1 - t));
+        // glow intensity tracks fill
+        const glow = 4 + t * 14;
+        fg.style.filter = `drop-shadow(0 0 ${glow}px rgba(220,38,38,${0.35 + t * 0.45}))`;
+      }
+      if (p < 1) raf = requestAnimationFrame(fillFrame);
+      else {
+        if (pctEl) pctEl.textContent = String(Math.round(level));
+        if (fg) fg.style.strokeDashoffset = String(circ * (1 - level / 100));
+        startHeartbeat();
+      }
+    }
+    raf = requestAnimationFrame(fillFrame);
+
+    function startHeartbeat() {
+      if (stopped) return;
+      root.classList.add("is-urgency-beating");
+
+      // Heartbeat on ring wrap: lub-dub
+      if (ringWrap?.animate) {
+        anims.push(
+          ringWrap.animate(
+            [
+              { transform: "scale(1)", offset: 0 },
+              { transform: "scale(1.07)", offset: 0.12 },
+              { transform: "scale(0.98)", offset: 0.22 },
+              { transform: "scale(1.05)", offset: 0.34 },
+              { transform: "scale(1)", offset: 0.5 },
+              { transform: "scale(1)", offset: 1 },
+            ],
+            { duration: 1400, iterations: Infinity, easing: "ease-in-out" }
+          )
+        );
+      }
+
+      // Core number soft pulse
+      if (core?.animate) {
+        anims.push(
+          core.animate(
+            [
+              { transform: "scale(1)", textShadow: "0 0 0 rgba(185,28,28,0)" },
+              { transform: "scale(1.08)", textShadow: "0 0 18px rgba(239,68,68,0.55)" },
+              { transform: "scale(1)", textShadow: "0 0 0 rgba(185,28,28,0)" },
+            ],
+            { duration: 1400, iterations: Infinity, easing: "ease-in-out" }
+          )
+        );
+      }
+
+      // Label chip pulse
+      if (label?.animate) {
+        anims.push(
+          label.animate(
+            [
+              { transform: "scale(1)", boxShadow: "0 4px 14px rgba(185,28,28,0.35)" },
+              { transform: "scale(1.06)", boxShadow: "0 8px 22px rgba(220,38,38,0.55)" },
+              { transform: "scale(1)", boxShadow: "0 4px 14px rgba(185,28,28,0.35)" },
+            ],
+            { duration: 1400, iterations: Infinity, easing: "ease-in-out" }
+          )
+        );
+      }
+
+      // Aura breathe
+      if (aura?.animate) {
+        anims.push(
+          aura.animate(
+            [
+              { transform: "scale(0.92)", opacity: 0.35 },
+              { transform: "scale(1.18)", opacity: 0.72 },
+              { transform: "scale(0.92)", opacity: 0.35 },
+            ],
+            { duration: 1400, iterations: Infinity, easing: "ease-in-out" }
+          )
+        );
+      }
+
+      // Expanding ripple rings (CSS class + staggered WAAPI)
+      const rippleNodes = [...root.querySelectorAll(".urgency-ripple")];
+      rippleNodes.forEach((node, i) => {
+        if (!node.animate) return;
+        anims.push(
+          node.animate(
+            [
+              { transform: "scale(0.55)", opacity: 0.55 },
+              { transform: "scale(1.35)", opacity: 0 },
+            ],
+            {
+              duration: 1600,
+              delay: i * 420,
+              iterations: Infinity,
+              easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+            }
+          )
+        );
+      });
+
+      // Micro jitter on the % when "critical" — keeps attention without faking change
+      const liveStart = performance.now();
+      function liveFrame(now) {
+        if (stopped) return;
+        const t = (now - liveStart) / 1000;
+        // subtle sine wobble on stroke glow only
+        if (fg) {
+          const w = 10 + Math.sin(t * 3.2) * 4 + Math.sin(t * 7.1) * 2;
+          const a = 0.55 + Math.sin(t * 2.4) * 0.2;
+          fg.style.filter = `drop-shadow(0 0 ${w}px rgba(220,38,38,${a}))`;
+        }
+        // occasional 1% flicker feel without lying: flash class
+        if (Math.sin(t * 1.7) > 0.992) {
+          root.classList.add("is-urgency-flash");
+          window.setTimeout(() => root.classList.remove("is-urgency-flash"), 120);
+        }
+        liveRaf = requestAnimationFrame(liveFrame);
+      }
+      liveRaf = requestAnimationFrame(liveFrame);
+
+      // Soft stamp once at critical
+      if (level >= 90) {
+        window.setTimeout(() => {
+          if (stopped) return;
+          stamp(root.closest(".result-card") || root, level >= 96 ? "CRÍTICO" : "ALTO");
+        }, 200);
+      }
+    }
+
+    function stop() {
+      stopped = true;
+      cancelAnimationFrame(raf);
+      cancelAnimationFrame(liveRaf);
+      anims.forEach((a) => {
+        try {
+          a.cancel();
+        } catch (_) {}
+      });
+      root.classList.remove("is-urgency-live", "is-urgency-beating", "is-urgency-flash", "is-urgency-static");
+      if (ringWrap) ringWrap.style.transform = "";
+      if (core) {
+        core.style.transform = "";
+        core.style.textShadow = "";
+      }
+      if (label) {
+        label.style.transform = "";
+        label.style.boxShadow = "";
+      }
+      if (fg) fg.style.filter = "";
+      root._urgencyStop = null;
+    }
+
+    root._urgencyStop = stop;
+    return stop;
+  }
+
   /** Feedback forte ao escolher opção */
   function pickPop(btn) {
     if (!btn || reduced() || !btn.animate) return;
@@ -278,6 +528,7 @@ window.QuizMotion = (() => {
     impactBar,
     runMeters,
     pulseCta,
+    urgencyMeter,
     pickPop,
     screenShake,
     pageFlash,

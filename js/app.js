@@ -43,7 +43,9 @@
     return pack().ui;
   }
 
-  /** Etapa de prova social (vídeo) — inserida no meio do funil, após o bloco de dor. */
+  const TYNK_EMBED = "https://play.tynk.ai/p/4b116b35-b926-4aaa-8eff-56bf3e917a38";
+
+  /** Etapa de prova social (vídeo Tynk) — no meio do funil, após o bloco de dor. */
   function socialStep() {
     const copy = {
       es: {
@@ -78,7 +80,7 @@
     return {
       type: "social",
       id: "social_video",
-      video: "assets/videos/prova-social.mp4",
+      embed: TYNK_EMBED,
       ...c,
     };
   }
@@ -341,7 +343,7 @@
   }
 
   function renderSocial(s) {
-    const src = s.video || "assets/videos/prova-social.mp4";
+    const embed = s.embed || TYNK_EMBED;
     el.screen.innerHTML = `
       <article class="social-card" id="social-root">
         <p class="social-badge" data-reveal>${escapeHtml(s.badge || "")}</p>
@@ -353,14 +355,15 @@
             <p class="social-role">${escapeHtml(s.role || "")}</p>
           </div>
         </div>
-        <div class="social-video-wrap" data-reveal>
-          <video
-            class="social-video"
-            controls
-            playsinline
-            preload="metadata"
-            src="${escapeHtml(src)}"
-          ></video>
+        <div class="social-video-wrap social-embed-wrap" data-reveal>
+          <iframe
+            class="social-embed"
+            src="${escapeHtml(embed)}"
+            title="${escapeHtml(s.name || "Video")}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            loading="lazy"
+          ></iframe>
         </div>
         <p class="social-quote" data-reveal>${escapeHtml(s.quote || "")}</p>
         <button type="button" class="btn-primary btn-accent" id="btn-social" data-reveal>${escapeHtml(
@@ -368,14 +371,8 @@
         )}</button>
       </article>`;
     M.stagger(el.screen, "[data-reveal]", 60);
-    const video = el.screen.querySelector("video");
     document.getElementById("btn-social").addEventListener("click", (e) => {
       M.ripple(e.currentTarget, e);
-      try {
-        if (video) {
-          video.pause();
-        }
-      } catch (_) {}
       nextAfterAnswer();
     });
   }
@@ -598,15 +595,19 @@
       <article class="result-card eval-card">
         <div class="result-hero">
           <span class="badge-critical" data-reveal>${escapeHtml(u.evalBadge)}</span>
-          <div class="result-level" data-reveal>
-            <div class="result-level-ring">
-              <svg viewBox="0 0 100 100">
-                <circle class="result-level-bg" cx="50" cy="50" r="42"></circle>
-                <circle class="result-level-fg" id="result-level-fg" cx="50" cy="50" r="42"></circle>
-              </svg>
-              <div class="result-level-core"><span id="result-level-pct">0</span><small>%</small></div>
+          <div class="result-level result-level-urgent" id="urgency-meter-eval" data-reveal>
+            <div class="urgency-ripples" aria-hidden="true">
+              <i class="urgency-ripple"></i><i class="urgency-ripple"></i><i class="urgency-ripple"></i>
             </div>
-            <p class="result-level-label">${escapeHtml((u.meterLabels && u.meterLabels[2]) || "Urgencia")}</p>
+            <div class="urgency-aura" aria-hidden="true"></div>
+            <div class="result-level-ring">
+              <svg viewBox="0 0 100 100" aria-hidden="true">
+                <circle class="result-level-bg" cx="50" cy="50" r="42"></circle>
+                <circle class="result-level-fg result-level-fg-urgent" id="result-level-fg" cx="50" cy="50" r="42"></circle>
+              </svg>
+              <div class="result-level-core result-level-core-urgent"><span id="result-level-pct">0</span><small>%</small></div>
+            </div>
+            <p class="result-level-label result-level-label-urgent">${escapeHtml((u.meterLabels && u.meterLabels[2]) || "Urgencia")}</p>
           </div>
           <h2 data-reveal>${escapeHtml(u.evalTitle)}</h2>
           <p data-reveal class="eval-mirror">${escapeHtml(mirror)}</p>
@@ -615,17 +616,7 @@
         </div>
       </article>`;
     M.stagger(el.screen, "[data-reveal]", 70);
-    const fg = document.getElementById("result-level-fg");
-    const circ = 2 * Math.PI * 42;
-    if (fg) {
-      fg.style.strokeDasharray = String(circ);
-      fg.style.strokeDashoffset = String(circ);
-      requestAnimationFrame(() => {
-        fg.style.transition = "stroke-dashoffset 1.1s cubic-bezier(0.16,1,0.3,1)";
-        fg.style.strokeDashoffset = String(circ * (1 - level / 100));
-      });
-    }
-    M.countUp?.(document.getElementById("result-level-pct"), level, { duration: 1100 });
+    M.urgencyMeter?.(document.getElementById("urgency-meter-eval"), level, { duration: 1500 });
     document.getElementById("btn-eval").addEventListener("click", (e) => {
       M.ripple(e.currentTarget, e);
       nextAfterAnswer();
@@ -722,6 +713,37 @@
     nextAfterAnswer();
   }
 
+  function beforeAfterCopy() {
+    if (state.lang === "pt") {
+      return {
+        title: "Imagine a virada em 14 dias",
+        before: "Hoje",
+        after: "Com o protocolo",
+        beforeCap: "Crise no comando",
+        afterCap: "Casa sob controle",
+        note: "Do caos diário para manhãs com método — sem gritos nem ameaças vazias.",
+      };
+    }
+    if (state.lang === "en") {
+      return {
+        title: "Picture the turnaround in 14 days",
+        before: "Today",
+        after: "With the protocol",
+        beforeCap: "Crisis in charge",
+        afterCap: "Home under control",
+        note: "From daily chaos to mornings with a method — no yelling, no empty threats.",
+      };
+    }
+    return {
+      title: "Imagina el cambio en 14 días",
+      before: "Hoy",
+      after: "Con el protocolo",
+      beforeCap: "La crisis manda",
+      afterCap: "Casa bajo control",
+      note: "Del caos diario a mañanas con método — sin gritos ni amenazas vacías.",
+    };
+  }
+
   function renderPitch() {
     const u = ui();
     const tags = tagsFromAnswers();
@@ -730,20 +752,26 @@
     const order = ["promise", "authority", "mechanism", "anchor", "offer", "guarantee", "faq"];
     const labels = u.meterLabels || [];
     const vals = [Math.min(99, level - 2), Math.min(99, level - 5), Math.min(99, level)];
+    const ba = beforeAfterCopy();
+    const urgencyLabel = labels[2] || (state.lang === "pt" ? "Urgência" : state.lang === "en" ? "Urgency" : "Urgencia");
 
     el.screen.innerHTML = `
-      <article class="result-card pitch-card" id="result-root">
-        <div class="result-hero">
-          <span class="badge-critical" data-reveal>⚡ ${escapeHtml(u.resultBadge)}</span>
-          <div class="result-level" data-reveal>
-            <div class="result-level-ring">
-              <svg viewBox="0 0 100 100">
-                <circle class="result-level-bg" cx="50" cy="50" r="42"></circle>
-                <circle class="result-level-fg" id="result-level-fg" cx="50" cy="50" r="42"></circle>
-              </svg>
-              <div class="result-level-core"><span id="result-level-pct">0</span><small>%</small></div>
+      <article class="result-card pitch-card is-urgent" id="result-root">
+        <div class="result-hero result-hero-urgent">
+          <span class="badge-critical badge-urgent" data-reveal>⚡ ${escapeHtml(u.resultBadge)}</span>
+          <div class="result-level result-level-urgent" id="urgency-meter" data-reveal>
+            <div class="urgency-ripples" aria-hidden="true">
+              <i class="urgency-ripple"></i><i class="urgency-ripple"></i><i class="urgency-ripple"></i>
             </div>
-            <p class="result-level-label">${escapeHtml(labels[2] || "Urgencia")}</p>
+            <div class="urgency-aura" aria-hidden="true"></div>
+            <div class="result-level-ring">
+              <svg viewBox="0 0 100 100" aria-hidden="true">
+                <circle class="result-level-bg" cx="50" cy="50" r="42"></circle>
+                <circle class="result-level-fg result-level-fg-urgent" id="result-level-fg" cx="50" cy="50" r="42"></circle>
+              </svg>
+              <div class="result-level-core result-level-core-urgent"><span id="result-level-pct">0</span><small>%</small></div>
+            </div>
+            <p class="result-level-label result-level-label-urgent">${escapeHtml(urgencyLabel)}</p>
           </div>
           <h2 data-reveal>${escapeHtml(u.resultTitle)}</h2>
           <p data-reveal>${escapeHtml(u.resultLead)}</p>
@@ -753,18 +781,41 @@
             ${labels
               .map(
                 (label, i) => `
-              <div class="analyze-meter-row">
+              <div class="analyze-meter-row${i === 2 ? " is-urgency" : ""}">
                 <div class="analyze-meter-top">
                   <span>${escapeHtml(label)}</span>
                   <strong class="analyze-meter-val" data-mval="${vals[i]}">0%</strong>
                 </div>
                 <div class="analyze-meter-track">
-                  <div class="analyze-meter-fill" data-meter="${vals[i]}"></div>
+                  <div class="analyze-meter-fill${i === 2 ? " is-urgency-fill" : ""}" data-meter="${vals[i]}"></div>
                 </div>
               </div>`
               )
               .join("")}
           </div>
+
+          <div class="before-after" data-reveal>
+            <p class="before-after-title">${escapeHtml(ba.title)}</p>
+            <div class="before-after-grid">
+              <figure class="ba-card ba-before">
+                <img src="${img("scene-q16-worst.jpg")}" alt="" width="400" height="300" loading="lazy" />
+                <figcaption>
+                  <span class="ba-tag ba-tag-before">${escapeHtml(ba.before)}</span>
+                  <strong>${escapeHtml(ba.beforeCap)}</strong>
+                </figcaption>
+              </figure>
+              <span class="ba-arrow" aria-hidden="true">→</span>
+              <figure class="ba-card ba-after">
+                <img src="${img("scene-q18-recover.jpg")}" alt="" width="400" height="300" loading="lazy" />
+                <figcaption>
+                  <span class="ba-tag ba-tag-after">${escapeHtml(ba.after)}</span>
+                  <strong>${escapeHtml(ba.afterCap)}</strong>
+                </figcaption>
+              </figure>
+            </div>
+            <p class="before-after-note">${escapeHtml(ba.note)}</p>
+          </div>
+
           <div class="tags" data-reveal>${tags.map((t) => `<span>${escapeHtml(t)}</span>`).join("")}</div>
           <ul class="result-list">
             ${(u.resultPoints || []).map((p) => `<li data-reveal>${escapeHtml(p)}</li>`).join("")}
@@ -784,7 +835,7 @@
               .join("")}
           </div>
 
-          <a class="btn-primary btn-accent" id="btn-hotmart" href="${HOTMART}" target="_blank" rel="noopener noreferrer" data-reveal>
+          <a class="btn-primary btn-accent btn-urgent-cta" id="btn-hotmart" href="${HOTMART}" target="_blank" rel="noopener noreferrer" data-reveal>
             ${escapeHtml(u.ctaSolution || u.stickyCta)}
           </a>
           <p class="price-note" data-reveal>${escapeHtml(u.priceNote || "")}</p>
@@ -798,17 +849,10 @@
     M.pulseCta?.(cta);
     cta?.addEventListener("click", () => trackFunnel("cta_checkout"));
 
-    const fg = document.getElementById("result-level-fg");
-    const circ = 2 * Math.PI * 42;
-    if (fg) {
-      fg.style.strokeDasharray = String(circ);
-      fg.style.strokeDashoffset = String(circ);
-      requestAnimationFrame(() => {
-        fg.style.transition = "stroke-dashoffset 1.2s cubic-bezier(0.16,1,0.3,1)";
-        fg.style.strokeDashoffset = String(circ * (1 - level / 100));
-      });
-    }
-    M.countUp?.(document.getElementById("result-level-pct"), level, { duration: 1200 });
+    // Contador de urgência com pulso / brilho / batimento (JS)
+    const meter = document.getElementById("urgency-meter");
+    M.urgencyMeter?.(meter, level, { duration: 1650 });
+
     el.screen.querySelectorAll("[data-meter]").forEach((m, i) => {
       const target = Number(m.dataset.meter) || 90;
       setTimeout(() => {
