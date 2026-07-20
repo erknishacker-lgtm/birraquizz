@@ -28,6 +28,7 @@ window.ANALYTICS_CONFIG = {
     { key: "q15", label: "Q15" },
     { key: "q16", label: "Q16" },
     { key: "m_pain", label: "Micro: dor / notícia" },
+    { key: "social_video", label: "Prova social (vídeo)" },
     { key: "q17", label: "Q17 (desejo)" },
     { key: "q18", label: "Q18" },
     { key: "q19", label: "Q19" },

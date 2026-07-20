@@ -40,6 +40,15 @@
           </div>
         </header>
 
+        <div class="global-filter" id="global-filter">
+          <label class="leads-filter-label" for="filter-date">
+            Filtrar por dia (funil + leads)
+            <input type="date" id="filter-date" />
+          </label>
+          <button type="button" class="btn-sm" id="btn-all-dates">Todos os dias</button>
+          <p class="filter-hint" id="filter-hint">Mostrando todos os dias.</p>
+        </div>
+
         <p class="load-status" id="load-status">—</p>
         <div class="summary-grid" id="summary-cards"></div>
         <div id="worst-drop"></div>
@@ -49,14 +58,41 @@
           <table class="funnel-table" id="funnel-table"></table>
         </div>
 
+        <div class="dash-panel leads-panel">
+          <div class="panel-head">
+            <h2>Leads capturados</h2>
+            <div class="dash-actions">
+              <button type="button" class="btn-sm is-primary" id="btn-leads-refresh">Atualizar leads</button>
+              <button type="button" class="btn-sm" id="btn-leads-export">Exportar CSV</button>
+              <button type="button" class="btn-sm" id="btn-leads-export-json">Backup JSON</button>
+              <button type="button" class="btn-sm" id="btn-leads-import">Importar JSON</button>
+              <button type="button" class="btn-sm is-danger" id="btn-leads-clear">Limpar lista</button>
+              <input type="file" id="leads-file" accept="application/json,.json" hidden />
+            </div>
+          </div>
+          <p class="leads-meta" id="leads-meta">—</p>
+          <div class="table-scroll">
+            <table class="funnel-table leads-table" id="leads-table"></table>
+          </div>
+          <p class="dash-note" style="margin-top: 12px">
+            Leads ficam salvos de forma permanente <strong>neste navegador</strong> (não somem ao recarregar).
+            Use <strong>Exportar CSV</strong> para backup no computador. Em outro aparelho, use
+            <strong>Importar JSON</strong> (exporte antes um backup se precisar).
+          </p>
+        </div>
+
         <p class="dash-note">
-          Contadores globais (todos os visitantes). Cada pessoa conta no máximo 1 vez por etapa por sessão de
-          navegador. Senha em <code>js/analytics-config.js</code> (<code>dashboardPassword</code>).
+          <strong>Todos os dias:</strong> funil global (CounterAPI + total local).
+          <strong>Dia específico:</strong> funil e leads deste navegador naquele dia (contagem diária local).
+          Cada pessoa conta no máximo 1 vez por etapa por sessão. Senha em
+          <code>js/analytics-config.js</code> (<code>dashboardPassword</code>).
         </p>
       </section>
     </div>
 
-    <script src="../js/analytics-config.js"></script>
-    <script src="../js/analytics-dashboard.js"></script>
+    <script src="../js/leads-store.js?v=13"></script>
+    <script src="../js/analytics-config.js?v=13"></script>
+    <script src="../js/analytics-track.js?v=13"></script>
+    <script src="../js/analytics-dashboard.js?v=13"></script>
   </body>
 </html>

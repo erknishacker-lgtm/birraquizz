@@ -43,8 +43,56 @@
     return pack().ui;
   }
 
+  /** Etapa de prova social (vídeo) — inserida no meio do funil, após o bloco de dor. */
+  function socialStep() {
+    const copy = {
+      es: {
+        badge: "Historia real",
+        title: "Mamá que ya recuperó el control en casa",
+        name: "Valentina Rojas",
+        role: "Madre de 2 hijos · México",
+        quote:
+          "Escucha a Valentina: en pocos días dejó de reaccionar tarde y recuperó el mando en las crisis.",
+        cta: "CONTINUAR EL TEST",
+      },
+      pt: {
+        badge: "História real",
+        title: "Mãe que já recuperou o controle em casa",
+        name: "Valentina Rojas",
+        role: "Mãe de 2 filhos · México",
+        quote:
+          "Ouça a Valentina: em poucos dias parou de reagir tarde e recuperou o comando nas crises.",
+        cta: "CONTINUAR O TESTE",
+      },
+      en: {
+        badge: "Real story",
+        title: "A mom who got control back at home",
+        name: "Valentina Rojas",
+        role: "Mother of 2 · Mexico",
+        quote:
+          "Hear Valentina: in a few days she stopped reacting late and took back command in crises.",
+        cta: "CONTINUE THE QUIZ",
+      },
+    };
+    const c = copy[state.lang] || copy.es;
+    return {
+      type: "social",
+      id: "social_video",
+      video: "assets/videos/prova-social.mp4",
+      ...c,
+    };
+  }
+
   function steps() {
-    return pack().steps || [];
+    const raw = pack().steps || [];
+    if (raw.some((s) => s.id === "social_video" || s.type === "social")) return raw;
+    const out = [];
+    for (const s of raw) {
+      out.push(s);
+      // No meio do funil: depois da micro de dor (antes do bloco desejo)
+      if (s.id === "m_pain") out.push(socialStep());
+    }
+    return out;
   }
 
   function totalSteps() {
@@ -63,6 +111,57 @@
 
   function img(name) {
     return `${IMG}${name}`;
+  }
+
+  /**
+   * Foto única e impactante por pergunta (sem repetir a mesma cena).
+   * Sobrescreve o image do flow quando existir mapeamento.
+   */
+  const SCENE_BY_Q = {
+    q1: "scene-q1.jpg",
+    q2: "scene-q2.jpg",
+    q3: "scene-q3-who.jpg",
+    q4: "scene-q4b.jpg",
+    q5: "scene-q5.jpg",
+    q6: "scene-q6-honest.jpg",
+    q7: "scene-super.jpg",
+    q8: "scene-screens.jpg",
+    q9: "scene-q9.jpg",
+    q10: "scene-public.jpg",
+    q11: "scene-escalation.jpg",
+    q12: "scene-q12.jpg",
+    q13: "scene-guilt.jpg",
+    q14: "scene-q14-family.jpg",
+    q15: "scene-q15-exhaust.jpg",
+    q16: "scene-q16-worst.jpg",
+    q17: "scene-calm.jpg",
+    q18: "scene-q18-recover.jpg",
+    q19: "scene-q19-super-ready.jpg",
+    q20: "scene-q20-protocol.jpg",
+    q21: "scene-q21-master.jpg",
+    q22: "scene-q22-14days.jpg",
+    q23: "scene-q23-choice.jpg",
+    q24: "scene-q24-script.jpg",
+    q25: "scene-q25-yelling.jpg",
+    q26: "scene-q26-freeze.jpg",
+    q27: "scene-q27-sequence.jpg",
+    q28: "scene-q28-limits.jpg",
+    q29: "scene-q29-everywhere.jpg",
+    q30: "scene-q30-ready.jpg",
+  };
+
+  const SCENE_BY_MICRO = {
+    m_ice: "scene-news.jpg",
+    m_pain: "scene-news3.jpg",
+    m_desire: "scene-home.jpg",
+    m_bridge: "scene-tv.jpg",
+  };
+
+  function sceneFor(s) {
+    if (!s) return "";
+    if (s.type === "question" && SCENE_BY_Q[s.id]) return SCENE_BY_Q[s.id];
+    if (s.type === "micro" && SCENE_BY_MICRO[s.id]) return SCENE_BY_MICRO[s.id];
+    return s.image || "";
   }
 
   function escapeHtml(s) {
@@ -123,6 +222,7 @@
     if (!s) return;
     if (s.type === "question") trackFunnel(s.id);
     else if (s.type === "micro") trackFunnel(s.id);
+    else if (s.type === "social") trackFunnel(s.id || "social_video");
     else if (s.type === "eval") trackFunnel("eval");
     else if (s.type === "capture") trackFunnel("capture");
     else if (s.type === "loading") trackFunnel("loading");
@@ -167,13 +267,27 @@
   }
 
   async function goStep(index, enterMode) {
-    if (state.transitioning) return;
+    // Se já estamos animando (ex.: loading → pitch), enfileira o próximo passo
+    if (state.transitioning) {
+      state.pendingStepIndex = index;
+      return;
+    }
     state.transitioning = true;
-    await M.leave(el.screen);
-    state.phase = "step";
-    state.stepIndex = index;
-    await paint({ enterMode: enterMode || "slide" });
-    state.transitioning = false;
+    try {
+      await M.leave(el.screen);
+      state.phase = "step";
+      state.stepIndex = index;
+      await paint({ enterMode: enterMode || "slide" });
+    } finally {
+      state.transitioning = false;
+    }
+    if (state.pendingStepIndex != null && state.pendingStepIndex !== state.stepIndex) {
+      const next = state.pendingStepIndex;
+      state.pendingStepIndex = null;
+      goStep(next);
+    } else {
+      state.pendingStepIndex = null;
+    }
   }
 
   function nextAfterAnswer() {
@@ -197,6 +311,7 @@
         renderHero();
       } else if (s.type === "question") renderQuestion(s);
       else if (s.type === "micro") renderMicro(s);
+      else if (s.type === "social") renderSocial(s);
       else if (s.type === "eval") renderEval();
       else if (s.type === "capture") renderCapture();
       else if (s.type === "loading") await renderLoading();
@@ -208,7 +323,7 @@
 
     if (!opts.instant) {
       const mode =
-        currentStep()?.type === "micro"
+        currentStep()?.type === "micro" || currentStep()?.type === "social"
           ? "slam"
           : currentStep()?.type === "pitch" || currentStep()?.type === "eval"
             ? "up"
@@ -223,6 +338,46 @@
     if (state.phase === "step" && currentStep()?.type === "micro" && !opts.instant) {
       await runMicroEffects();
     }
+  }
+
+  function renderSocial(s) {
+    const src = s.video || "assets/videos/prova-social.mp4";
+    el.screen.innerHTML = `
+      <article class="social-card" id="social-root">
+        <p class="social-badge" data-reveal>${escapeHtml(s.badge || "")}</p>
+        <h2 data-reveal>${escapeHtml(s.title || "")}</h2>
+        <div class="social-person" data-reveal>
+          <span class="social-avatar" aria-hidden="true">${escapeHtml((s.name || "V").charAt(0))}</span>
+          <div>
+            <strong class="social-name">${escapeHtml(s.name || "")}</strong>
+            <p class="social-role">${escapeHtml(s.role || "")}</p>
+          </div>
+        </div>
+        <div class="social-video-wrap" data-reveal>
+          <video
+            class="social-video"
+            controls
+            playsinline
+            preload="metadata"
+            src="${escapeHtml(src)}"
+          ></video>
+        </div>
+        <p class="social-quote" data-reveal>${escapeHtml(s.quote || "")}</p>
+        <button type="button" class="btn-primary btn-accent" id="btn-social" data-reveal>${escapeHtml(
+          s.cta || ui().continueCta
+        )}</button>
+      </article>`;
+    M.stagger(el.screen, "[data-reveal]", 60);
+    const video = el.screen.querySelector("video");
+    document.getElementById("btn-social").addEventListener("click", (e) => {
+      M.ripple(e.currentTarget, e);
+      try {
+        if (video) {
+          video.pause();
+        }
+      } catch (_) {}
+      nextAfterAnswer();
+    });
   }
 
   function renderHero() {
@@ -254,27 +409,17 @@
     });
   }
 
-  function blockLabel(block) {
-    const map = {
-      es: { ice: "Rompehielo", pain: "Dolor", desire: "Deseo", bridge: "Puente" },
-      pt: { ice: "Quebra-gelo", pain: "Dor", desire: "Desejo", bridge: "Ponte" },
-      en: { ice: "Icebreaker", pain: "Pain", desire: "Desire", bridge: "Bridge" },
-    };
-    return (map[state.lang] || map.es)[block] || "";
-  }
-
   function renderQuestion(s) {
     const u = ui();
     const caption = (u.qCaption && u.qCaption[s.caption]) || "";
-    const bl = blockLabel(s.block);
+    const photo = sceneFor(s);
     el.screen.innerHTML = `
       <article class="q-card">
         <div class="q-media" data-reveal>
-          <img src="${img(s.image)}" alt="" width="800" height="500" />
+          <img src="${img(photo)}" alt="" width="800" height="500" loading="eager" />
           <span class="q-caption">${escapeHtml(caption)}</span>
         </div>
         <div class="q-body">
-          ${bl ? `<p class="block-chip" data-reveal>${escapeHtml(bl)}</p>` : ""}
           <h2 data-reveal>${escapeHtml(s.title)}</h2>
           <p class="q-help" data-reveal>${escapeHtml(s.help)}</p>
           <div class="options" role="group">
@@ -305,6 +450,7 @@
 
   function renderMicro(s) {
     // Reuse news card styles by layout
+    const photo = sceneFor(s);
     const dateShort = new Date().toLocaleDateString(localeTag(), {
       day: "2-digit",
       month: "short",
@@ -323,7 +469,7 @@
       el.screen.innerHTML = `
         <article class="tv-card" id="news-root">
           <div class="tv-bezel"><div class="tv-screen">
-            <img src="${img(s.image)}" alt="" />
+            <img src="${img(photo)}" alt="" />
             <div class="tv-scan"></div>
             <div class="tv-topbar"><span class="tv-channel">${escapeHtml(s.paper || "")}</span>
             <span class="tv-clock">${escapeHtml(dateShort)}</span></div>
@@ -344,7 +490,7 @@
       el.screen.innerHTML = `
         <article class="mag-card" id="news-root">
           <div class="mag-cover">
-            <img src="${img(s.image)}" alt="" />
+            <img src="${img(photo)}" alt="" />
             <div class="mag-cover-meta">
               <span class="mag-issue">${escapeHtml(dateShort)}</span>
               <span class="mag-brand">${escapeHtml(s.paper || "")}</span>
@@ -377,7 +523,7 @@
               <span class="paper-dateline">${escapeHtml(region)}</span>
             </div>
           </header>
-          <div class="paper-media"><img src="${img(s.image)}" alt="" /></div>
+          <div class="paper-media"><img src="${img(photo)}" alt="" /></div>
           <div class="paper-body">
             <h2 class="paper-headline" id="paper-headline"></h2>
             <p class="paper-lead" data-reveal>${escapeHtml(s.body)}</p>
@@ -431,10 +577,23 @@
     return Math.min(99, Math.max(86, 88 + Math.min(11, Math.floor((state.score || 24) / 8))));
   }
 
+  /** Espelho personalizado (etapa Avaliação do funil): devolve a vida do lead para ele. */
+  function mirrorText(tags, level) {
+    const t = (tags || []).join(" · ");
+    if (state.lang === "pt") {
+      return `Pelas suas respostas, o nível de urgência está em ${level}%. Padrões que aparecem com mais força: ${t || "reação tardia e roteiro errado"}. Você não está “falhando como pai/mãe” — está reagindo tarde e, muitas vezes, sem método. Quando a birra manda, a casa inteira paga o preço.`;
+    }
+    if (state.lang === "en") {
+      return `Based on your answers, urgency is at ${level}%. Strongest patterns: ${t || "late reaction and the wrong script"}. You're not “failing as a parent” — you're reacting late, often without a method. When the tantrum runs the house, everyone pays.`;
+    }
+    return `Según tus respuestas, la urgencia está en ${level}%. Patrones más fuertes: ${t || "reacción tardía y guion equivocado"}. No estás “fallando como padre/madre” — reaccionas tarde y, a menudo, sin método. Cuando el berrinche manda, paga toda la casa.`;
+  }
+
   function renderEval() {
     const u = ui();
     const tags = tagsFromAnswers();
     const level = attentionLevel();
+    const mirror = mirrorText(tags, level);
     el.screen.innerHTML = `
       <article class="result-card eval-card">
         <div class="result-hero">
@@ -450,7 +609,7 @@
             <p class="result-level-label">${escapeHtml((u.meterLabels && u.meterLabels[2]) || "Urgencia")}</p>
           </div>
           <h2 data-reveal>${escapeHtml(u.evalTitle)}</h2>
-          <p data-reveal>${escapeHtml(u.evalLead)}</p>
+          <p data-reveal class="eval-mirror">${escapeHtml(mirror)}</p>
           <div class="tags" data-reveal>${tags.map((t) => `<span>${escapeHtml(t)}</span>`).join("")}</div>
           <button type="button" class="btn-primary btn-accent" id="btn-eval" data-reveal>${escapeHtml(u.evalCta)}</button>
         </div>
@@ -478,7 +637,6 @@
     el.screen.innerHTML = `
       <article class="hero-card capture-card">
         <div class="hero-body">
-          <p class="block-chip" data-reveal>Lead</p>
           <h1 data-reveal style="font-size:clamp(1.25rem,5vw,1.5rem)">${escapeHtml(u.captureTitle)}</h1>
           <p class="lead" data-reveal>${escapeHtml(u.captureLead)}</p>
           <form id="lead-form" class="lead-form" data-reveal>
@@ -506,11 +664,26 @@
         if (err) err.hidden = false;
         return;
       }
-      state.lead = { name, email, phone, ts: Date.now(), lang: state.lang };
+      const tags = tagsFromAnswers();
+      const level = attentionLevel();
+      state.lead = {
+        name,
+        email,
+        phone,
+        ts: Date.now(),
+        lang: state.lang,
+        score: state.score,
+        level,
+        tags,
+      };
       try {
-        const leads = JSON.parse(localStorage.getItem("birra_leads") || "[]");
-        leads.push(state.lead);
-        localStorage.setItem("birra_leads", JSON.stringify(leads.slice(-200)));
+        if (window.LeadsStore && typeof window.LeadsStore.add === "function") {
+          window.LeadsStore.add(state.lead);
+        } else {
+          const leads = JSON.parse(localStorage.getItem("birra_leads") || "[]");
+          leads.push(state.lead);
+          localStorage.setItem("birra_leads", JSON.stringify(leads.slice(-2000)));
+        }
       } catch (_) {}
       trackFunnel("lead_capture");
       nextAfterAnswer();

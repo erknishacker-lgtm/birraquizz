@@ -36,9 +36,12 @@ python3 -m http.server 8877
 ### Painel interno `/dadosquizz/`
 
 - Relatório de funil: visitas → cada pergunta → notícias → resultado → clique no checkout  
+- **Leads capturados**: nome, e-mail, WhatsApp, data, idioma, urgência + botão WhatsApp  
+- Exportar CSV / backup JSON / importar JSON (mesma máquina ou outro aparelho)  
 - Senha padrão: veja `js/analytics-config.js` → `dashboardPassword` (troque!)  
 - `noindex` (não para clientes)  
-- Contadores via CounterAPI + espelho local
+- Contadores via CounterAPI + espelho local  
+- Leads ficam salvos no navegador (permanentes até limpar o histórico; use CSV para backup)
 
 ## Arquivos
 

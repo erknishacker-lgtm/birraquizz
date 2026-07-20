@@ -1266,6 +1266,109 @@ button:disabled {
   border-radius: 999px;
 }
 
+/* ========== Prova social (vídeo) ========== */
+.social-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 18px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.social-badge {
+  margin: 0;
+  align-self: flex-start;
+  font-family: var(--font);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--primary-deep);
+  background: oklch(0.95 0.03 230);
+  border: 1px solid var(--line);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.social-card h2 {
+  margin: 0;
+  font-family: var(--font);
+  font-size: clamp(1.15rem, 4.5vw, 1.4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+.social-person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.social-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #fff;
+  background: linear-gradient(145deg, var(--primary-mid), var(--primary-deep));
+  flex-shrink: 0;
+}
+
+.social-name {
+  display: block;
+  font-family: var(--font);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--primary-deep);
+}
+
+.social-role {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.social-video-wrap {
+  border-radius: 14px;
+  overflow: hidden;
+  background: #0b1220;
+  border: 1px solid var(--line);
+  aspect-ratio: 9 / 16;
+  max-height: min(58vh, 520px);
+  margin: 0 auto;
+  width: min(100%, 320px);
+}
+
+.social-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.social-quote {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--ink);
+}
+
+.social-card .btn-primary {
+  width: 100%;
+  margin-top: 4px;
+}
+
 /* Captura de lead */
 .capture-card .funnel-body {
   padding: 18px 16px 20px;
