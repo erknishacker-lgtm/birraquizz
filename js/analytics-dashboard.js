@@ -99,22 +99,41 @@
     }
   }
 
+  /**
+   * @returns {Promise<number|null>} null = falha de rede/API (não zerar o funil)
+   */
   async function fetchCountRemote(key) {
-    const url = `${BASE}/${encodeURIComponent(NS)}/${encodeURIComponent(key)}/`;
+    const url =
+      (window.QuizAnalytics && typeof window.QuizAnalytics.remoteUrl === "function"
+        ? window.QuizAnalytics.remoteUrl(key)
+        : `${BASE}/${encodeURIComponent(NS)}/${encodeURIComponent(key)}/`);
     try {
-      const r = await fetch(url, { cache: "no-store" });
-      if (!r.ok) return 0;
+      const r = await fetch(url, {
+        cache: "no-store",
+        mode: "cors",
+        redirect: "follow",
+        credentials: "omit",
+      });
+      if (r.status === 429) return null;
+      if (!r.ok) return null;
       const j = await r.json();
-      return Number(j.count || j.value || 0) || 0;
+      const n = Number(j.count != null ? j.count : j.value);
+      return Number.isFinite(n) ? n : 0;
     } catch {
-      return 0;
+      return null;
     }
+  }
+
+  function sleep(ms) {
+    return new Promise((r) => setTimeout(r, ms));
   }
 
   async function loadAll() {
     if (el.status) el.status.textContent = "Carregando contadores…";
     const keys = FUNNEL.map((f) => f.key);
     const counts = {};
+    let remoteOk = 0;
+    let remoteFail = 0;
 
     if (dayFilter) {
       // Funil do dia (somente contadores diários deste navegador)
@@ -123,19 +142,27 @@
         counts[k] = Number(daily[k]) || 0;
       });
     } else {
-      // Totais globais (CounterAPI) + fallback local
-      const batch = 6;
+      // Totais: CounterAPI (com throttle) + merge com espelho local
+      // Rate limit da API é baixo (~30/min) — lotes pequenos + pausa
+      const local = readLocalTotals();
+      const batch = 4;
       for (let i = 0; i < keys.length; i += batch) {
         const slice = keys.slice(i, i + batch);
         const vals = await Promise.all(slice.map((k) => fetchCountRemote(k)));
         slice.forEach((k, idx) => {
-          counts[k] = vals[idx];
+          const remote = vals[idx];
+          const loc = Number(local[k]) || 0;
+          if (remote == null) {
+            remoteFail += 1;
+            counts[k] = loc;
+          } else {
+            remoteOk += 1;
+            // usa o maior: API global pode estar à frente; local cobre falhas
+            counts[k] = Math.max(remote, loc);
+          }
         });
+        if (i + batch < keys.length) await sleep(180);
       }
-      const local = readLocalTotals();
-      keys.forEach((k) => {
-        if (!counts[k] && local[k]) counts[k] = Number(local[k]) || 0;
-      });
     }
 
     renderSummary(counts);
@@ -150,6 +177,10 @@
         el.status.textContent = `Atualizado: ${t} · funil do dia ${formatDayLabel(
           dayFilter
         )} (este navegador)`;
+      } else if (remoteFail && !remoteOk) {
+        el.status.textContent = `Atualizado: ${t} · API offline/rate-limit · mostrando espelho LOCAL deste navegador · namespace: ${NS}`;
+      } else if (remoteFail) {
+        el.status.textContent = `Atualizado: ${t} · totais (API + local) · ${remoteFail} etapa(s) usaram só local · namespace: ${NS}`;
       } else {
         el.status.textContent = `Atualizado: ${t} · totais globais · namespace: ${NS}`;
       }

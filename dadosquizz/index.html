@@ -82,17 +82,17 @@
         </div>
 
         <p class="dash-note">
-          <strong>Todos os dias:</strong> funil global (CounterAPI + total local).
-          <strong>Dia específico:</strong> funil e leads deste navegador naquele dia (contagem diária local).
+          <strong>Todos os dias:</strong> funil global (CounterAPI + espelho local; se a API falhar/rate-limit, usa o local).
+          <strong>Dia específico:</strong> funil e leads <em>deste navegador</em> naquele dia (não é o total global do site).
           Cada pessoa conta no máximo 1 vez por etapa por sessão. Senha em
           <code>js/analytics-config.js</code> (<code>dashboardPassword</code>).
         </p>
       </section>
     </div>
 
-    <script src="../js/leads-store.js?v=13"></script>
-    <script src="../js/analytics-config.js?v=13"></script>
-    <script src="../js/analytics-track.js?v=13"></script>
-    <script src="../js/analytics-dashboard.js?v=13"></script>
+    <script src="../js/leads-store.js?v=26"></script>
+    <script src="../js/analytics-config.js?v=26"></script>
+    <script src="../js/analytics-track.js?v=26"></script>
+    <script src="../js/analytics-dashboard.js?v=26"></script>
   </body>
 </html>

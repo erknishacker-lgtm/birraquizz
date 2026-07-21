@@ -1,6 +1,10 @@
 /**
  * Telemetria do quiz → CounterAPI (+ espelho local + contagem por dia).
  * Uso: window.QuizAnalytics.track("q1")
+ *
+ * Resiliência:
+ * - Sempre grava local (mesmo se a API falhar / rate limit)
+ * - Remote com /up/ (trailing slash), retry e sendBeacon como fallback
  */
 (function () {
   const CFG = window.ANALYTICS_CONFIG || {};
@@ -39,7 +43,7 @@
   function bumpLocal(key) {
     try {
       const data = JSON.parse(localStorage.getItem(LOCAL_KEY) || "{}");
-      data[key] = (data[key] || 0) + 1;
+      data[key] = (Number(data[key]) || 0) + 1;
       data._updated = Date.now();
       localStorage.setItem(LOCAL_KEY, JSON.stringify(data));
     } catch (_) {
@@ -55,7 +59,6 @@
       if (!all[day] || typeof all[day] !== "object") all[day] = {};
       all[day][key] = (Number(all[day][key]) || 0) + 1;
       all[day]._updated = Date.now();
-      // mantém no máx. ~120 dias
       const days = Object.keys(all).sort();
       while (days.length > 120) {
         delete all[days.shift()];
@@ -66,10 +69,50 @@
     }
   }
 
+  function remoteUrl(key, action) {
+    // trailing slash evita 301 HTML em alguns clientes
+    const path = action ? `${encodeURIComponent(key)}/${action}/` : `${encodeURIComponent(key)}/`;
+    return `${BASE}/${encodeURIComponent(NS)}/${path}`;
+  }
+
   function hitRemote(key) {
-    const url = `${BASE}/${encodeURIComponent(NS)}/${encodeURIComponent(key)}/up`;
-    return fetch(url, { method: "GET", mode: "cors", cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
+    // CounterAPI v1: GET …/key/up/ (não usar sendBeacon — ele manda POST)
+    const url = remoteUrl(key, "up");
+    return fetch(url, {
+      method: "GET",
+      mode: "cors",
+      cache: "no-store",
+      redirect: "follow",
+      credentials: "omit",
+    })
+      .then(async (r) => {
+        if (r.ok) {
+          try {
+            return await r.json();
+          } catch {
+            return { ok: true };
+          }
+        }
+        // retry uma vez após rate-limit / 5xx
+        if (r.status === 429 || r.status >= 500) {
+          await new Promise((res) => setTimeout(res, 450 + Math.random() * 500));
+          const r2 = await fetch(url, {
+            method: "GET",
+            mode: "cors",
+            cache: "no-store",
+            redirect: "follow",
+            credentials: "omit",
+          });
+          if (r2.ok) {
+            try {
+              return await r2.json();
+            } catch {
+              return { ok: true };
+            }
+          }
+        }
+        return null;
+      })
       .catch(() => null);
   }
 
@@ -82,6 +125,7 @@
     const once = opts && opts.oncePerSession;
     if (once && hasSessionFlag(key)) return;
     if (once) setSessionFlag(key);
+    // Local primeiro — painel do mesmo navegador sempre atualiza
     bumpLocal(key);
     bumpDaily(key);
     hitRemote(key);
@@ -117,7 +161,10 @@
     getDaily,
     getDailyAll,
     localDayKey,
+    remoteUrl,
     DAILY_KEY,
     LOCAL_KEY,
+    NS,
+    BASE,
   };
 })();
