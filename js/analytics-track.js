@@ -4,7 +4,7 @@
  *
  * Resiliência:
  * - Sempre grava local (mesmo se a API falhar / rate limit)
- * - Remote com /up/ (trailing slash), retry e sendBeacon como fallback
+ * - Remote com /up/ (trailing slash) + retry em rate-limit
  */
 (function () {
   const CFG = window.ANALYTICS_CONFIG || {};
