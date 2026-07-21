@@ -129,39 +129,53 @@
   }
 
   async function loadAll() {
-    if (el.status) el.status.textContent = "Carregando contadores…";
+    if (el.status) el.status.textContent = "Carregando contadores globais…";
     const keys = FUNNEL.map((f) => f.key);
     const counts = {};
     let remoteOk = 0;
     let remoteFail = 0;
+    let leadsSync = { source: "—", ok: false };
 
     if (dayFilter) {
-      // Funil do dia (somente contadores diários deste navegador)
+      // AVISO: filtro por dia ainda é local (CounterAPI não tem série diária)
       const daily = readDaily(dayFilter);
       keys.forEach((k) => {
         counts[k] = Number(daily[k]) || 0;
       });
     } else {
-      // Totais: CounterAPI (com throttle) + merge com espelho local
-      // Rate limit da API é baixo (~30/min) — lotes pequenos + pausa
-      const local = readLocalTotals();
+      // FONTE ÚNICA GLOBAL: CounterAPI (igual para todos os sócios)
+      // NÃO misturar localStorage — isso gerava números diferentes por navegador
       const batch = 4;
       for (let i = 0; i < keys.length; i += batch) {
         const slice = keys.slice(i, i + batch);
         const vals = await Promise.all(slice.map((k) => fetchCountRemote(k)));
         slice.forEach((k, idx) => {
           const remote = vals[idx];
-          const loc = Number(local[k]) || 0;
           if (remote == null) {
             remoteFail += 1;
-            counts[k] = loc;
+            counts[k] = 0;
           } else {
             remoteOk += 1;
-            // usa o maior: API global pode estar à frente; local cobre falhas
-            counts[k] = Math.max(remote, loc);
+            counts[k] = remote;
           }
         });
-        if (i + batch < keys.length) await sleep(180);
+        if (i + batch < keys.length) await sleep(200);
+      }
+      // Só se a API inteira falhar: fallback local com aviso forte
+      if (remoteOk === 0 && remoteFail > 0) {
+        const local = readLocalTotals();
+        keys.forEach((k) => {
+          counts[k] = Number(local[k]) || 0;
+        });
+      }
+    }
+
+    // Leads compartilhados (nuvem) — mesma lista para o time
+    if (Store && typeof Store.sync === "function") {
+      try {
+        leadsSync = await Store.sync();
+      } catch {
+        leadsSync = { source: "local-only", ok: false };
       }
     }
 
@@ -173,16 +187,22 @@
 
     if (el.status) {
       const t = new Date().toLocaleString("pt-BR");
+      const leadsLabel =
+        leadsSync.source === "shared"
+          ? "leads: nuvem (iguais para o time)"
+          : leadsSync.ok
+            ? `leads: ${leadsSync.source}`
+            : "leads: só local (falha ao sincronizar nuvem)";
       if (dayFilter) {
         el.status.textContent = `Atualizado: ${t} · funil do dia ${formatDayLabel(
           dayFilter
-        )} (este navegador)`;
-      } else if (remoteFail && !remoteOk) {
-        el.status.textContent = `Atualizado: ${t} · API offline/rate-limit · mostrando espelho LOCAL deste navegador · namespace: ${NS}`;
+        )} ⚠️ só este navegador (não é total do site) · ${leadsLabel}`;
+      } else if (remoteOk === 0 && remoteFail > 0) {
+        el.status.textContent = `Atualizado: ${t} · ⚠️ CounterAPI falhou — funil LOCAL (pode diferir do sócio) · ${leadsLabel}`;
       } else if (remoteFail) {
-        el.status.textContent = `Atualizado: ${t} · totais (API + local) · ${remoteFail} etapa(s) usaram só local · namespace: ${NS}`;
+        el.status.textContent = `Atualizado: ${t} · funil GLOBAL CounterAPI (${remoteFail} etapa(s) sem resposta=0) · ${leadsLabel} · ns:${NS}`;
       } else {
-        el.status.textContent = `Atualizado: ${t} · totais globais · namespace: ${NS}`;
+        el.status.textContent = `Atualizado: ${t} · funil GLOBAL CounterAPI (igual para todos) · ${leadsLabel} · ns:${NS}`;
       }
     }
   }
@@ -210,6 +230,7 @@
   }
 
   function getFilteredLeads() {
+    // Após sync(), readAll() reflete a lista compartilhada em nuvem
     const list = Store ? Store.readAll() : [];
     const sorted = list.slice().sort((a, b) => (b.ts || 0) - (a.ts || 0));
     if (!dayFilter) return { all: sorted, filtered: sorted };
@@ -227,13 +248,15 @@
 
     if (el.leadsMeta) {
       if (!all.length) {
-        el.leadsMeta.textContent = "Nenhum lead capturado ainda neste navegador";
+        el.leadsMeta.textContent = "Nenhum lead ainda (lista compartilhada na nuvem)";
       } else if (dayFilter) {
         el.leadsMeta.textContent = `${filtered.length} de ${all.length} lead${
           all.length === 1 ? "" : "s"
-        } · dia ${formatDayLabel(dayFilter)}`;
+        } · dia ${formatDayLabel(dayFilter)} · lista compartilhada`;
       } else {
-        el.leadsMeta.textContent = `${all.length} lead${all.length === 1 ? "" : "s"} salvos neste navegador · todos os dias`;
+        el.leadsMeta.textContent = `${all.length} lead${
+          all.length === 1 ? "" : "s"
+        } · lista compartilhada (igual para o time)`;
       }
     }
 
@@ -299,11 +322,12 @@
       <tbody>${rows}</tbody>`;
 
     el.leadsTable.querySelectorAll("[data-del]").forEach((btn) => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", async () => {
         const id = btn.getAttribute("data-del");
         if (!id || !Store) return;
-        if (!confirm("Apagar este lead da lista local?")) return;
-        Store.remove(id);
+        if (!confirm("Apagar este lead da lista compartilhada (some para o time)?")) return;
+        if (typeof Store.removeAndSync === "function") await Store.removeAndSync(id);
+        else Store.remove(id);
         renderLeads();
       });
     });
@@ -471,7 +495,11 @@
   }
 
   if (el.btnRefresh) el.btnRefresh.addEventListener("click", () => loadAll());
-  if (el.btnLeadsRefresh) el.btnLeadsRefresh.addEventListener("click", () => renderLeads());
+  if (el.btnLeadsRefresh)
+    el.btnLeadsRefresh.addEventListener("click", async () => {
+      if (Store && typeof Store.sync === "function") await Store.sync();
+      renderLeads();
+    });
   if (el.filterDate) {
     el.filterDate.addEventListener("change", () => {
       applyDayFilter(el.filterDate.value || "");
@@ -505,7 +533,12 @@
   if (el.btnLeadsClear) {
     el.btnLeadsClear.addEventListener("click", () => {
       if (!Store) return;
-      if (!confirm("Apagar TODOS os leads deste navegador? Exporte CSV antes se precisar.")) return;
+      if (
+        !confirm(
+          "Apagar TODOS os leads da lista COMPARTILHADA (some para o time)? Exporte CSV antes se precisar."
+        )
+      )
+        return;
       Store.clear();
       renderLeads();
     });

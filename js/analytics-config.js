@@ -6,7 +6,16 @@ window.ANALYTICS_CONFIG = {
   namespace: "birraquizz-erkni",
   dashboardPassword: "birra2026",
   counterApiBase: "https://api.counterapi.dev/v1",
-  /** Funil versão 12 perguntas (Ice 2 · Pain 4 · Desire 3 · Bridge 3) */
+  /**
+   * Leads compartilhados (mesmo armazenamento para todos os sócios).
+   * Não é localStorage — os dois veem a mesma lista.
+   */
+  leadsRemote: {
+    blobId: "019f859b-edd4-7da2-8110-ad1775d47918",
+    blobBase: "https://jsonblob.com/api/jsonBlob",
+    backupUrl: "https://raw.githubusercontent.com/erknishacker-lgtm/birraquizz/main/data/leads.json",
+  },
+  /** Funil versão 12 perguntas (Ice 2 · Pain 4 · Desire 3 · Bridge 3) — totais globais via CounterAPI */
   funnelKeys: [
     { key: "visit", label: "Acessou o quiz" },
     { key: "start", label: "Clicou em começar" },

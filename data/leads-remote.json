@@ -1,0 +1,5 @@
+{
+  "blobId": "019f859b-edd4-7da2-8110-ad1775d47918",
+  "blobBase": "https://jsonblob.com/api/jsonBlob",
+  "backupNote": "Leads compartilhados entre sócios. Backup automático em data/leads.json via GitHub Action."
+}
