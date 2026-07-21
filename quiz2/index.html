@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      name="description"
+      content="Quiz 2.0 (teste de design) — Berrinche Cero / Birra Zero. Link secundário, não é a página principal."
+    />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Quiz 2.0 Design Test | Berrinche Cero</title>
+    <!-- Meta Pixel Code — PageView only (mesmo pixel da principal) -->
+    <script>
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function () {
+          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = "2.0";
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+      fbq("init", "1692279998539511");
+      fbq("track", "PageView");
+    </script>
+    <noscript
+      ><img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=1692279998539511&ev=PageView&noscript=1"
+        alt=""
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://play.tynk.ai" />
+    <link rel="dns-prefetch" href="https://play.tynk.ai" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Base (estrutura) + skin designer full (quiz 2.0) -->
+    <link rel="stylesheet" href="../css/styles.css?v=20" />
+    <link rel="stylesheet" href="../css/quiz2-designer.css?v=20" />
+  </head>
+  <body data-page="quiz2" data-theme="designer" data-hide-progress-count="true">
+    <div class="app" id="app">
+      <header class="topbar">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <div class="progress-wrap" id="progress-wrap" aria-hidden="false">
+          <div class="progress-bar" aria-hidden="true" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+            <span id="progress-bar"></span>
+          </div>
+          <!-- Número escondido no design 2.0 — só a barra -->
+          <span class="progress-count" id="progress-count" hidden></span>
+        </div>
+        <div class="lang" role="group" aria-label="Language">
+          <button type="button" data-lang="es" aria-pressed="true">ES</button>
+          <button type="button" data-lang="pt" aria-pressed="false">PT</button>
+          <button type="button" data-lang="en" aria-pressed="false">EN</button>
+        </div>
+      </header>
+
+      <main id="screen" class="screen is-active" aria-live="polite"></main>
+    </div>
+
+    <!-- Mesmo funil, copy, checkout e assets da principal; só o visual muda -->
+    <script>
+      window.IMG_BASE = "../assets/images/";
+    </script>
+    <script src="../js/analytics-config.js?v=20"></script>
+    <script src="../js/analytics-track.js?v=20"></script>
+    <script src="../js/meta-pixel.js?v=20"></script>
+    <script src="../js/leads-store.js?v=20"></script>
+    <script src="../js/quiz-flow.js?v=20"></script>
+    <script src="../js/motion.js?v=20"></script>
+    <script src="../js/app.js?v=20"></script>
+  </body>
+</html>

@@ -11,13 +11,21 @@ cd quizz-pagina-birra
 python3 -m http.server 8877
 ```
 
-| Página | URL local |
-|--------|-----------|
-| Quiz | http://127.0.0.1:8877/ |
-| Obrigado | http://127.0.0.1:8877/obrigado/ |
-| Upsell | http://127.0.0.1:8877/upsell/ |
-| Downsell | http://127.0.0.1:8877/downsell/ |
-| **Dados do quiz (interno)** | http://127.0.0.1:8877/dadosquizz/ |
+| Página | URL local | Produção |
+|--------|-----------|----------|
+| Quiz (principal) | http://127.0.0.1:8877/ | https://birraquizzz.vercel.app/ |
+| **Quiz 2.0 design test** | http://127.0.0.1:8877/quiz2/ | https://birraquizzz.vercel.app/quiz2/ |
+| Obrigado | http://127.0.0.1:8877/obrigado/ | /obrigado/ |
+| Upsell | http://127.0.0.1:8877/upsell/ | /upsell/ |
+| Downsell | http://127.0.0.1:8877/downsell/ | /downsell/ |
+| **Dados do quiz (interno)** | http://127.0.0.1:8877/dadosquizz/ | /dadosquizz/ |
+
+### Quiz 2.0 (link secundário — teste de design)
+
+- Rota: `/quiz2/` (não substitui a principal; `noindex`)
+- Visual: fundo branco, texto preto, destaques vermelhos, cantos retos
+- Progresso: **só a barra**, sem número de perguntas
+- Mesmo funil, copy, leads, pixel e checkout Hotmart da v1
 
 ## Fluxo quiz (versão 12 perguntas)
 

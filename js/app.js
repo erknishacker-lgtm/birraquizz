@@ -177,20 +177,45 @@
     });
   }
 
+  function hideProgressCount() {
+    return (
+      document.body.dataset.hideProgressCount === "true" ||
+      document.body.dataset.theme === "designer" ||
+      document.body.dataset.page === "quiz2"
+    );
+  }
+
   function updateProgress() {
     const on = state.phase === "step";
     el.progressWrap.classList.toggle("is-on", on);
+    const barHost = el.progressBar?.parentElement;
     if (!on) {
       el.progressBar.style.width = "0%";
-      el.progressCount.textContent = "";
+      if (el.progressCount) el.progressCount.textContent = "";
+      if (barHost) {
+        barHost.setAttribute("aria-valuenow", "0");
+        barHost.removeAttribute("aria-valuetext");
+      }
       return;
     }
     const n = Math.min(state.stepIndex + 1, totalSteps());
     const tot = totalSteps();
-    el.progressBar.style.width = `${Math.round((n / tot) * 100)}%`;
-    el.progressCount.textContent = (ui().progressOf || "{n}/{total}")
-      .replace("{n}", String(n))
-      .replace("{total}", String(tot));
+    const pct = Math.round((n / tot) * 100);
+    el.progressBar.style.width = `${pct}%`;
+    if (barHost) {
+      barHost.setAttribute("aria-valuenow", String(pct));
+      barHost.setAttribute("aria-valuetext", `${pct}%`);
+    }
+    // Quiz 2.0 / designer: só a barra — sem "3 / 12"
+    if (hideProgressCount()) {
+      if (el.progressCount) el.progressCount.textContent = "";
+      return;
+    }
+    if (el.progressCount) {
+      el.progressCount.textContent = (ui().progressOf || "{n}/{total}")
+        .replace("{n}", String(n))
+        .replace("{total}", String(tot));
+    }
   }
 
   function trackFunnel(key) {

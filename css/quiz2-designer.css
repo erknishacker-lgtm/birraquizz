@@ -1,0 +1,587 @@
+/**
+ * Quiz 2.0 — skin designer (teste A/B visual)
+ * Fundo branco · texto preto · destaques vermelhos · cantos retos
+ * Carregar DEPOIS de styles.css. Não altera a página principal.
+ */
+
+body[data-theme="designer"] {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --primary: #111111;
+  --primary-mid: #c8102e;
+  --primary-deep: #000000;
+  --accent: #c8102e;
+  --accent-hot: #c8102e;
+  --ink: #000000;
+  --muted: #333333;
+  --alert: #c8102e;
+  --alert-bg: #fff5f5;
+  --line: #111111;
+  --shadow: none;
+  --radius: 0;
+  --radius-sm: 0;
+  --font: "IBM Plex Mono", "Courier New", monospace;
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;
+  --red: #c8102e;
+  --red-deep: #8b0a1e;
+  --black: #000000;
+  --white: #ffffff;
+  --gray: #666666;
+  --gray-line: #e5e5e5;
+
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  color: var(--black);
+  background: var(--white);
+  line-height: 1.45;
+}
+
+/* Sem gradientes de fundo da v1 */
+body[data-theme="designer"]::before,
+body[data-theme="designer"]::after {
+  display: none !important;
+}
+
+body[data-theme="designer"] .app {
+  background: var(--white);
+}
+
+/* ——— Topbar + progresso (só barra, sem número) ——— */
+body[data-theme="designer"] .topbar {
+  background: var(--white);
+  border-bottom: 2px solid var(--black);
+  backdrop-filter: none;
+  padding: 10px 0 12px;
+  gap: 10px;
+}
+
+body[data-theme="designer"] .brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 0;
+  background: var(--red);
+  box-shadow: none;
+  animation: none;
+}
+
+body[data-theme="designer"] .lang button {
+  border-radius: 0;
+  border: 1.5px solid var(--black);
+  background: var(--white);
+  color: var(--black);
+  font-family: var(--font);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+body[data-theme="designer"] .lang button[aria-pressed="true"] {
+  background: var(--black);
+  border-color: var(--black);
+  color: var(--white);
+}
+
+body[data-theme="designer"] .progress-wrap {
+  gap: 0;
+}
+
+body[data-theme="designer"] .progress-count {
+  display: none !important;
+}
+
+body[data-theme="designer"] .progress-bar {
+  height: 8px;
+  border-radius: 0;
+  background: var(--gray-line);
+  border: 1.5px solid var(--black);
+}
+
+body[data-theme="designer"] .progress-bar > span {
+  border-radius: 0;
+  background: var(--red);
+  transition: width 0.35s linear;
+}
+
+/* ——— Tipografia geral ——— */
+body[data-theme="designer"] h1,
+body[data-theme="designer"] h2,
+body[data-theme="designer"] .hero-body h1,
+body[data-theme="designer"] .q-body h2,
+body[data-theme="designer"] .result-card h2,
+body[data-theme="designer"] .social-card h2,
+body[data-theme="designer"] .paper-headline,
+body[data-theme="designer"] .loading-screen h2 {
+  font-family: var(--font);
+  font-weight: 700;
+  color: var(--black);
+  letter-spacing: -0.02em;
+}
+
+body[data-theme="designer"] .lead,
+body[data-theme="designer"] .sub,
+body[data-theme="designer"] .q-help,
+body[data-theme="designer"] .hero-body .lead,
+body[data-theme="designer"] .hero-body .sub,
+body[data-theme="designer"] p {
+  color: var(--black);
+}
+
+body[data-theme="designer"] .q-help,
+body[data-theme="designer"] .sub,
+body[data-theme="designer"] .footer-note,
+body[data-theme="designer"] .social-role {
+  color: var(--gray);
+  font-weight: 400;
+}
+
+body[data-theme="designer"] strong,
+body[data-theme="designer"] b {
+  font-weight: 700;
+  color: var(--black);
+}
+
+/* ——— Cards / mídia: cantos retos, borda preta ——— */
+body[data-theme="designer"] .hero-card,
+body[data-theme="designer"] .q-card,
+body[data-theme="designer"] .result-card,
+body[data-theme="designer"] .social-card,
+body[data-theme="designer"] .paper,
+body[data-theme="designer"] .tv-card,
+body[data-theme="designer"] .magazine-card,
+body[data-theme="designer"] .insight-card,
+body[data-theme="designer"] .capture-card {
+  border-radius: 0 !important;
+  border: 2px solid var(--black);
+  box-shadow: none !important;
+  background: var(--white);
+  overflow: hidden;
+}
+
+body[data-theme="designer"] .hero-media,
+body[data-theme="designer"] .q-media,
+body[data-theme="designer"] .paper-media,
+body[data-theme="designer"] .tv-screen {
+  border-radius: 0 !important;
+}
+
+body[data-theme="designer"] .hero-media img,
+body[data-theme="designer"] .q-media img {
+  border-radius: 0;
+  filter: grayscale(0.15) contrast(1.05);
+}
+
+body[data-theme="designer"] .hero-media::after,
+body[data-theme="designer"] .q-media::after {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent 55%);
+}
+
+/* Kicker / badges: vermelho ou caixa preta */
+body[data-theme="designer"] .hero-kicker,
+body[data-theme="designer"] .q-caption,
+body[data-theme="designer"] .social-badge,
+body[data-theme="designer"] .badge-critical,
+body[data-theme="designer"] .badge-urgent {
+  border-radius: 0 !important;
+  background: var(--red) !important;
+  color: var(--white) !important;
+  border: none;
+  font-family: var(--font);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: none !important;
+}
+
+body[data-theme="designer"] .trust-row span {
+  border-radius: 0;
+  border: 1.5px solid var(--black);
+  background: var(--white);
+  color: var(--black);
+  font-weight: 600;
+}
+
+/* ——— Botões: quadrados, vermelho ou preto ——— */
+body[data-theme="designer"] .btn-primary,
+body[data-theme="designer"] .btn-accent,
+body[data-theme="designer"] .btn-ghost,
+body[data-theme="designer"] .btn-urgent-cta,
+body[data-theme="designer"] .sticky-cta .btn-primary {
+  border-radius: 0 !important;
+  font-family: var(--font);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: none !important;
+  border: 2px solid var(--black);
+}
+
+body[data-theme="designer"] .btn-primary {
+  background: var(--black);
+  color: var(--white);
+}
+
+body[data-theme="designer"] .btn-primary:hover {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--white);
+}
+
+body[data-theme="designer"] .btn-accent,
+body[data-theme="designer"] .btn-urgent-cta,
+body[data-theme="designer"] .btn-primary.btn-accent {
+  background: var(--red) !important;
+  border-color: var(--red-deep) !important;
+  color: var(--white) !important;
+}
+
+body[data-theme="designer"] .btn-accent:hover,
+body[data-theme="designer"] .btn-urgent-cta:hover {
+  background: var(--red-deep) !important;
+  border-color: var(--black) !important;
+}
+
+body[data-theme="designer"] .btn-ghost {
+  background: var(--white);
+  color: var(--black);
+}
+
+/* ——— Opções de resposta ——— */
+body[data-theme="designer"] .option {
+  border-radius: 0 !important;
+  border: 1.5px solid var(--black);
+  background: var(--white);
+  color: var(--black);
+  font-weight: 600;
+  box-shadow: none !important;
+  transition: background 0.12s linear, color 0.12s linear, border-color 0.12s linear;
+}
+
+body[data-theme="designer"] .option:hover,
+body[data-theme="designer"] .option:focus-visible {
+  background: #f5f5f5;
+  border-color: var(--black);
+  outline: 2px solid var(--red);
+  outline-offset: 0;
+}
+
+body[data-theme="designer"] .option.is-picked {
+  background: var(--black) !important;
+  color: var(--white) !important;
+  border-color: var(--black) !important;
+  box-shadow: none !important;
+}
+
+body[data-theme="designer"] .option.is-picked::before,
+body[data-theme="designer"] .option.is-picked::after {
+  border-color: var(--red);
+}
+
+/* ——— Micro / paper / TV / magazine ——— */
+body[data-theme="designer"] .paper-name,
+body[data-theme="designer"] .paper-cat,
+body[data-theme="designer"] .paper-kicker,
+body[data-theme="designer"] .paper-date-badge {
+  border-radius: 0 !important;
+  font-family: var(--font);
+  font-weight: 700;
+}
+
+body[data-theme="designer"] .paper-date-badge,
+body[data-theme="designer"] .paper-cat {
+  background: var(--red);
+  color: var(--white);
+  border: none;
+}
+
+body[data-theme="designer"] .paper-quote {
+  border-radius: 0 !important;
+  border-left: 4px solid var(--red);
+  background: #fafafa;
+}
+
+body[data-theme="designer"] .paper-warning {
+  border-radius: 0 !important;
+  border: 2px solid var(--red);
+  background: var(--alert-bg);
+  color: var(--black);
+  font-weight: 700;
+}
+
+body[data-theme="designer"] .paper-stat strong {
+  color: var(--red);
+  font-family: var(--font);
+}
+
+body[data-theme="designer"] .paper-bullets li {
+  border-radius: 0 !important;
+  border: 1px solid var(--gray-line);
+  background: var(--white);
+}
+
+body[data-theme="designer"] .tv-bezel,
+body[data-theme="designer"] .tv-screen {
+  border-radius: 0 !important;
+}
+
+body[data-theme="designer"] .tv-bezel {
+  border: 2px solid var(--black);
+  background: var(--black);
+}
+
+/* ——— Social proof ——— */
+body[data-theme="designer"] .social-avatar {
+  border-radius: 0 !important;
+  background: var(--red);
+  color: var(--white);
+  font-weight: 700;
+  border: 2px solid var(--black);
+}
+
+body[data-theme="designer"] .social-video-wrap,
+body[data-theme="designer"] .social-embed-wrap {
+  border-radius: 0 !important;
+  border: 2px solid var(--black);
+  overflow: hidden;
+}
+
+body[data-theme="designer"] .social-quote {
+  font-weight: 600;
+  color: var(--black);
+  border-left: 3px solid var(--red);
+  padding-left: 12px;
+}
+
+/* ——— Diagnóstico / pitch / meters ——— */
+body[data-theme="designer"] .result-hero,
+body[data-theme="designer"] .result-hero-urgent {
+  background: var(--white) !important;
+  border-bottom: 2px solid var(--black);
+}
+
+body[data-theme="designer"] .result-level-ring circle,
+body[data-theme="designer"] .result-level-bg {
+  stroke: var(--gray-line) !important;
+}
+
+body[data-theme="designer"] .result-level-fg,
+body[data-theme="designer"] .result-level-fg-urgent {
+  stroke: var(--red) !important;
+}
+
+body[data-theme="designer"] .result-level-core,
+body[data-theme="designer"] .result-level-core-urgent {
+  color: var(--black);
+  font-family: var(--font);
+  font-weight: 700;
+}
+
+body[data-theme="designer"] .result-level-label,
+body[data-theme="designer"] .result-level-label-urgent {
+  color: var(--red);
+  font-family: var(--font);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+body[data-theme="designer"] .urgency-aura,
+body[data-theme="designer"] .urgency-ripple {
+  border-color: rgba(200, 16, 46, 0.35) !important;
+}
+
+body[data-theme="designer"] .tags span {
+  border-radius: 0 !important;
+  border: 1.5px solid var(--black);
+  background: var(--white);
+  color: var(--black);
+  font-weight: 700;
+  font-family: var(--font);
+  font-size: 0.72rem;
+}
+
+body[data-theme="designer"] .pitch-block {
+  border-radius: 0 !important;
+  border: 1.5px solid var(--black);
+  background: var(--white);
+  box-shadow: none;
+}
+
+body[data-theme="designer"] .pitch-block strong,
+body[data-theme="designer"] .pitch-block .pitch-t {
+  color: var(--black);
+  font-weight: 700;
+}
+
+/* Antes / depois no pitch */
+body[data-theme="designer"] .before-after,
+body[data-theme="designer"] .ba-card,
+body[data-theme="designer"] .ba-tag {
+  border-radius: 0 !important;
+}
+
+body[data-theme="designer"] .ba-card {
+  border: 1.5px solid var(--black);
+  overflow: hidden;
+  background: var(--white);
+}
+
+body[data-theme="designer"] .ba-tag {
+  font-family: var(--font);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+body[data-theme="designer"] .ba-tag-before {
+  background: var(--black);
+  color: var(--white);
+}
+
+body[data-theme="designer"] .ba-tag-after {
+  background: var(--red);
+  color: var(--white);
+}
+
+body[data-theme="designer"] .before-after-title {
+  font-family: var(--font);
+  font-weight: 700;
+  color: var(--black);
+}
+
+body[data-theme="designer"] .analyze-meter-track {
+  border-radius: 0 !important;
+  border: 1.5px solid var(--black);
+  background: var(--gray-line);
+  overflow: hidden;
+}
+
+body[data-theme="designer"] .analyze-meter-fill {
+  border-radius: 0 !important;
+  background: var(--black) !important;
+}
+
+body[data-theme="designer"] .analyze-meter-fill.is-urgency-fill {
+  background: var(--red) !important;
+}
+
+body[data-theme="designer"] .analyze-meter-val {
+  color: var(--red);
+  font-family: var(--font);
+  font-weight: 700;
+}
+
+body[data-theme="designer"] .result-list li {
+  border-radius: 0 !important;
+  border-left: 3px solid var(--red);
+}
+
+body[data-theme="designer"] .block-chip,
+body[data-theme="designer"] .pitch-num {
+  border-radius: 0 !important;
+  background: var(--red);
+  color: var(--white);
+  font-family: var(--font);
+  font-weight: 700;
+}
+
+/* ——— Captura de lead ——— */
+body[data-theme="designer"] .lead-form input,
+body[data-theme="designer"] .lead-who {
+  border-radius: 0 !important;
+  border: 1.5px solid var(--black);
+  background: var(--white);
+  color: var(--black);
+}
+
+body[data-theme="designer"] .lead-form input:focus {
+  outline: 2px solid var(--red);
+  border-color: var(--black);
+}
+
+body[data-theme="designer"] .lead-form label,
+body[data-theme="designer"] .lead-who legend {
+  color: var(--black);
+  font-weight: 700;
+}
+
+body[data-theme="designer"] .lead-error {
+  color: var(--red);
+  font-weight: 700;
+}
+
+/* ——— Loading ——— */
+body[data-theme="designer"] .loading-screen {
+  background: var(--white);
+}
+
+body[data-theme="designer"] .loading-spinner {
+  border-radius: 0 !important;
+  border: 3px solid var(--gray-line);
+  border-top-color: var(--red);
+}
+
+body[data-theme="designer"] .loading-bar-track {
+  border-radius: 0 !important;
+  border: 1.5px solid var(--black);
+  background: var(--gray-line);
+  overflow: hidden;
+}
+
+body[data-theme="designer"] .loading-bar-fill {
+  border-radius: 0 !important;
+  background: var(--red) !important;
+}
+
+body[data-theme="designer"] .loading-bar-pct,
+body[data-theme="designer"] .loading-kicker {
+  color: var(--black);
+  font-family: var(--font);
+  font-weight: 700;
+}
+
+/* ——— Sticky CTA ——— */
+body[data-theme="designer"] .sticky-cta {
+  background: var(--white);
+  border-top: 2px solid var(--black);
+  box-shadow: none;
+}
+
+body[data-theme="designer"] .sticky-cta .btn-primary {
+  background: var(--red) !important;
+  border-color: var(--black) !important;
+  color: var(--white) !important;
+  border-radius: 0 !important;
+}
+
+/* Ripple / pulse mais secos */
+body[data-theme="designer"] .js-ripple {
+  border-radius: 0;
+  background: rgba(200, 16, 46, 0.25);
+}
+
+body[data-theme="designer"] .cta-pulse {
+  animation: none;
+}
+
+/* Destaques editoriais em vermelho */
+body[data-theme="designer"] .eval-mirror {
+  font-weight: 600;
+  color: var(--black);
+}
+
+body[data-theme="designer"] .price-note {
+  color: var(--red);
+  font-weight: 700;
+}
+
+/* Garantia de cantos retos em qualquer residual da v1 */
+body[data-theme="designer"] * {
+  --radius: 0;
+  --radius-sm: 0;
+}
+
+body[data-theme="designer"] .option:nth-child(1),
+body[data-theme="designer"] .option:nth-child(2),
+body[data-theme="designer"] .option:nth-child(3),
+body[data-theme="designer"] .option:nth-child(4) {
+  /* remove delays/cores especiais arredondadas se existirem */
+}
