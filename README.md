@@ -23,7 +23,7 @@ python3 -m http.server 8877
 ### Quiz 2.0 (link secundário — teste de design)
 
 - Rota: `/quiz2/` (não substitui a principal; `noindex`)
-- Visual: fundo branco, texto preto, destaques vermelhos, cantos retos
+- Visual: estilo **advertorial / VSL** (referência: páginas tipo edelixir text-page) — coluna de texto, fundo branco, títulos Oswald, corpo Poppins, vermelho `#ff0000`, **sem caixas**
 - Progresso: **só a barra**, sem número de perguntas
 - Mesmo funil, copy, leads, pixel e checkout Hotmart da v1
 
