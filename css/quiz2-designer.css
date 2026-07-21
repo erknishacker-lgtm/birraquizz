@@ -1,5 +1,8 @@
 /**
- * Quiz 2.0 — skin inspirada em advertorial / VSL (ex.: edelixir.com/text-page)
+ * Skin principal (advertorial / VSL) — inspirada em edelixir.com/text-page
+ *
+ * Usada na HOME (`/`) via body[data-theme="designer"].
+ * O visual clássico (legado) fica em `/quiz2/` sem este CSS.
  *
  * Princípios:
  * - Fundo branco, texto preto, destaques #ff0000
@@ -8,7 +11,7 @@
  * - Quase zero borders/cards — fluxo editorial
  * - CTA vermelho sólido
  *
- * Carregar DEPOIS de styles.css. Só afeta body[data-theme="designer"].
+ * Carregar DEPOIS de styles.css.
  */
 
 @import url("https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Poppins:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap");

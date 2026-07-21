@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta
       name="description"
-      content="Quiz 2.0 (teste de design advertorial) — Berrinche Cero / Birra Zero. Link secundário."
+      content="Quiz visual clássico (versão anterior) — Berrinche Cero / Birra Zero. Link secundário para comparação."
     />
     <meta name="robots" content="noindex, nofollow" />
-    <meta name="theme-color" content="#ffffff" />
-    <title>Quiz 2.0 | Design Test</title>
-    <!-- Meta Pixel Code — PageView only (mesmo pixel da principal) -->
+    <meta name="theme-color" content="#2a5f86" />
+    <title>Quiz clássico (legado) | Berrinche Cero</title>
+    <!-- Meta Pixel Code — PageView only -->
     <script>
       !(function (f, b, e, v, n, t, s) {
         if (f.fbq) return;
@@ -44,17 +44,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://play.tynk.ai" />
     <link rel="dns-prefetch" href="https://play.tynk.ai" />
-    <!-- Oswald + Poppins (estilo advertorial / VSL) -->
+    <link rel="prerender" href="https://play.tynk.ai/p/4b116b35-b926-4aaa-8eff-56bf3e917a38" />
+    <!-- Visual legado (ex-principal): Sora + Source Sans -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Poppins:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../css/styles.css?v=24" />
-    <link rel="stylesheet" href="../css/quiz2-designer.css?v=24" />
+    <link rel="stylesheet" href="../css/styles.css?v=25" />
   </head>
-  <body data-page="quiz2" data-theme="designer" data-hide-progress-count="true">
+  <!-- Sem data-theme=designer → visual clássico (app shell azul/laranja) -->
+  <body data-page="quiz-classic" data-hide-progress-count="true">
     <div class="app" id="app">
       <header class="topbar">
+        <span class="brand-dot" aria-hidden="true"></span>
         <div class="progress-wrap" id="progress-wrap" aria-hidden="false">
           <div class="progress-bar" aria-hidden="true" role="progressbar" aria-valuemin="0" aria-valuemax="100">
             <span id="progress-bar"></span>
@@ -74,12 +76,12 @@
     <script>
       window.IMG_BASE = "../assets/images/";
     </script>
-    <script src="../js/analytics-config.js?v=24"></script>
-    <script src="../js/analytics-track.js?v=24"></script>
-    <script src="../js/meta-pixel.js?v=24"></script>
-    <script src="../js/leads-store.js?v=24"></script>
-    <script src="../js/quiz-flow.js?v=24"></script>
-    <script src="../js/motion.js?v=24"></script>
-    <script src="../js/app.js?v=24"></script>
+    <script src="../js/analytics-config.js?v=25"></script>
+    <script src="../js/analytics-track.js?v=25"></script>
+    <script src="../js/meta-pixel.js?v=25"></script>
+    <script src="../js/leads-store.js?v=25"></script>
+    <script src="../js/quiz-flow.js?v=25"></script>
+    <script src="../js/motion.js?v=25"></script>
+    <script src="../js/app.js?v=25"></script>
   </body>
 </html>

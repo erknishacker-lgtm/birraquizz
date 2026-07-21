@@ -13,19 +13,21 @@ python3 -m http.server 8877
 
 | Página | URL local | Produção |
 |--------|-----------|----------|
-| Quiz (principal) | http://127.0.0.1:8877/ | https://birraquizzz.vercel.app/ |
-| **Quiz 2.0 design test** | http://127.0.0.1:8877/quiz2/ | https://birraquizzz.vercel.app/quiz2/ |
+| **Quiz principal (advertorial)** | http://127.0.0.1:8877/ | https://birraquizzz.vercel.app/ |
+| Quiz clássico (legado) | http://127.0.0.1:8877/quiz2/ | https://birraquizzz.vercel.app/quiz2/ |
 | Obrigado | http://127.0.0.1:8877/obrigado/ | /obrigado/ |
 | Upsell | http://127.0.0.1:8877/upsell/ | /upsell/ |
 | Downsell | http://127.0.0.1:8877/downsell/ | /downsell/ |
 | **Dados do quiz (interno)** | http://127.0.0.1:8877/dadosquizz/ | /dadosquizz/ |
 
-### Quiz 2.0 (link secundário — teste de design)
+### Visual principal vs. legado
 
-- Rota: `/quiz2/` (não substitui a principal; `noindex`)
-- Visual: estilo **advertorial / VSL** (referência: páginas tipo edelixir text-page) — coluna de texto, fundo branco, títulos Oswald, corpo Poppins, vermelho `#ff0000`, **sem caixas**
-- Progresso: **só a barra**, sem número de perguntas
-- Mesmo funil, copy, leads, pixel e checkout Hotmart da v1
+| Rota | Visual |
+|------|--------|
+| `/` | **Advertorial / VSL** (fundo branco, Oswald + Poppins, vermelho) — era o “quiz2” |
+| `/quiz2/` | **Clássico** (app azul/laranja, Sora) — era a principal; `noindex` |
+
+Ambos usam o mesmo funil, copy, leads, pixel e checkout Hotmart.
 
 ## Fluxo quiz (versão 12 perguntas)
 

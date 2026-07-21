@@ -180,8 +180,7 @@
   function hideProgressCount() {
     return (
       document.body.dataset.hideProgressCount === "true" ||
-      document.body.dataset.theme === "designer" ||
-      document.body.dataset.page === "quiz2"
+      document.body.dataset.theme === "designer"
     );
   }
 
@@ -455,10 +454,8 @@
   }
 
   function isDesignerTheme() {
-    return (
-      document.body.dataset.theme === "designer" ||
-      document.body.dataset.page === "quiz2"
-    );
+    // Só o atributo data-theme controla o visual advertorial (agora é a principal)
+    return document.body.dataset.theme === "designer";
   }
 
   /** Quiz 2.0: micro em formato advertorial (sem TV/revista); m_bridge bem compacto. */
