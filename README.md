@@ -2,6 +2,8 @@
 
 Quiz interativo (mobile-first) + páginas de funil (obrigado, upsell, downsell).
 
+**Produção:** https://birraquizz.vercel.app
+
 ## Como abrir
 
 ```bash
@@ -17,13 +19,17 @@ python3 -m http.server 8877
 | Downsell | http://127.0.0.1:8877/downsell/ |
 | **Dados do quiz (interno)** | http://127.0.0.1:8877/dadosquizz/ |
 
-## Fluxo quiz
+## Fluxo quiz (versão 12 perguntas)
 
-1. Hero + seletor ES / PT / EN  
-2. 12 perguntas com imagens  
-3. Matérias após as perguntas **4, 8 e 12**  
-4. Loading ~3s  
-5. Resultado urgente + CTA Hotmart  
+1. Hero + seletor ES / PT / EN (~3–4 min)  
+2. **Quebra-gelo** (2 perguntas) → micro recompensa  
+3. **Dor** (4 perguntas) → micro alerta → prova social (vídeo)  
+4. **Desejo** (3 perguntas) → micro cenário ideal  
+5. **Ponte** (3 perguntas) → micro protocolo  
+6. Diagnóstico → captura de lead (inclui “quem responde”) → loading  
+7. Pitch / resultado + CTA Hotmart  
+
+Versão longa (30 perguntas) arquivada em `archive/quiz-flow-30-perguntas.js`.
 
 ## Funil (pós-compra / oferta)
 
@@ -35,22 +41,19 @@ python3 -m http.server 8877
 
 ### Painel interno `/dadosquizz/`
 
-- Relatório de funil: visitas → cada pergunta → notícias → resultado → clique no checkout  
-- **Leads capturados**: nome, e-mail, WhatsApp, data, idioma, urgência + botão WhatsApp  
-- Exportar CSV / backup JSON / importar JSON (mesma máquina ou outro aparelho)  
-- Senha padrão: veja `js/analytics-config.js` → `dashboardPassword` (troque!)  
-- `noindex` (não para clientes)  
-- Contadores via CounterAPI + espelho local  
-- Leads ficam salvos no navegador (permanentes até limpar o histórico; use CSV para backup)
+- Relatório de funil: visitas → cada pergunta → micros → resultado → clique no checkout  
+- **Leads capturados**: nome, e-mail, WhatsApp, quem responde, data, idioma, urgência  
+- Exportar CSV / backup JSON / importar JSON  
+- Senha: `js/analytics-config.js` → `dashboardPassword` (troque!)  
 
 ## Arquivos
 
 | Pasta / arquivo | Função |
 |-----------------|--------|
 | `index.html` | Quiz |
-| `css/styles.css` | Design system |
-| `css/funnel.css` | Páginas do funil |
-| `js/i18n.js` + `app.js` + `motion.js` | Quiz |
-| `js/funnel-i18n.js` + `funnel.js` | Funil ES/PT/EN |
-| `obrigado/` `upsell/` `downsell/` | Rotas |
+| `js/quiz-flow.js` | Copy + fluxo (12 perguntas, ES/PT/EN) |
+| `js/app.js` + `motion.js` | Motor do quiz |
+| `js/funnel-i18n.js` + `funnel.js` | Funil pós-compra |
+| `archive/` | Versão 30 perguntas + relatórios de copy |
+| `obrigado/` `upsell/` `downsell/` | Rotas do funil |
 | `assets/images/` | Cenas |

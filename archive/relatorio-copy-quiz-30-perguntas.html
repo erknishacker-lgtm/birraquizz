@@ -1,0 +1,2057 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Relatório completo de copy — Quiz Birra Zero / Berrinche Cero</title>
+<style>
+  :root {
+    --ink: #0f172a;
+    --muted: #475569;
+    --line: #e2e8f0;
+    --bg: #f8fafc;
+    --card: #fff;
+    --accent: #0369a1;
+    --ice: #0ea5e9;
+    --pain: #dc2626;
+    --desire: #16a34a;
+    --bridge: #9333ea;
+    --micro: #d97706;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: var(--ink); background: var(--bg); line-height: 1.55;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 24px 18px 80px; }
+  header.report {
+    background: linear-gradient(135deg, #0c4a6e, #0369a1);
+    color: #fff; border-radius: 16px; padding: 28px 24px; margin-bottom: 24px;
+  }
+  header.report h1 { margin: 0 0 8px; font-size: 1.55rem; }
+  header.report p { margin: 4px 0; opacity: .95; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .chip {
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+    padding: 4px 10px; border-radius: 999px; font-size: .82rem;
+  }
+  .toc {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 20px;
+  }
+  .toc h2 { margin: 0 0 10px; font-size: 1rem; }
+  .toc ol { margin: 0; padding-left: 1.2rem; }
+  .toc a { color: var(--accent); }
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px; margin-bottom: 20px;
+  }
+  .stat {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px; text-align: center;
+  }
+  .stat b { display: block; font-size: 1.5rem; color: var(--accent); }
+  .stat span { font-size: .8rem; color: var(--muted); }
+  .overview-card, .map {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 20px;
+  }
+  .map pre {
+    background: #0f172a; color: #e2e8f0; padding: 14px; border-radius: 10px;
+    overflow-x: auto; font-size: .85rem; line-height: 1.45;
+  }
+  .tabs {
+    display: flex; gap: 6px; flex-wrap: wrap; position: sticky; top: 0; z-index: 20;
+    background: rgba(248,250,252,.92); backdrop-filter: blur(8px);
+    padding: 10px 0; margin-bottom: 12px; border-bottom: 1px solid var(--line);
+  }
+  .tab-btn {
+    border: 1px solid var(--line); background: #fff; border-radius: 999px;
+    padding: 8px 14px; cursor: pointer; font-weight: 600; color: var(--ink);
+  }
+  .tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  h2 { font-size: 1.2rem; margin: 28px 0 12px; border-bottom: 2px solid var(--line); padding-bottom: 6px; }
+  h3 { font-size: 1.05rem; margin: 0 0 8px; }
+  h4 { font-size: .95rem; margin: 14px 0 6px; color: var(--muted); }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 12px;
+  }
+  .card.micro { border-left: 4px solid var(--micro); }
+  .card.q { border-left: 4px solid var(--accent); }
+  .card.sys { border-left: 4px solid #94a3b8; opacity: .95; }
+  .card.funnel { border-left: 4px solid #0f766e; }
+  .card-head { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .badge {
+    font-size: .72rem; font-weight: 700; letter-spacing: .02em;
+    padding: 3px 8px; border-radius: 6px; background: #e0f2fe; color: #075985;
+  }
+  .badge.q { background: #e0f2fe; color: #075985; }
+  .badge.micro { background: #ffedd5; color: #9a3412; }
+  .badge.sys { background: #f1f5f9; color: #475569; }
+  .badge.funnel { background: #ccfbf1; color: #115e59; }
+  .badge.soft { background: #f1f5f9; color: #64748b; font-weight: 600; }
+  .badge.stamp { background: #fee2e2; color: #991b1b; }
+  .help { color: var(--muted); font-size: .9rem; margin: 0 0 8px; }
+  .opts { margin: 0; padding-left: 0; list-style: none; }
+  .opts li {
+    padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px;
+    margin-bottom: 6px; background: #fafafa;
+  }
+  .oid {
+    display: inline-flex; width: 1.4rem; height: 1.4rem; align-items: center; justify-content: center;
+    background: var(--accent); color: #fff; border-radius: 50%; font-size: .75rem; font-weight: 700;
+    margin-right: 6px;
+  }
+  .meta { display: block; font-size: .78rem; color: var(--muted); margin-top: 2px; }
+  .section-banner {
+    margin: 22px 0 12px; padding: 10px 14px; border-radius: 10px;
+    font-weight: 800; color: #fff; letter-spacing: .02em;
+  }
+  .block-ice { background: var(--ice); }
+  .block-pain { background: var(--pain); }
+  .block-desire { background: var(--desire); }
+  .block-bridge { background: var(--bridge); }
+  .ui-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px; margin-bottom: 12px;
+  }
+  .ui-item {
+    border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: #fff;
+    font-size: .88rem;
+  }
+  .ui-item strong { display: block; font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .ui-item .val { margin-top: 2px; }
+  .ui-item ul { margin: 4px 0 0; padding-left: 1.1rem; }
+  blockquote {
+    margin: 10px 0; padding: 10px 14px; border-left: 3px solid var(--micro);
+    background: #fffbeb; border-radius: 0 8px 8px 0; font-style: italic;
+  }
+  blockquote footer { font-style: normal; font-size: .85rem; color: var(--muted); margin-top: 6px; }
+  .cta { margin: 8px 0 0; }
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; margin: 8px 0 14px; }
+  th, td { border: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
+  th { background: #f1f5f9; }
+  .legacy-q { border-bottom: 1px dashed var(--line); padding: 8px 0; font-size: .9rem; }
+  .print-hint { font-size: .85rem; color: var(--muted); margin-top: 8px; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 20px; }
+  .actions button, .actions a {
+    border: 1px solid var(--line); background: #fff; border-radius: 8px;
+    padding: 8px 12px; cursor: pointer; text-decoration: none; color: var(--ink); font-weight: 600;
+  }
+  @media print {
+    .tabs, .actions, .print-hint { display: none !important; }
+    .tab-panel { display: block !important; page-break-before: always; }
+    .tab-panel:first-of-type { page-break-before: auto; }
+    .card { break-inside: avoid; }
+    body { background: #fff; }
+    header.report { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="report">
+    <h1>Relatório completo de copy — Quiz Birra Zero</h1>
+    <p>Inventário de todos os textos usados no funil (quiz + páginas de conversão).</p>
+    <p>Produto: <strong>Birra Zero / Berrinche Cero / Tantrum Zero</strong> · Pais de crianças 2–4 anos</p>
+    <div class="meta-row">
+      <span class="chip">Fonte ativa: quiz-flow.js + app.js</span>
+      <span class="chip">Funil: js/funnel-i18n.js</span>
+      <span class="chip">Legado: js/i18n.js</span>
+      <span class="chip">Gerado: 2026-07-21</span>
+    </div>
+  </header>
+
+  <div class="actions">
+    <button type="button" onclick="window.print()">Imprimir / Salvar como PDF</button>
+    <a href="#mapa">Ir ao mapa do funil</a>
+    <a href="#panel-pt">Começar pelo PT</a>
+  </div>
+  <p class="print-hint">Para PDF: abra este arquivo no navegador → Imprimir → “Salvar como PDF”. Marque “Gráficos de fundo” se quiser as cores das seções.</p>
+
+  <div class="stats">
+    <div class="stat"><b>30</b><span>Perguntas no fluxo ativo</span></div>
+    <div class="stat"><b>4+1</b><span>Micros + prova social</span></div>
+    <div class="stat"><b>3</b><span>Idiomas (PT · ES · EN)</span></div>
+    <div class="stat"><b>6+10+8+6</b><span>Ice · Pain · Desire · Bridge</span></div>
+    <div class="stat"><b>~2790</b><span>Palavras (PT, fluxo+funil)</span></div>
+    <div class="stat"><b>~2838</b><span>Palavras (ES)</span></div>
+    <div class="stat"><b>~2664</b><span>Palavras (EN)</span></div>
+  </div>
+
+  <nav class="toc">
+    <h2>Como ler este relatório</h2>
+    <ol>
+      <li><strong>Mapa do funil</strong> — ordem das telas e lógica de conversão</li>
+      <li><strong>Aba do idioma</strong> — copy completa na ordem em que o usuário vê</li>
+      <li><strong>UI</strong> — hero, diagnóstico, captura, pitch, CTAs</li>
+      <li><strong>Perguntas</strong> — título, ajuda, opções, peso e tags</li>
+      <li><strong>Micros</strong> — textos de dramatização entre blocos</li>
+      <li><strong>Funil</strong> — obrigado, upsell, downsell</li>
+      <li><strong>Legado</strong> — versão de 12 perguntas (ainda no código)</li>
+    </ol>
+  </nav>
+
+  <section class="map" id="mapa">
+    <h2>Mapa do funil (fluxo ativo)</h2>
+    <pre>HERO (kicker + título + lead + CTA)
+  │
+  ├─ QUEBRA-GELO (q1–q6)  →  MICRO m_ice (recompensa clara)
+  │
+  ├─ DOR (q7–q16)         →  MICRO m_pain (alerta parental)
+  │                         →  PROVA SOCIAL (vídeo Valentina)
+  │
+  ├─ DESEJO (q17–q24)     →  MICRO m_desire (cenário ideal)
+  │
+  ├─ PONTE (q25–q30)      →  MICRO m_bridge (protocolo 7 min)
+  │
+  ├─ EVAL (diagnóstico com meters)
+  ├─ CAPTURE (nome + e-mail + WhatsApp)
+  ├─ LOADING (análise animada)
+  └─ PITCH / RESULTADO + CTA checkout
+        │
+        ├─ (pós-compra) OBRIGADO
+        ├─ UPSELL (Implementação Rápida)
+        └─ DOWNSELL (Núcleo 7 Minutos)</pre>
+    <p class="help">Voz da marca: direta, empática sem suavizar a urgência. Sem diagnóstico médico. Promessa central = protocolo de 7 minutos em 14 dias.</p>
+  </section>
+
+  
+
+  
+  <section class="overview-card" id="copy-appjs">
+    <h2>Copy extra em app.js (não está só no quiz-flow)</h2>
+    <h3>Prova social (vídeo) — após micro de dor (m_pain)</h3>
+    <p class="help">Inserida dinamicamente no meio do funil. Embed Tynk + depoimento.</p>
+    <table>
+      <thead><tr><th>Idioma</th><th>Badge</th><th>Título</th><th>Nome / papel</th><th>Quote</th><th>CTA</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>PT</td>
+          <td>História real</td>
+          <td>Mãe que já recuperou o controle em casa</td>
+          <td>Valentina Rojas · Mãe de 2 filhos · México</td>
+          <td>Ouça a Valentina: em poucos dias parou de reagir tarde e recuperou o comando nas crises.</td>
+          <td>CONTINUAR O TESTE</td>
+        </tr>
+        <tr>
+          <td>ES</td>
+          <td>Historia real</td>
+          <td>Mamá que ya recuperó el control en casa</td>
+          <td>Valentina Rojas · Madre de 2 hijos · México</td>
+          <td>Escucha a Valentina: en pocos días dejó de reaccionar tarde y recuperó el mando en las crisis.</td>
+          <td>CONTINUAR EL TEST</td>
+        </tr>
+        <tr>
+          <td>EN</td>
+          <td>Real story</td>
+          <td>A mom who got control back at home</td>
+          <td>Valentina Rojas · Mother of 2 · Mexico</td>
+          <td>Hear Valentina: in a few days she stopped reacting late and took back command in crises.</td>
+          <td>CONTINUE THE QUIZ</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Bloco “antes × depois” no pitch (14 dias)</h3>
+    <table>
+      <thead><tr><th>Idioma</th><th>Título</th><th>Antes</th><th>Depois</th><th>Nota</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>PT</td>
+          <td>Imagine a virada em 14 dias</td>
+          <td>Hoje · Crise no comando</td>
+          <td>Com o protocolo · Casa sob controle</td>
+          <td>Do caos diário para manhãs com método — sem gritos nem ameaças vazias.</td>
+        </tr>
+        <tr>
+          <td>ES</td>
+          <td>Imagina el cambio en 14 días</td>
+          <td>Hoy · La crisis manda</td>
+          <td>Con el protocolo · Casa bajo control</td>
+          <td>Del caos diario a mañanas con método — sin gritos ni amenazas vacías.</td>
+        </tr>
+        <tr>
+          <td>EN</td>
+          <td>Picture the turnaround in 14 days</td>
+          <td>Today · Crisis in charge</td>
+          <td>With the protocol · Home under control</td>
+          <td>From daily chaos to mornings with a method — no yelling, no empty threats.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="tabs" role="tablist">
+    <button type="button" class="tab-btn active" data-tab="pt">Português (BR)</button><button type="button" class="tab-btn" data-tab="es">Español</button><button type="button" class="tab-btn" data-tab="en">English</button>
+  </div>
+
+  <section class="tab-panel active" data-panel="pt" id="panel-pt">
+    <h2>1. Interface / UI (Português (BR))</h2>
+    <div class="ui-grid"><div class="ui-item"><strong>heroKicker</strong><div class="val">Teste de 6–8 min · pais de 2 a 4 anos</div></div><div class="ui-item"><strong>heroTitle</strong><div class="val">Sua casa virou um campo de batalha a cada birra?</div></div><div class="ui-item"><strong>heroLead</strong><div class="val">Responda com honestidade. No final você recebe um diagnóstico personalizado e o caminho de 7 minutos para recuperar o controle.</div></div><div class="ui-item"><strong>heroSub</strong><div class="val">Recompensa clara: diagnóstico + plano de desescalada + resultado acionável. Sem teoria vazia.</div></div><div class="ui-item"><strong>trust1</strong><div class="val">Diagnóstico real</div></div><div class="ui-item"><strong>trust2</strong><div class="val">Protocolo 7 min</div></div><div class="ui-item"><strong>trust3</strong><div class="val">Casa · mercado · rua</div></div><div class="ui-item"><strong>startCta</strong><div class="val">COMEÇAR O TESTE E RECEBER MEU DIAGNÓSTICO</div></div><div class="ui-item"><strong>progressOf</strong><div class="val">{n} / {total}</div></div><div class="ui-item"><strong>analyzeTitle</strong><div class="val">Preparando seu diagnóstico…</div></div><div class="ui-item"><strong>analyzeText</strong><div class="val">Cruzamos suas respostas com sinais de crise, autoridade e urgência.</div></div><div class="ui-item"><strong>analyzeLoading</strong><div class="val">Carregando…</div></div><div class="ui-item"><strong>analyzeDone</strong><div class="val">Pronto</div></div><div class="ui-item"><strong>continueCta</strong><div class="val">Continuar</div></div><div class="ui-item"><strong>evalBadge</strong><div class="val">Seu diagnóstico</div></div><div class="ui-item"><strong>evalTitle</strong><div class="val">Isto é o que suas respostas revelam</div></div><div class="ui-item"><strong>evalLead</strong><div class="val">Você não está “falhando como pai/mãe”. Está reagindo tarde e, muitas vezes, com o roteiro errado.</div></div><div class="ui-item"><strong>evalCta</strong><div class="val">QUERO MEU RESULTADO COMPLETO</div></div><div class="ui-item"><strong>captureTitle</strong><div class="val">Desbloqueie seu resultado completo</div></div><div class="ui-item"><strong>captureLead</strong><div class="val">Só depois do diagnóstico pedimos seus dados — em troca do resultado completo e do acesso ao protocolo.</div></div><div class="ui-item"><strong>captureName</strong><div class="val">Nome</div></div><div class="ui-item"><strong>captureEmail</strong><div class="val">E-mail</div></div><div class="ui-item"><strong>capturePhone</strong><div class="val">WhatsApp (com DDI)</div></div><div class="ui-item"><strong>captureCta</strong><div class="val">VER MEU RESULTADO COMPLETO</div></div><div class="ui-item"><strong>captureNote</strong><div class="val">Sem spam. Usamos isso para enviar o diagnóstico e o acesso.</div></div><div class="ui-item"><strong>captureError</strong><div class="val">Preencha nome, e-mail e WhatsApp para continuar.</div></div><div class="ui-item"><strong>pitchBadge</strong><div class="val">Seu protocolo de 7 minutos</div></div><div class="ui-item"><strong>stickyCta</strong><div class="val">QUERO O PROTOCOLO AGORA</div></div><div class="ui-item"><strong>langAria</strong><div class="val">Idioma</div></div><div class="ui-item"><strong>metaTitle</strong><div class="val">Teste Birra Zero | Diagnóstico em 7 minutos</div></div><div class="ui-item"><strong>metaDescription</strong><div class="val">Quiz para pais: diagnóstico de birras e protocolo de desescalada em 7 minutos.</div></div><div class="ui-item"><strong>meterLabels</strong><ul><li>Intensidade das crises</li><li>Perda de autoridade</li><li>Urgência</li></ul></div><div class="ui-item"><strong>resultTagsDefault</strong><ul><li>Reação tardia</li><li>Roteiro errado</li><li>Perda de controle</li></ul></div><div class="ui-item"><strong>resultBadge</strong><div class="val">Resultado · Nível crítico de urgência</div></div><div class="ui-item"><strong>resultTitle</strong><div class="val">Você precisa de um protocolo JÁ — chega de paciência vazia</div></div><div class="ui-item"><strong>resultLead</strong><div class="val">Não importa o quanto tenta: se reage tarde e com o roteiro errado, a birra cresce e a criança aprende que a explosão manda.</div></div><div class="ui-item"><strong>resultPoints</strong><ul><li>Cada crise sem contenção treina uma explosão mais forte.</li><li>Se cede por vergonha ou grita por esgotamento, o caos vira regra.</li><li>Telas, mercado e rotina sem limite viram campo de batalha.</li><li>Há uma sequência de 7 minutos para cortar a escalada e recuperar o comando.</li></ul></div><div class="ui-item"><strong>priceNote</strong><div class="val">Investimento menor que uma compra grande. Muito menor que mais um mês de gritos.</div></div><div class="ui-item"><strong>footerNote</strong><div class="val">Material prático para pais. Não é terapia clínica nem diagnóstico médico.</div></div><div class="ui-item"><strong>ctaSolution</strong><div class="val">QUERO O PROTOCOLO AGORA</div></div></div><h4>Legendas de imagem (qCaption)</h4><ul><li><code>home</code> — Casa · explosão</li><li><code>super</code> — Mercado · público</li><li><code>screens</code> — Telas</li><li><code>public</code> — Rua · vergonha</li><li><code>guilt</code> — Culpa</li><li><code>escalate</code> — Escalada</li><li><code>calm</code> — Controle calmo</li></ul><h4>Blocos do pitch (oferta)</h4><table><thead><tr><th>Bloco</th><th>Título</th><th>Texto</th></tr></thead><tbody><tr><td><code>promise</code></td><td>O que muda em 14 dias</td><td>Em 14 dias, aplique um protocolo de 7 minutos para baixar explosões e recuperar o controle sem gritos nem ameaças.</td></tr><tr><td><code>authority</code></td><td>Pais como você já fizeram</td><td>Já ajudou centenas de pais a parar de viver apagando incêndio o dia inteiro.</td></tr><tr><td><code>mechanism</code></td><td>Como o protocolo funciona</td><td>Protocolo de desescalada: sequência por fase, frases prontas, checklist de crise e prevenção de gatilhos (2–4 anos).</td></tr><tr><td><code>anchor</code></td><td>Menos que continuar no caos</td><td>Menos que uma compra grande no mercado. Muito menos que mais um mês de gritos.</td></tr><tr><td><code>offer</code></td><td>O que você recebe hoje</td><td>Guia prática + acesso imediato. Bônus de frases, checklist, prevenção e birra em público (conforme oferta).</td></tr><tr><td><code>guarantee</code></td><td>Sua tranquilidade</td><td>7 dias. Se não vir valor real, pede reembolso.</td></tr><tr><td><code>faq</code></td><td>Dúvidas frequentes</td><td>Serve em plena crise? Sim. No mercado? Sim. É ceder? Não. Crianças 2–4? Exatamente essa fase.</td></tr></tbody></table>
+    <h2>2. Fluxo completo — ordem real do quiz</h2>
+    <p class="help">Hero → Quebra-gelo → micro → Dor → micro → Desejo → micro → Ponte → micro → Eval → Captura → Loading → Pitch</p>
+    <div class="section-banner block-ice">Quebra-gelo (Ice)</div><article class="card q" id="pt-q1">
+        <div class="card-head">
+          <span class="badge q">Q1 · q1</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q1.jpg</span>
+        </div>
+        <h3>Quantas crises ou birras intensas seu filho tem por dia?</h3>
+        <p class="help">Seja honesta/o. Não há resposta “certa”.</p>
+        <ol class="opts"><li><span class="oid">a</span> 5 ou mais — estou no limite
+          <span class="meta">peso 4 · tags: Crisis diarias extremas</span>
+        </li><li><span class="oid">b</span> 3 a 4 — o caos é quase diário
+          <span class="meta">peso 3 · tags: Crisis frecuentes</span>
+        </li><li><span class="oid">c</span> 1 a 2, mas muito intensas
+          <span class="meta">peso 2 · tags: Crisis intensas</span>
+        </li><li><span class="oid">d</span> Poucas, mas sinto que pioram
+          <span class="meta">peso 2 · tags: Escalada</span>
+        </li></ol></article><article class="card q" id="pt-q2">
+        <div class="card-head">
+          <span class="badge q">Q2 · q2</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q2.jpg</span>
+        </div>
+        <h3>Qual a idade do seu filho ou filha?</h3>
+        <p class="help">A fase de 2 a 4 anos é a mais volátil.</p>
+        <ol class="opts"><li><span class="oid">a</span> 2 anos
+          <span class="meta">peso 3 · tags: Etapa 2–4</span>
+        </li><li><span class="oid">b</span> 3 anos
+          <span class="meta">peso 3 · tags: Etapa 2–4</span>
+        </li><li><span class="oid">c</span> 4 anos
+          <span class="meta">peso 3 · tags: Etapa 2–4</span>
+        </li><li><span class="oid">d</span> Outra idade, mas igualmente forte
+          <span class="meta">peso 2 · tags: Fuera de etapa</span>
+        </li></ol></article><article class="card q" id="pt-q3">
+        <div class="card-head">
+          <span class="badge q">Q3 · q3</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-home.jpg</span>
+        </div>
+        <h3>Quem responde este teste?</h3>
+        <p class="help">Só para personalizar o diagnóstico.</p>
+        <ol class="opts"><li><span class="oid">a</span> Mãe / mamãe
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">b</span> Pai / papai
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">c</span> Ambos / cuidamos juntos
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> Avô/avó ou outro cuidador
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card q" id="pt-q4">
+        <div class="card-head">
+          <span class="badge q">Q4 · q4</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q5.jpg</span>
+        </div>
+        <h3>Se tivesse que resumir sua casa em uma palavra hoje, qual seria?</h3>
+        <p class="help">A primeira que vier.</p>
+        <ol class="opts"><li><span class="oid">a</span> Caos
+          <span class="meta">peso 3 · tags: Caos</span>
+        </li><li><span class="oid">b</span> Esgotamento
+          <span class="meta">peso 3 · tags: Agotamiento</span>
+        </li><li><span class="oid">c</span> Culpa
+          <span class="meta">peso 3 · tags: Culpa</span>
+        </li><li><span class="oid">d</span> Esperança (mas frágil)
+          <span class="meta">peso 2 · tags: Esperanza</span>
+        </li></ol></article><article class="card q" id="pt-q5">
+        <div class="card-head">
+          <span class="badge q">Q5 · q5</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q7.jpg</span>
+        </div>
+        <h3>Quantos adultos reagem diferente diante da birra?</h3>
+        <p class="help">Se cada um tem um roteiro, a criança aprende a explodir no mais fraco.</p>
+        <ol class="opts"><li><span class="oid">a</span> Só eu carrego tudo
+          <span class="meta">peso 3 · tags: Carga sola</span>
+        </li><li><span class="oid">b</span> Dois adultos, quase sempre desalinhados
+          <span class="meta">peso 4 · tags: Desalineados</span>
+        </li><li><span class="oid">c</span> Tentamos alinhar e às vezes falha
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> Vários (parceiro, avós) e bagunça
+          <span class="meta">peso 4 · tags: Varios adultos</span>
+        </li></ol></article><article class="card q" id="pt-q6">
+        <div class="card-head">
+          <span class="badge q">Q6 · q6</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>Você está disposta/o a responder com honestidade total?</h3>
+        <p class="help">O diagnóstico só serve se for real.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sim, preciso de clareza JÁ
+          <span class="meta">peso 4 · tags: Lista</span>
+        </li><li><span class="oid">b</span> Sim, mesmo que doa admitir
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Vou tentar
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> Só quero uma solução rápida
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card micro" id="pt-m_ice">
+        <div class="card-head">
+          <span class="badge micro">MICRO · m_ice</span>
+          <span class="badge soft">insight</span>
+          <span class="badge stamp">RECOMPENSA</span>
+        </div>
+        <p class="ribbon">Antes de seguir · Método Birra Zero · Promessa</p>
+        <p class="paper">FUNIL QUIZ</p>
+        <h3>Ninguém responde dezenas de perguntas sem uma recompensa clara</h3>
+        <p>Sua recompensa ao terminar: um diagnóstico de em que ponto está sua casa com as birras e o próximo passo exato para recuperar o controle em 7 minutos — sem gritos nem ameaças vazias.</p>
+        <ul><li>Diagnóstico personalizado</li><li>Plano de desescalada</li><li>Resultado acionável</li></ul>
+        <blockquote>“Com base nas suas respostas, mostramos se você está reagindo tarde, com o roteiro errado, e qual protocolo aplicar primeiro.”<footer>— Protocolo Birra Zero</footer></blockquote>
+        <p class="cta">CTA: <strong>SEGUIR O TESTE</strong></p>
+      </article><div class="section-banner block-pain">Dor (Pain)</div><article class="card q" id="pt-q7">
+        <div class="card-head">
+          <span class="badge q">Q7 · q7</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-super.jpg</span>
+        </div>
+        <h3>Onde as birras explodem mais?</h3>
+        <p class="help">O lugar muda a vergonha, não a urgência.</p>
+        <ol class="opts"><li><span class="oid">a</span> Em casa, várias vezes ao dia
+          <span class="meta">peso 3 · tags: Caos en casa</span>
+        </li><li><span class="oid">b</span> No mercado ou lojas
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">c</span> Rua, visitas ou lugares públicos
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">d</span> Em todo lugar — sem zona segura
+          <span class="meta">peso 4 · tags: Sin zona segura</span>
+        </li></ol></article><article class="card q" id="pt-q8">
+        <div class="card-head">
+          <span class="badge q">Q8 · q8</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-screens.jpg</span>
+        </div>
+        <h3>As telas disparam birra?</h3>
+        <p class="help">Tirar a tela sem roteiro é faísca clássica.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sim: na hora de tirar, guerra total
+          <span class="meta">peso 4 · tags: Pantallas</span>
+        </li><li><span class="oid">b</span> Às vezes, conforme o cansaço
+          <span class="meta">peso 3 · tags: Pantallas</span>
+        </li><li><span class="oid">c</span> Pouco, mas outros limites explodem
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> Sempre briga por “mais um pouco”
+          <span class="meta">peso 4 · tags: Negociación</span>
+        </li></ol></article><article class="card q" id="pt-q9">
+        <div class="card-head">
+          <span class="badge q">Q9 · q9</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-q5.jpg</span>
+        </div>
+        <h3>Quando a birra começa, o que você faz na maioria das vezes?</h3>
+        <p class="help">Sua reação treina o que vem depois.</p>
+        <ol class="opts"><li><span class="oid">a</span> Grito, ameaço ou castigo… e me arrependo
+          <span class="meta">peso 4 · tags: Gritos</span>
+        </li><li><span class="oid">b</span> Cedo para acalmar
+          <span class="meta">peso 4 · tags: Ceder</span>
+        </li><li><span class="oid">c</span> Travo: não sei o que dizer
+          <span class="meta">peso 3 · tags: Bloqueo</span>
+        </li><li><span class="oid">d</span> Tento acalmar, mas se alonga igual
+          <span class="meta">peso 3 · tags: Sin secuencia</span>
+        </li></ol></article><article class="card q" id="pt-q10">
+        <div class="card-head">
+          <span class="badge q">Q10 · q10</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-public.jpg</span>
+        </div>
+        <h3>Se a crise é em público, o que acontece com você?</h3>
+        <p class="help">A vergonha é a arma da birra.</p>
+        <ol class="opts"><li><span class="oid">a</span> Cedo por vergonha
+          <span class="meta">peso 4 · tags: Vergüenza</span>
+        </li><li><span class="oid">b</span> Paraliso; sinto que olham
+          <span class="meta">peso 3 · tags: Parálisis</span>
+        </li><li><span class="oid">c</span> Eu também explodo
+          <span class="meta">peso 4 · tags: Doble explosión</span>
+        </li><li><span class="oid">d</span> Resisto, mas saio esgotada/o
+          <span class="meta">peso 3 · tags: Agotamiento</span>
+        </li></ol></article><article class="card q" id="pt-q11">
+        <div class="card-head">
+          <span class="badge q">Q11 · q11</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-escalation.jpg</span>
+        </div>
+        <h3>Seu filho já bate, empurra, morde ou joga coisas?</h3>
+        <p class="help">Agressão não “passa sozinha” se a crise ganha.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sim, já tem tapa ou empurrão
+          <span class="meta">peso 4 · tags: Agresión</span>
+        </li><li><span class="oid">b</span> Joga objetos e grita no talo
+          <span class="meta">peso 3 · tags: Desborde</span>
+        </li><li><span class="oid">c</span> Ainda não bate, mas sobe toda semana
+          <span class="meta">peso 3 · tags: Escalada</span>
+        </li><li><span class="oid">d</span> Às vezes e não sei cortar
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="pt-q12">
+        <div class="card-head">
+          <span class="badge q">Q12 · q12</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-q9.jpg</span>
+        </div>
+        <h3>Na prática, quem “ganha” a negociação?</h3>
+        <p class="help">Se a explosão ganha, a explosão é treinada.</p>
+        <ol class="opts"><li><span class="oid">a</span> Ele/ela: eu acabo cedendo
+          <span class="meta">peso 4 · tags: Niño manda</span>
+        </li><li><span class="oid">b</span> Ninguém: guerra até o esgotamento
+          <span class="meta">peso 4 · tags: Guerra</span>
+        </li><li><span class="oid">c</span> Eu às vezes, com gritos e culpa
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Depende do dia — sem regra clara
+          <span class="meta">peso 3 · tags: Sin autoridad</span>
+        </li></ol></article><article class="card q" id="pt-q13">
+        <div class="card-head">
+          <span class="badge q">Q13 · q13</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-guilt.jpg</span>
+        </div>
+        <h3>Depois de uma crise forte, o que você mais sente?</h3>
+        <p class="help">Culpa não educa. Protocolo organiza.</p>
+        <ol class="opts"><li><span class="oid">a</span> Culpa: estraguei o dia
+          <span class="meta">peso 3 · tags: Culpa</span>
+        </li><li><span class="oid">b</span> Raiva e esgotamento: não aguento mais
+          <span class="meta">peso 4 · tags: Agotamiento extremo</span>
+        </li><li><span class="oid">c</span> Medo: “e se piorar?”
+          <span class="meta">peso 4 · tags: Miedo</span>
+        </li><li><span class="oid">d</span> Vergonha (principalmente em público)
+          <span class="meta">peso 3 · tags: Vergüenza</span>
+        </li></ol></article><article class="card q" id="pt-q14">
+        <div class="card-head">
+          <span class="badge q">Q14 · q14</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-q7.jpg</span>
+        </div>
+        <h3>Seu parceiro ou avós bagunçam com outra reação?</h3>
+        <p class="help">Roteiro diferente = mais crise.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sim: um cede, outro grita
+          <span class="meta">peso 4 · tags: Desalineados</span>
+        </li><li><span class="oid">b</span> Às vezes; vira briga entre adultos
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Quase sempre estou sozinha/o
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Tentamos e na hora falha
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card q" id="pt-q15">
+        <div class="card-head">
+          <span class="badge q">Q15 · q15</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-q11.jpg</span>
+        </div>
+        <h3>Há quanto tempo você vive no modo “apagar incêndio”?</h3>
+        <p class="help">Tempo sem protocolo endurece o padrão.</p>
+        <ol class="opts"><li><span class="oid">a</span> Meses — cada vez mais pesado
+          <span class="meta">peso 4 · tags: Patrón instalado</span>
+        </li><li><span class="oid">b</span> Semanas, já me desbordou
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Desde a fase 2–4
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Sempre teve birra; agora eles mandam
+          <span class="meta">peso 4 · tags: Inversión de mando</span>
+        </li></ol></article><article class="card q" id="pt-q16">
+        <div class="card-head">
+          <span class="badge q">Q16 · q16</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-home.jpg</span>
+        </div>
+        <h3>Qual foi a pior cena da semana passada?</h3>
+        <p class="help">Escolha a que mais pesa.</p>
+        <ol class="opts"><li><span class="oid">a</span> Birra no mercado / público
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">b</span> Guerra por telas
+          <span class="meta">peso 4 · tags: Pantallas</span>
+        </li><li><span class="oid">c</span> Explosão na rotina / dormir
+          <span class="meta">peso 3 · tags: Rutina</span>
+        </li><li><span class="oid">d</span> Tapas ou empurrões em mim
+          <span class="meta">peso 4 · tags: Agresión</span>
+        </li></ol></article><article class="card micro" id="pt-m_pain">
+        <div class="card-head">
+          <span class="badge micro">MICRO · m_pain</span>
+          <span class="badge soft">paper</span>
+          <span class="badge stamp">URGENTE</span>
+        </div>
+        <p class="ribbon">Alerta parental · Informe do lar · Dor</p>
+        <p class="paper">CRÔNICA DO LAR</p>
+        <h3>Quando a criança manda em casa, a birra deixa de ser “fase”</h3>
+        <p>Se você cede “só dessa vez”, grita “só hoje” ou trava, a criança aprende: quem explode, decide. Isso se treina a cada crise.</p>
+        <ul><li>Ceder treina a próxima explosão</li><li>Gritar sem sequência sobe a adrenalina</li><li>Público e telas examinam quem manda</li></ul>
+        <blockquote>“O vazio de autoridade se preenche com a crise. Sem método, a birra vira chefe da casa.”<footer>— Síntese educativa parental</footer></blockquote>
+        <p class="cta">CTA: <strong>CONTINUAR</strong></p>
+      </article><div class="section-banner block-desire">Desejo (Desire)</div><article class="card q" id="pt-q17">
+        <div class="card-head">
+          <span class="badge q">Q17 · q17</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-calm.jpg</span>
+        </div>
+        <h3>Como você gostaria que fosse uma manhã normal em casa?</h3>
+        <p class="help">O cenário que você deseja.</p>
+        <ol class="opts"><li><span class="oid">a</span> Mais calma e menos gritos
+          <span class="meta">peso 3 · tags: Deseo calma</span>
+        </li><li><span class="oid">b</span> Eu mandando a rotina com segurança
+          <span class="meta">peso 4 · tags: Deseo mando</span>
+        </li><li><span class="oid">c</span> Crises de minutos, não de uma hora
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Tudo isso
+          <span class="meta">peso 4 · tags: Deseo control total</span>
+        </li></ol></article><article class="card q" id="pt-q18">
+        <div class="card-head">
+          <span class="badge q">Q18 · q18</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>O que você quer recuperar com mais urgência?</h3>
+        <p class="help">Sua prioridade nas próximas 2 semanas.</p>
+        <ol class="opts"><li><span class="oid">a</span> Parar de gritar e me arrepender
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">b</span> Saber o que dizer em cada fase
+          <span class="meta">peso 4 · tags: Frases</span>
+        </li><li><span class="oid">c</span> Agir em público sem ceder por vergonha
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">d</span> Diminuir a frequência de crises
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="pt-q19">
+        <div class="card-head">
+          <span class="badge q">Q19 · q19</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-public.jpg</span>
+        </div>
+        <h3>Se amanhã tivesse frases prontas para o mercado, como se sentiria?</h3>
+        <p class="help">Imagine o alívio.</p>
+        <ol class="opts"><li><span class="oid">a</span> Com muito mais controle
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">b</span> Menos vergonha
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Mais segura/o como referência
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> Aliviada/o de não improvisar
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="pt-q20">
+        <div class="card-head">
+          <span class="badge q">Q20 · q20</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>Um protocolo de 7 minutos parece realista no seu dia?</h3>
+        <p class="help">Simples e usável sob pressão.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sim, se for passo a passo
+          <span class="meta">peso 4 · tags: Protocolo</span>
+        </li><li><span class="oid">b</span> Sim, preciso curto
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">c</span> Talvez, se funcionar em público
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Prefiro ainda mais curto
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card q" id="pt-q21">
+        <div class="card-head">
+          <span class="badge q">Q21 · q21</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-screens.jpg</span>
+        </div>
+        <h3>O que você gostaria de dominar primeiro?</h3>
+        <p class="help">Escolha a frente de batalha.</p>
+        <ol class="opts"><li><span class="oid">a</span> Cortar a escalada em casa
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">b</span> Telas sem guerra
+          <span class="meta">peso 4 · tags: Pantallas</span>
+        </li><li><span class="oid">c</span> Crise em público
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">d</span> Limites sem gritos
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="pt-q22">
+        <div class="card-head">
+          <span class="badge q">Q22 · q22</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-q2.jpg</span>
+        </div>
+        <h3>Em 14 dias, que resultado faria você dizer “valeu a pena”?</h3>
+        <p class="help">Seja específica/o.</p>
+        <ol class="opts"><li><span class="oid">a</span> Menos crises por dia
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">b</span> Crises mais curtas
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Eu com mais controle e menos culpa
+          <span class="meta">peso 4 · tags: Control adulto</span>
+        </li><li><span class="oid">d</span> Família mais alinhada
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="pt-q23">
+        <div class="card-head">
+          <span class="badge q">Q23 · q23</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-guilt.jpg</span>
+        </div>
+        <h3>Prefere baixar a culpa ou subir a ordem em casa primeiro?</h3>
+        <p class="help">As duas importam; escolha o foco.</p>
+        <ol class="opts"><li><span class="oid">a</span> Baixar a culpa primeiro
+          <span class="meta">peso 3 · tags: Culpa</span>
+        </li><li><span class="oid">b</span> Subir a ordem e os limites
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">c</span> As duas ao mesmo tempo
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> Só quero que o caos pare já
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="pt-q24">
+        <div class="card-head">
+          <span class="badge q">Q24 · q24</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-calm.jpg</span>
+        </div>
+        <h3>Se te dessem um roteiro exato hoje, abriria na próxima crise?</h3>
+        <p class="help">O compromisso real.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sim, na próxima sem falta
+          <span class="meta">peso 4 · tags: Lista</span>
+        </li><li><span class="oid">b</span> Sim, se for fácil de seguir
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Eu tentaria
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> Dependendo do dia
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card micro" id="pt-m_desire">
+        <div class="card-head">
+          <span class="badge micro">MICRO · m_desire</span>
+          <span class="badge soft">magazine</span>
+          <span class="badge stamp">DESEJO</span>
+        </div>
+        <p class="ribbon">Seu cenário ideal · Visão de controle · Desejo</p>
+        <p class="paper">PROTOCOLO EDITORIAL</p>
+        <h3>Menos paciência vazia. Mais roteiro no minuto exato</h3>
+        <p>Imagine abrir o celular no mercado e ter frases e passos prontos. Não para ser perfeita/o: para parar de improvisar quando já está no limite.</p>
+        <ul><li>Frases por fase da birra</li><li>Checklist de 60 segundos</li><li>Rota casa + público</li></ul>
+        <blockquote>“Paciência sem método é só esperar a próxima explosão.”<footer>— Equipe Birra Zero</footer></blockquote>
+        <p class="cta">CTA: <strong>QUERO ESSE CONTROLE</strong></p>
+      </article><div class="section-banner block-bridge">Ponte (Bridge)</div><article class="card q" id="pt-q25">
+        <div class="card-head">
+          <span class="badge q">Q25 · q25</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-q5.jpg</span>
+        </div>
+        <h3>Já testou gritos, castigos ou ameaças sem resultado duradouro?</h3>
+        <p class="help">Por isso muda o enfoque.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sim, muitas vezes
+          <span class="meta">peso 4 · tags: Ya probó de todo</span>
+        </li><li><span class="oid">b</span> Sim, às vezes
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Pouco, mas não funciona
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Ainda não, e não quero chegar lá
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card q" id="pt-q26">
+        <div class="card-head">
+          <span class="badge q">Q26 · q26</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-public.jpg</span>
+        </div>
+        <h3>Você trava e fica em branco em plena crise?</h3>
+        <p class="help">Frases prontas existem para isso.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sim, quase sempre
+          <span class="meta">peso 4 · tags: Bloqueo</span>
+        </li><li><span class="oid">b</span> Às vezes
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Falo demais e pioro
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Improviso e saio mal
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="pt-q27">
+        <div class="card-head">
+          <span class="badge q">Q27 · q27</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>Você precisa de uma sequência exata (o que fazer minuto a minuto)?</h3>
+        <p class="help">Chega de paciência vazia.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sim, exata e simples
+          <span class="meta">peso 4 · tags: Protocolo</span>
+        </li><li><span class="oid">b</span> Sim, com frases inclusas
+          <span class="meta">peso 4 · tags: Frases</span>
+        </li><li><span class="oid">c</span> Algo prático, não teoria
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> Um plano de 14 dias
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="pt-q28">
+        <div class="card-head">
+          <span class="badge q">Q28 · q28</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-escalation.jpg</span>
+        </div>
+        <h3>Está disposta/o a pôr limites com método (não com mais violência)?</h3>
+        <p class="help">Conter ≠ ceder.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sim, com método
+          <span class="meta">peso 4 · tags: Método</span>
+        </li><li><span class="oid">b</span> Sim, sem gritos se possível
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Quero aprender a não ceder
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> Quero autoridade calma
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="pt-q29">
+        <div class="card-head">
+          <span class="badge q">Q29 · q29</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-super.jpg</span>
+        </div>
+        <h3>O método tem que servir em casa E em público?</h3>
+        <p class="help">Se só serve em casa, cai fora.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sim, os dois
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">b</span> Principalmente público
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">c</span> Principalmente casa
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Onde explodir
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="pt-q30">
+        <div class="card-head">
+          <span class="badge q">Q30 · q30</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>Pronta/o para receber seu diagnóstico e o caminho de 7 minutos?</h3>
+        <p class="help">Último passo antes do resultado.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sim, mostre o diagnóstico
+          <span class="meta">peso 4 · tags: Lista</span>
+        </li><li><span class="oid">b</span> Sim, quero o protocolo
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">c</span> Sim, preciso agir já
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> Sim, mesmo que doa olhar
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card micro" id="pt-m_bridge">
+        <div class="card-head">
+          <span class="badge micro">MICRO · m_bridge</span>
+          <span class="badge soft">tv</span>
+          <span class="badge stamp">PONTE</span>
+        </div>
+        <p class="ribbon">Especialista · Ponte ao protocolo · Ponte</p>
+        <p class="paper">INFORME AO VIVO</p>
+        <h3>A criança quer mandar. Você volta a pôr ordem — com método</h3>
+        <p>Não é castigo duro nem ceder por paz falsa. É uma sequência de 7 minutos: o que dizer, o que fazer e o que evitar em cada fase.</p>
+        <ul><li>Sequência exata</li><li>Frases prontas</li><li>Prevenção de gatilhos</li></ul>
+        <blockquote>“Enquanto outros dizem “tenha mais paciência”, nós te damos o roteiro.”<footer>— Desescalada em 7 minutos</footer></blockquote>
+        <p class="cta">CTA: <strong>VER MEU DIAGNÓSTICO</strong></p>
+      </article><article class="card sys" id="pt-eval">
+        <div class="card-head"><span class="badge sys">Diagnóstico (eval) · eval</span></div>
+        <p class="help">Tela de sistema — textos na seção UI abaixo.</p>
+      </article><article class="card sys" id="pt-capture">
+        <div class="card-head"><span class="badge sys">Captura de lead · capture</span></div>
+        <p class="help">Tela de sistema — textos na seção UI abaixo.</p>
+      </article><article class="card sys" id="pt-loading">
+        <div class="card-head"><span class="badge sys">Loading / Análise · loading</span></div>
+        <p class="help">Tela de sistema — textos na seção UI abaixo.</p>
+      </article><article class="card sys" id="pt-pitch">
+        <div class="card-head"><span class="badge sys">Pitch / Resultado + CTA · pitch</span></div>
+        <p class="help">Tela de sistema — textos na seção UI abaixo.</p>
+      </article>
+    <h2>3. Funil pós-compra (obrigado · upsell · downsell)</h2>
+    <article class="card funnel"><div class="card-head"><span class="badge funnel">OBRIGADO</span></div><h3>Pronto! Você já faz parte do Birra Zero</h3><p class="help">metaTitle: Obrigado! | Birra Zero · badge: Compra confirmada · kicker: —</p><p><strong>Lead:</strong> Seu acesso ao protocolo está a caminho. Em minutos (às vezes segundos) você recebe o material no e-mail usado na Hotmart.</p><p><strong>nextTitle:</strong> O que fazer agora</p><h4>steps</h4><ol><li><strong>Confira seu e-mail</strong> — Procure o e-mail da Hotmart (também no spam ou promoções) com o link de acesso.</li><li><strong>Salve o material no celular</strong> — Assim você abre no mercado, na rua ou em plena crise em casa.</li><li><strong>Aplique o protocolo na próxima crise</strong> — Não espere o “dia perfeito”. O método treina no momento real.</li></ol><p><strong>boxTitle:</strong> Importante</p><p><strong>boxText:</strong> Se não ver o e-mail em 10–15 minutos, confira o spam ou fale com o suporte Hotmart com o comprovante.</p><h4>pills</h4><ul><li>Protocolo 7 min</li><li>Frases prontas</li><li>Casa · mercado · rua</li></ul><p><strong>ctaMail:</strong> Abrir meu e-mail</p><p><strong>footer:</strong> Obrigado por confiar em um método prático, não em mais teoria vazia.</p></article><article class="card funnel"><div class="card-head"><span class="badge funnel">UPSELL</span></div><h3>Birra Zero: Implementação Rápida</h3><p class="help">metaTitle: Implementação Rápida | Birra Zero · badge: Oferta só agora · kicker: Complemento exclusivo</p><p><strong>Lead:</strong> Aplique o protocolo muito mais rápido nos momentos de birra, com menos dúvida, menos improviso e menos esforço emocional desde o primeiro episódio.</p><p><strong>promiseTitle:</strong> Promessa de resultado</p><p><strong>promise:</strong> Menos dúvida no momento crítico. Menos improviso. Menos desgaste emocional — com uma camada de execução pronta para usar.</p><p><strong>contentsTitle:</strong> O que inclui (camada avançada)</p><h4>contents</h4><ul><li>Roteiros de resposta por situação (casa, mercado, rua, telas)</li><li>Checklist de preparação para casa e saídas</li><li>Mapa de decisões em plena crise</li><li>Modelos de frases para agir sem improvisar</li><li>Exemplos passo a passo para aplicar o protocolo em menos tempo</li></ul><p><strong>exclusiveTitle:</strong> Sensação de exclusividade</p><p><strong>exclusive:</strong> Acesse a camada de implementação que não aparece na guia base: o atalho prático para usar o sistema como se você já tivesse a resposta pronta antes da crise começar. É a versão de trabalho interno para quem quer executar, não só entender.</p><p><strong>forWhoTitle:</strong> É para você se…</p><h4>forWho</h4><ul><li>Já tem (ou vai ter) a guia base e quer executar mais rápido</li><li>Trava no momento e precisa do roteiro já escrito</li><li>Quer menos esforço mental em cada crise</li></ul><p><strong>cta:</strong> SIM, QUERO A IMPLEMENTAÇÃO RÁPIDA</p><p><strong>decline:</strong> Não, obrigado. Continuar sem este complemento</p><p><strong>priceHint:</strong> Pagamento único · Acesso imediato</p><p><strong>footer:</strong> Disponível nesta página como complemento. Você pode seguir sem ele.</p></article><article class="card funnel"><div class="card-head"><span class="badge funnel">DOWNSELL</span></div><h3>Protocolo Núcleo 7 Minutos</h3><p class="help">metaTitle: Protocolo Núcleo 7 Minutos | Birra Zero · badge: Opção mais simples · kicker: Se a guia completa não é para você agora</p><p><strong>Lead:</strong> Aplique só o coração do método para cortar a escalada da birra com um protocolo breve, claro e pronto para o momento crítico.</p><p><strong>whenTitle:</strong> Quando é para você</p><p><strong>when:</strong> Se a guia completa pareceu demais por preço, falta de tempo ou porque você só precisa do básico para sair de uma crise hoje. Ideal para entrar no método sem comprar o pacote inteiro.</p><p><strong>gainTitle:</strong> O que você ganha</p><p><strong>gain:</strong> Economia de tempo e execução imediata: o núcleo prático para intervir sem ler material extenso nem se perder em teoria.</p><p><strong>structureTitle:</strong> O que inclui</p><h4>structure</h4><ul><li>Sinal de entrada: como reconhecer que a birra já entrou em escalada</li><li>Protocolo mínimo de 7 minutos: o que fazer em ordem, sem improvisar</li><li>Frases prontas: respostas curtas para baixar a tensão sem gritos</li><li>Checklist de crise: revisão rápida antes de agir</li><li>Fechamento de estabilização: o que observar depois para não reiniciar a escalada</li></ul><p><strong>deliveryTitle:</strong> Como você recebe</p><p><strong>delivery:</strong> Download digital imediato em ebook curto e direto, otimizado para consulta rápida no celular.</p><p><strong>cta:</strong> SIM, QUERO O NÚCLEO DE 7 MINUTOS</p><p><strong>decline:</strong> Não, prefiro sair sem o protocolo</p><p><strong>priceHint:</strong> Entrada simples · Acesso imediato no celular</p><p><strong>footer:</strong> É a versão mínima para agir hoje. Sem enrolação, sem teoria longa.</p></article><article class="card funnel"><div class="card-head"><span class="badge funnel">COMMON</span></div>
+      <p><strong>guarantee:</strong> Acesso digital imediato. Garantia de 7 dias conforme a oferta Hotmart.</p>
+      <p><strong>secure:</strong> Pagamento seguro · Acesso na hora</p>
+    </article>
+    <h2>4. Copy legada (i18n.js — 12 perguntas)</h2>
+    <p class="help">Versão antiga em <code>js/i18n.js</code> (12 perguntas + 3 “news”). Mantida no repo; o fluxo ativo é <code>quiz-flow.js</code>.</p><h4>Hero legado</h4><ul>
+    <li><strong>Title:</strong> Sua casa virou um campo de batalha a cada birra?</li>
+    <li><strong>Lead:</strong> Responda 12 perguntas com honestidade. No final você vê se está perdendo o controle… ou se ainda dá tempo de recuperar o comando.</li>
+    <li><strong>CTA:</strong> COMEÇAR O TESTE AGORA</li>
+  </ul><h4>Perguntas legadas (12)</h4><div class="legacy-q"><strong>L1 · q1:</strong> Quantas crises ou birras intensas seu filho tem por dia?
+      <ul><li>a) 5 ou mais — estou no limite</li><li>b) 3 a 4 — o caos é quase diário</li><li>c) 1 a 2, mas muito intensas</li><li>d) Poucas, mas sinto que estão piorando</li></ul></div><div class="legacy-q"><strong>L2 · q2:</strong> Qual a idade do seu filho ou filha?
+      <ul><li>a) 2 anos</li><li>b) 3 anos</li><li>c) 4 anos</li><li>d) Outra idade, mas as crises são igualmente fortes</li></ul></div><div class="legacy-q"><strong>L3 · q3:</strong> Onde as birras explodem mais?
+      <ul><li>a) Em casa, várias vezes ao dia</li><li>b) No mercado ou lojas</li><li>c) Na rua, visitas ou lugares públicos</li><li>d) Em todo lugar — não tem zona segura</li></ul></div><div class="legacy-q"><strong>L4 · q4:</strong> As telas (tablet, celular, TV) disparam birra?
+      <ul><li>a) Sim: na hora de tirar, é guerra total</li><li>b) Às vezes; depende do dia e do cansaço</li><li>c) Pouco, mas outros limites explodem</li><li>d) Quase sempre tem briga por “mais um pouquinho”</li></ul></div><div class="legacy-q"><strong>L5 · q5:</strong> Quando a birra começa, o que você faz na maioria das vezes?
+      <ul><li>a) Grito, ameaço ou castigo… e depois me arrependo</li><li>b) Cedo para acalmar (mesmo sabendo que não devia)</li><li>c) Travo: não sei o que dizer</li><li>d) Tento acalmar, mas a crise se alonga do mesmo jeito</li></ul></div><div class="legacy-q"><strong>L6 · q6:</strong> Se a crise é em público, o que acontece com você?
+      <ul><li>a) Cedo por vergonha ou para “não fazer cena”</li><li>b) Paraliso; sinto que todo mundo olha</li><li>c) Eu também explodo</li><li>d) Resisto, mas termino esgotada/o e sem controle real</li></ul></div><div class="legacy-q"><strong>L7 · q7:</strong> Seu parceiro, avós ou cuidadores reagem diferente e bagunçam tudo?
+      <ul><li>a) Sim: um cede, outro grita, ninguém alinha</li><li>b) Às vezes; vira briga entre adultos depois</li><li>c) Quase sempre estou sozinha/o na crise</li><li>d) Tentamos alinhar, mas na hora falha</li></ul></div><div class="legacy-q"><strong>L8 · q8:</strong> Seu filho já bate, empurra, morde ou joga coisas quando não leva a sua?
+      <ul><li>a) Sim, já tem tapa ou empurrão em mim ou em outros</li><li>b) Joga objetos, grita no volume máximo, desborda</li><li>c) Ainda não bate, mas a intensidade sobe toda semana</li><li>d) Acontece às vezes e não sei cortar sem piorar a briga</li></ul></div><div class="legacy-q"><strong>L9 · q9:</strong> Na prática, quem “ganha” a negociação da birra?
+      <ul><li>a) Ele/ela: eu acabo cedendo</li><li>b) Ninguém: vira guerra até o esgotamento</li><li>c) Eu às vezes, mas com custo de gritos e culpa</li><li>d) Depende do dia — não tem regra clara</li></ul></div><div class="legacy-q"><strong>L10 · q10:</strong> Depois de uma crise forte, o que você mais sente?
+      <ul><li>a) Culpa: sinto que estraguei o dia / prejudiquei</li><li>b) Raiva e esgotamento: não aguento mais</li><li>c) Medo: “e se isso piorar?”</li><li>d) Vergonha se foi em público</li></ul></div><div class="legacy-q"><strong>L11 · q11:</strong> Há quanto tempo você vive no modo “apagar incêndio”?
+      <ul><li>a) Meses — e cada vez pesa mais</li><li>b) Semanas, mas já me desbordou</li><li>c) Desde que entrou a fase dos 2–4 anos</li><li>d) Sempre teve birra, mas agora eles mandam</li></ul></div><div class="legacy-q"><strong>L12 · q12:</strong> Se você tivesse um roteiro claro de 7 minutos para cortar a crise, aplicaria?
+      <ul><li>a) Sim, preciso AGORA</li><li>b) Sim, se for simples e servir em público também</li><li>c) Quero parar de improvisar e de gritar</li><li>d) Estou disposta/o a impor limites com método, não com violência</li></ul></div><h4>News / alertas legados</h4><div class="legacy-q"><strong>n1</strong> (após Q4): Pais sem comando: a birra já não é “fase” — é quem governa a casa
+      <p>Em milhares de lares se repete o mesmo padrão: o adulto cede “só dessa vez”, grita “só hoje” ou trava… e a criança aprende uma lição perigosa: quem explode, decide. O que começa com choro por tela ou doce termina com adulto esgotado e filho que não aceita um “não”.</p>
+      <p class="cta">CTA: SEGUIR O TESTE</p></div><div class="legacy-q"><strong>n2</strong> (após Q8): De birra a tapa: quando a criança bate no pai, a crise já é sistema de poder
+      <p>Primeiro choro. Depois grito. Depois o corpo: empurrar, bater, morder, jogar objetos. Não porque a criança “nasceu violenta”, e sim porque a explosão funcionou. Cada vez que a crise ganha tela, brinquedo ou um “tá bom, eu dou”, o cérebro anota: a força manda.</p>
+      <p class="cta">CTA: CONTINUAR · VER MEU NÍVEL</p></div><div class="legacy-q"><strong>n3</strong> (após Q12): A criança quer mandar. O adulto precisa pôr ordem — hoje, não “quando passar”
+      <p>Não é dobrar com castigo duro nem comprar silêncio cedendo. É recuperar o comando: o que dizer, o que fazer e o que evitar em cada fase da crise — em casa, no mercado ou na rua — com uma sequência de 7 minutos. Paciência sem método é só esperar a próxima explosão.</p>
+      <p class="cta">CTA: VER MEU RESULTADO AGORA</p></div>
+  </section>
+<section class="tab-panel" data-panel="es" id="panel-es">
+    <h2>1. Interface / UI (Español)</h2>
+    <div class="ui-grid"><div class="ui-item"><strong>heroKicker</strong><div class="val">Test de 6–8 min · padres de 2 a 4 años</div></div><div class="ui-item"><strong>heroTitle</strong><div class="val">¿Tu casa ya se volvió un campo de batalla por cada berrinche?</div></div><div class="ui-item"><strong>heroLead</strong><div class="val">Responde con honestidad. Al final recibes un diagnóstico personalizado y el camino de 7 minutos para recuperar el control.</div></div><div class="ui-item"><strong>heroSub</strong><div class="val">Recompensa clara: diagnóstico + plan de desescalada + resultado accionable. Sin teoría vacía.</div></div><div class="ui-item"><strong>trust1</strong><div class="val">Diagnóstico real</div></div><div class="ui-item"><strong>trust2</strong><div class="val">Protocolo 7 min</div></div><div class="ui-item"><strong>trust3</strong><div class="val">Casa · súper · calle</div></div><div class="ui-item"><strong>startCta</strong><div class="val">EMPEZAR EL TEST Y RECIBIR MI DIAGNÓSTICO</div></div><div class="ui-item"><strong>progressOf</strong><div class="val">{n} / {total}</div></div><div class="ui-item"><strong>analyzeTitle</strong><div class="val">Preparando tu diagnóstico…</div></div><div class="ui-item"><strong>analyzeText</strong><div class="val">Cruzamos tus respuestas con señales de crisis, autoridad y urgencia.</div></div><div class="ui-item"><strong>analyzeLoading</strong><div class="val">Cargando…</div></div><div class="ui-item"><strong>analyzeDone</strong><div class="val">Listo</div></div><div class="ui-item"><strong>continueCta</strong><div class="val">Continuar</div></div><div class="ui-item"><strong>evalBadge</strong><div class="val">Tu diagnóstico</div></div><div class="ui-item"><strong>evalTitle</strong><div class="val">Esto es lo que tus respuestas revelan</div></div><div class="ui-item"><strong>evalLead</strong><div class="val">No estás “fallando como padre/madre”. Estás reaccionando tarde y, muchas veces, con el guion equivocado.</div></div><div class="ui-item"><strong>evalCta</strong><div class="val">QUIERO MI RESULTADO COMPLETO</div></div><div class="ui-item"><strong>captureTitle</strong><div class="val">Desbloquea tu resultado completo</div></div><div class="ui-item"><strong>captureLead</strong><div class="val">Solo después del diagnóstico pedimos tus datos — a cambio del resultado completo y el acceso al protocolo.</div></div><div class="ui-item"><strong>captureName</strong><div class="val">Nombre</div></div><div class="ui-item"><strong>captureEmail</strong><div class="val">E-mail</div></div><div class="ui-item"><strong>capturePhone</strong><div class="val">WhatsApp (con código de país)</div></div><div class="ui-item"><strong>captureCta</strong><div class="val">VER MI RESULTADO COMPLETO</div></div><div class="ui-item"><strong>captureNote</strong><div class="val">No spam. Usamos esto para enviarte el diagnóstico y el acceso.</div></div><div class="ui-item"><strong>captureError</strong><div class="val">Completa nombre, e-mail y WhatsApp para continuar.</div></div><div class="ui-item"><strong>pitchBadge</strong><div class="val">Tu protocolo de 7 minutos</div></div><div class="ui-item"><strong>stickyCta</strong><div class="val">QUIERO EL PROTOCOLO AHORA</div></div><div class="ui-item"><strong>langAria</strong><div class="val">Idioma</div></div><div class="ui-item"><strong>metaTitle</strong><div class="val">Test Berrinche Cero | Diagnóstico en 7 minutos</div></div><div class="ui-item"><strong>metaDescription</strong><div class="val">Quiz para padres: diagnóstico de berrinches y protocolo de desescalada en 7 minutos.</div></div><div class="ui-item"><strong>meterLabels</strong><ul><li>Intensidad de crisis</li><li>Pérdida de autoridad</li><li>Urgencia</li></ul></div><div class="ui-item"><strong>resultTagsDefault</strong><ul><li>Reacción tardía</li><li>Guion incorrecto</li><li>Pérdida de control</li></ul></div><div class="ui-item"><strong>resultBadge</strong><div class="val">Resultado · Nivel crítico de urgencia</div></div><div class="ui-item"><strong>resultTitle</strong><div class="val">Necesitas un protocolo YA — no más paciencia vacía</div></div><div class="ui-item"><strong>resultLead</strong><div class="val">Da igual cuánto lo intentes: si reaccionas tarde y con el guion equivocado, el berrinche crece y tu hijo aprende que la explosión manda.</div></div><div class="ui-item"><strong>resultPoints</strong><ul><li>Cada crisis sin contención entrena una explosión más fuerte.</li><li>Si cedes por vergüenza o gritas por agotamiento, el caos se vuelve norma.</li><li>Pantallas, súper y rutina sin límites convierten la casa en campo de batalla.</li><li>Hay una secuencia de 7 minutos para cortar la escalada y recuperar el mando.</li></ul></div><div class="ui-item"><strong>priceNote</strong><div class="val">Inversión menor que un súper grande. Mucho menor que otro mes de gritos.</div></div><div class="ui-item"><strong>footerNote</strong><div class="val">Material práctico para padres. No es terapia clínica ni diagnóstico médico.</div></div><div class="ui-item"><strong>ctaSolution</strong><div class="val">QUIERO EL PROTOCOLO AHORA</div></div></div><h4>Legendas de imagem (qCaption)</h4><ul><li><code>home</code> — Casa · explosión</li><li><code>super</code> — Súper · público</li><li><code>screens</code> — Pantallas</li><li><code>public</code> — Calle · vergüenza</li><li><code>guilt</code> — Culpa</li><li><code>escalate</code> — Escalada</li><li><code>calm</code> — Control calmado</li></ul><h4>Blocos do pitch (oferta)</h4><table><thead><tr><th>Bloco</th><th>Título</th><th>Texto</th></tr></thead><tbody><tr><td><code>promise</code></td><td>Qué cambia en 14 días</td><td>En 14 días, aplica un protocolo de 7 minutos para bajar explosiones y recuperar el control sin gritos ni amenazas.</td></tr><tr><td><code>authority</code></td><td>Padres como tú ya lo hicieron</td><td>Ya ayudó a cientos de padres a dejar de vivir apagando incendios todo el día.</td></tr><tr><td><code>mechanism</code></td><td>Cómo funciona el protocolo</td><td>Protocolo de desescalada: secuencia por fase, frases listas, checklist de crisis y prevención de disparadores (2–4 años).</td></tr><tr><td><code>anchor</code></td><td>Menos que seguir en el caos</td><td>Menos que una compra grande del súper. Mucho menos que otro mes de gritos y desgaste.</td></tr><tr><td><code>offer</code></td><td>Qué recibes hoy</td><td>Guía práctica + acceso inmediato. Bonos de frases, checklist, prevención y berrinches en público (según oferta).</td></tr><tr><td><code>guarantee</code></td><td>Tu tranquilidad</td><td>7 días. Si no ves valor real, pides el reembolso.</td></tr><tr><td><code>faq</code></td><td>Dudas frecuentes</td><td>¿Sirve en plena crisis? Sí. ¿En el súper? Sí. ¿Es ceder? No. ¿Niños 2–4? Exactamente esa etapa.</td></tr></tbody></table>
+    <h2>2. Fluxo completo — ordem real do quiz</h2>
+    <p class="help">Hero → Quebra-gelo → micro → Dor → micro → Desejo → micro → Ponte → micro → Eval → Captura → Loading → Pitch</p>
+    <div class="section-banner block-ice">Quebra-gelo (Ice)</div><article class="card q" id="es-q1">
+        <div class="card-head">
+          <span class="badge q">Q1 · q1</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q1.jpg</span>
+        </div>
+        <h3>¿Cuántas crisis o berrinches intensos vive tu hijo al día?</h3>
+        <p class="help">Sé honesta/o. No hay respuestas “correctas”.</p>
+        <ol class="opts"><li><span class="oid">a</span> 5 o más — estoy al límite
+          <span class="meta">peso 4 · tags: Crisis diarias extremas</span>
+        </li><li><span class="oid">b</span> 3 a 4 — el caos es casi diario
+          <span class="meta">peso 3 · tags: Crisis frecuentes</span>
+        </li><li><span class="oid">c</span> 1 a 2, pero muy intensas
+          <span class="meta">peso 2 · tags: Crisis intensas</span>
+        </li><li><span class="oid">d</span> Pocas, pero siento que empeoran
+          <span class="meta">peso 2 · tags: Escalada</span>
+        </li></ol></article><article class="card q" id="es-q2">
+        <div class="card-head">
+          <span class="badge q">Q2 · q2</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q2.jpg</span>
+        </div>
+        <h3>¿Qué edad tiene tu hijo o hija?</h3>
+        <p class="help">La etapa de 2 a 4 años es la más volátil.</p>
+        <ol class="opts"><li><span class="oid">a</span> 2 años
+          <span class="meta">peso 3 · tags: Etapa 2–4</span>
+        </li><li><span class="oid">b</span> 3 años
+          <span class="meta">peso 3 · tags: Etapa 2–4</span>
+        </li><li><span class="oid">c</span> 4 años
+          <span class="meta">peso 3 · tags: Etapa 2–4</span>
+        </li><li><span class="oid">d</span> Otra edad, pero igual de fuerte
+          <span class="meta">peso 2 · tags: Fuera de etapa</span>
+        </li></ol></article><article class="card q" id="es-q3">
+        <div class="card-head">
+          <span class="badge q">Q3 · q3</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-home.jpg</span>
+        </div>
+        <h3>¿Quién contesta este test?</h3>
+        <p class="help">Solo para personalizar el diagnóstico.</p>
+        <ol class="opts"><li><span class="oid">a</span> Madre / mamá
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">b</span> Padre / papá
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">c</span> Ambos / cuidamos juntos
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> Abuelo/a u otro cuidador
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card q" id="es-q4">
+        <div class="card-head">
+          <span class="badge q">Q4 · q4</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q5.jpg</span>
+        </div>
+        <h3>Si tuvieras que resumir tu casa en una palabra hoy, ¿cuál sería?</h3>
+        <p class="help">La primera que te salga.</p>
+        <ol class="opts"><li><span class="oid">a</span> Caos
+          <span class="meta">peso 3 · tags: Caos</span>
+        </li><li><span class="oid">b</span> Agotamiento
+          <span class="meta">peso 3 · tags: Agotamiento</span>
+        </li><li><span class="oid">c</span> Culpa
+          <span class="meta">peso 3 · tags: Culpa</span>
+        </li><li><span class="oid">d</span> Esperanza (pero frágil)
+          <span class="meta">peso 2 · tags: Esperanza</span>
+        </li></ol></article><article class="card q" id="es-q5">
+        <div class="card-head">
+          <span class="badge q">Q5 · q5</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q7.jpg</span>
+        </div>
+        <h3>¿Cuántos adultos reaccionan distinto ante el berrinche?</h3>
+        <p class="help">Si cada uno tiene un guion, el niño aprende a explotar al más débil.</p>
+        <ol class="opts"><li><span class="oid">a</span> Solo yo cargo con todo
+          <span class="meta">peso 3 · tags: Carga sola</span>
+        </li><li><span class="oid">b</span> Dos adultos, casi siempre desalineados
+          <span class="meta">peso 4 · tags: Desalineados</span>
+        </li><li><span class="oid">c</span> Intentamos alinearnos y a veces falla
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> Hay varios (pareja, abuelos) y se desordena
+          <span class="meta">peso 4 · tags: Varios adultos</span>
+        </li></ol></article><article class="card q" id="es-q6">
+        <div class="card-head">
+          <span class="badge q">Q6 · q6</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>¿Estás dispuesta/o a responder con honestidad total?</h3>
+        <p class="help">El diagnóstico solo sirve si es real.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sí, necesito claridad YA
+          <span class="meta">peso 4 · tags: Lista</span>
+        </li><li><span class="oid">b</span> Sí, aunque me duela admitirlo
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Lo intentaré
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> Solo quiero una solución rápida
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card micro" id="es-m_ice">
+        <div class="card-head">
+          <span class="badge micro">MICRO · m_ice</span>
+          <span class="badge soft">insight</span>
+          <span class="badge stamp">RECOMPENSA</span>
+        </div>
+        <p class="ribbon">Antes de seguir · Método Berrinche Cero · Promesa</p>
+        <p class="paper">FUNIL QUIZ</p>
+        <h3>Nadie responde 30 preguntas sin una recompensa clara</h3>
+        <p>Tu recompensa al terminar: un diagnóstico de en qué punto está tu casa con los berrinches y el siguiente paso exacto para recuperar el control en 7 minutos — sin gritos ni amenazas vacías.</p>
+        <ul><li>Diagnóstico personalizado</li><li>Plan de desescalada</li><li>Resultado accionable</li></ul>
+        <blockquote>“Basado en tus respuestas, te mostramos si estás reaccionando tarde, con el guion equivocado, y qué protocolo aplicar primero.”<footer>— Protocolo Berrinche Cero</footer></blockquote>
+        <p class="cta">CTA: <strong>SEGUIR EL TEST</strong></p>
+      </article><div class="section-banner block-pain">Dor (Pain)</div><article class="card q" id="es-q7">
+        <div class="card-head">
+          <span class="badge q">Q7 · q7</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-super.jpg</span>
+        </div>
+        <h3>¿Dónde explotan más los berrinches?</h3>
+        <p class="help">El lugar cambia la vergüenza, no la urgencia.</p>
+        <ol class="opts"><li><span class="oid">a</span> En casa, varias veces al día
+          <span class="meta">peso 3 · tags: Caos en casa</span>
+        </li><li><span class="oid">b</span> En el súper o tiendas
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">c</span> Calle, visitas o lugares públicos
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">d</span> En todos lados — sin zona segura
+          <span class="meta">peso 4 · tags: Sin zona segura</span>
+        </li></ol></article><article class="card q" id="es-q8">
+        <div class="card-head">
+          <span class="badge q">Q8 · q8</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-screens.jpg</span>
+        </div>
+        <h3>¿Las pantallas disparan berrinches?</h3>
+        <p class="help">Apagar sin guion es una chispa clásica.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sí: al quitarla, guerra total
+          <span class="meta">peso 4 · tags: Pantallas</span>
+        </li><li><span class="oid">b</span> A veces, según el cansancio
+          <span class="meta">peso 3 · tags: Pantallas</span>
+        </li><li><span class="oid">c</span> Poco, pero otros límites explotan
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> Siempre pelea por “un rato más”
+          <span class="meta">peso 4 · tags: Negociación</span>
+        </li></ol></article><article class="card q" id="es-q9">
+        <div class="card-head">
+          <span class="badge q">Q9 · q9</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-q5.jpg</span>
+        </div>
+        <h3>Cuando empieza el berrinche, ¿qué haces casi siempre?</h3>
+        <p class="help">Tu reacción entrena lo que viene después.</p>
+        <ol class="opts"><li><span class="oid">a</span> Grito, amenazo o castigo… y me arrepiento
+          <span class="meta">peso 4 · tags: Gritos</span>
+        </li><li><span class="oid">b</span> Cedo para que se calme
+          <span class="meta">peso 4 · tags: Ceder</span>
+        </li><li><span class="oid">c</span> Me bloqueo: no sé qué decir
+          <span class="meta">peso 3 · tags: Bloqueo</span>
+        </li><li><span class="oid">d</span> Intento calmar, pero se alarga igual
+          <span class="meta">peso 3 · tags: Sin secuencia</span>
+        </li></ol></article><article class="card q" id="es-q10">
+        <div class="card-head">
+          <span class="badge q">Q10 · q10</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-public.jpg</span>
+        </div>
+        <h3>Si la crisis es en público, ¿qué te pasa a ti?</h3>
+        <p class="help">La vergüenza es el arma del berrinche.</p>
+        <ol class="opts"><li><span class="oid">a</span> Cedo por vergüenza
+          <span class="meta">peso 4 · tags: Vergüenza</span>
+        </li><li><span class="oid">b</span> Me paralizo; siento que miran
+          <span class="meta">peso 3 · tags: Parálisis</span>
+        </li><li><span class="oid">c</span> Estallo yo también
+          <span class="meta">peso 4 · tags: Doble explosión</span>
+        </li><li><span class="oid">d</span> Resisto, pero salgo agotada/o
+          <span class="meta">peso 3 · tags: Agotamiento</span>
+        </li></ol></article><article class="card q" id="es-q11">
+        <div class="card-head">
+          <span class="badge q">Q11 · q11</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-escalation.jpg</span>
+        </div>
+        <h3>¿Tu hijo ya pega, empuja, muerde o lanza cosas?</h3>
+        <p class="help">La agresión no “pasa sola” si gana la crisis.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sí, ya hay golpes o empujones
+          <span class="meta">peso 4 · tags: Agresión</span>
+        </li><li><span class="oid">b</span> Tira objetos y grita a todo volumen
+          <span class="meta">peso 3 · tags: Desborde</span>
+        </li><li><span class="oid">c</span> Aún no pega, pero sube cada semana
+          <span class="meta">peso 3 · tags: Escalada</span>
+        </li><li><span class="oid">d</span> A veces y no sé cortarlo
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="es-q12">
+        <div class="card-head">
+          <span class="badge q">Q12 · q12</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-q9.jpg</span>
+        </div>
+        <h3>En la práctica, ¿quién “gana” la negociación?</h3>
+        <p class="help">Si gana la explosión, se entrena la explosión.</p>
+        <ol class="opts"><li><span class="oid">a</span> Él/ella: termino cediendo
+          <span class="meta">peso 4 · tags: Niño manda</span>
+        </li><li><span class="oid">b</span> Nadie: guerra hasta el agotamiento
+          <span class="meta">peso 4 · tags: Guerra</span>
+        </li><li><span class="oid">c</span> Yo a veces, con gritos y culpa
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Depende del día — sin regla clara
+          <span class="meta">peso 3 · tags: Sin autoridad</span>
+        </li></ol></article><article class="card q" id="es-q13">
+        <div class="card-head">
+          <span class="badge q">Q13 · q13</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-guilt.jpg</span>
+        </div>
+        <h3>Después de una crisis fuerte, ¿qué sientes más?</h3>
+        <p class="help">La culpa no educa. Un protocolo sí.</p>
+        <ol class="opts"><li><span class="oid">a</span> Culpa: arruiné el día
+          <span class="meta">peso 3 · tags: Culpa</span>
+        </li><li><span class="oid">b</span> Rabia y agotamiento: no puedo más
+          <span class="meta">peso 4 · tags: Agotamiento extremo</span>
+        </li><li><span class="oid">c</span> Miedo: “¿y si empeora?”
+          <span class="meta">peso 4 · tags: Miedo</span>
+        </li><li><span class="oid">d</span> Vergüenza (sobre todo en público)
+          <span class="meta">peso 3 · tags: Vergüenza</span>
+        </li></ol></article><article class="card q" id="es-q14">
+        <div class="card-head">
+          <span class="badge q">Q14 · q14</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-q7.jpg</span>
+        </div>
+        <h3>¿Tu pareja o abuelos desordenan con otra reacción?</h3>
+        <p class="help">Un guion distinto = más crisis.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sí: uno cede, otro grita
+          <span class="meta">peso 4 · tags: Desalineados</span>
+        </li><li><span class="oid">b</span> A veces; pelea entre adultos
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Casi siempre estoy sola/o
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Intentamos y en el momento falla
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card q" id="es-q15">
+        <div class="card-head">
+          <span class="badge q">Q15 · q15</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-q11.jpg</span>
+        </div>
+        <h3>¿Hace cuánto vives en modo “apagar incendios”?</h3>
+        <p class="help">El tiempo sin protocolo endurece el patrón.</p>
+        <ol class="opts"><li><span class="oid">a</span> Meses — cada vez más pesado
+          <span class="meta">peso 4 · tags: Patrón instalado</span>
+        </li><li><span class="oid">b</span> Semanas, ya me desbordó
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Desde la etapa 2–4
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Siempre hubo berrinches; ahora mandan ellos
+          <span class="meta">peso 4 · tags: Inversión de mando</span>
+        </li></ol></article><article class="card q" id="es-q16">
+        <div class="card-head">
+          <span class="badge q">Q16 · q16</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-home.jpg</span>
+        </div>
+        <h3>¿Cuál es tu peor escena de la semana pasada?</h3>
+        <p class="help">Elige la que más te pesa.</p>
+        <ol class="opts"><li><span class="oid">a</span> Berrinche en el súper / público
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">b</span> Guerra por pantallas
+          <span class="meta">peso 4 · tags: Pantallas</span>
+        </li><li><span class="oid">c</span> Explosión al irse a dormir / rutina
+          <span class="meta">peso 3 · tags: Rutina</span>
+        </li><li><span class="oid">d</span> Golpes o empujones hacia mí
+          <span class="meta">peso 4 · tags: Agresión</span>
+        </li></ol></article><article class="card micro" id="es-m_pain">
+        <div class="card-head">
+          <span class="badge micro">MICRO · m_pain</span>
+          <span class="badge soft">paper</span>
+          <span class="badge stamp">URGENTE</span>
+        </div>
+        <p class="ribbon">Alerta parental · Informe del hogar · Dolor</p>
+        <p class="paper">CRÓNICA DEL HOGAR</p>
+        <h3>Cuando el niño manda en casa, el berrinche deja de ser “una etapa”</h3>
+        <p>Si cedes “solo esta vez”, gritas “solo hoy” o te bloqueas, el niño aprende: quien explota, decide. Eso se entrena en cada crisis.</p>
+        <ul><li>Ceder entrena la próxima explosión</li><li>Gritar sin secuencia sube la adrenalina</li><li>Público y pantallas examinan quién manda</li></ul>
+        <blockquote>“El vacío de autoridad se llena con la crisis. Sin método, el berrinche se vuelve el jefe de la casa.”<footer>— Síntesis educativa parental</footer></blockquote>
+        <p class="cta">CTA: <strong>CONTINUAR</strong></p>
+      </article><div class="section-banner block-desire">Desejo (Desire)</div><article class="card q" id="es-q17">
+        <div class="card-head">
+          <span class="badge q">Q17 · q17</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-calm.jpg</span>
+        </div>
+        <h3>¿Cómo te gustaría que se sintiera una mañana normal en casa?</h3>
+        <p class="help">El escenario que deseas.</p>
+        <ol class="opts"><li><span class="oid">a</span> Más calma y menos gritos
+          <span class="meta">peso 3 · tags: Deseo calma</span>
+        </li><li><span class="oid">b</span> Que yo mande la rutina con seguridad
+          <span class="meta">peso 4 · tags: Deseo mando</span>
+        </li><li><span class="oid">c</span> Que las crisis duren minutos, no una hora
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Todo lo anterior
+          <span class="meta">peso 4 · tags: Deseo control total</span>
+        </li></ol></article><article class="card q" id="es-q18">
+        <div class="card-head">
+          <span class="badge q">Q18 · q18</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>¿Qué quieres recuperar con más urgencia?</h3>
+        <p class="help">Tu prioridad de las próximas 2 semanas.</p>
+        <ol class="opts"><li><span class="oid">a</span> Dejar de gritar y arrepentirme
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">b</span> Saber qué decir en cada fase
+          <span class="meta">peso 4 · tags: Frases</span>
+        </li><li><span class="oid">c</span> Actuar en público sin ceder por vergüenza
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">d</span> Que baje la frecuencia de crisis
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="es-q19">
+        <div class="card-head">
+          <span class="badge q">Q19 · q19</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-public.jpg</span>
+        </div>
+        <h3>Si mañana tuvieras frases listas para el súper, ¿cómo te sentirías?</h3>
+        <p class="help">Imagina el alivio.</p>
+        <ol class="opts"><li><span class="oid">a</span> Con mucho más control
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">b</span> Menos vergüenza
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Más segura/o como referente
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> Aliviada/o de no improvisar
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="es-q20">
+        <div class="card-head">
+          <span class="badge q">Q20 · q20</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>¿Un protocolo de 7 minutos te parece realista para tu día?</h3>
+        <p class="help">Simple y usable bajo presión.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sí, si es paso a paso
+          <span class="meta">peso 4 · tags: Protocolo</span>
+        </li><li><span class="oid">b</span> Sí, lo necesito corto
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">c</span> Tal vez, si funciona en público
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Prefiero algo aún más corto
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card q" id="es-q21">
+        <div class="card-head">
+          <span class="badge q">Q21 · q21</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-screens.jpg</span>
+        </div>
+        <h3>¿Qué te gustaría dominar primero?</h3>
+        <p class="help">Elige el frente de batalla.</p>
+        <ol class="opts"><li><span class="oid">a</span> Cortar la escalada en casa
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">b</span> Pantallas sin guerra
+          <span class="meta">peso 4 · tags: Pantallas</span>
+        </li><li><span class="oid">c</span> Crisis en público
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">d</span> Límites sin gritos
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="es-q22">
+        <div class="card-head">
+          <span class="badge q">Q22 · q22</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-q2.jpg</span>
+        </div>
+        <h3>En 14 días, ¿qué resultado te haría decir “valió la pena”?</h3>
+        <p class="help">Sé específica/o.</p>
+        <ol class="opts"><li><span class="oid">a</span> Menos crisis al día
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">b</span> Crisis más cortas
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Yo con más control y menos culpa
+          <span class="meta">peso 4 · tags: Control adulto</span>
+        </li><li><span class="oid">d</span> Toda la familia más alineada
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="es-q23">
+        <div class="card-head">
+          <span class="badge q">Q23 · q23</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-guilt.jpg</span>
+        </div>
+        <h3>¿Prefieres bajar la culpa o subir el orden en casa primero?</h3>
+        <p class="help">Ambas importan; elige el foco.</p>
+        <ol class="opts"><li><span class="oid">a</span> Bajar la culpa primero
+          <span class="meta">peso 3 · tags: Culpa</span>
+        </li><li><span class="oid">b</span> Subir el orden y los límites
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">c</span> Las dos a la vez
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> Solo quiero que pare el caos ya
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="es-q24">
+        <div class="card-head">
+          <span class="badge q">Q24 · q24</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-calm.jpg</span>
+        </div>
+        <h3>Si te dieran un guion exacto hoy, ¿lo abrirías en la próxima crisis?</h3>
+        <p class="help">El compromiso real.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sí, en la próxima sin falta
+          <span class="meta">peso 4 · tags: Lista</span>
+        </li><li><span class="oid">b</span> Sí, si es fácil de seguir
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Lo intentaría
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> Dependiendo del día
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card micro" id="es-m_desire">
+        <div class="card-head">
+          <span class="badge micro">MICRO · m_desire</span>
+          <span class="badge soft">magazine</span>
+          <span class="badge stamp">DESEO</span>
+        </div>
+        <p class="ribbon">Tu escenario ideal · Visión de control · Deseo</p>
+        <p class="paper">PROTOCOLO EDITORIAL</p>
+        <h3>Menos paciencia vacía. Más guion en el minuto exacto</h3>
+        <p>Imagina abrir el celular en el súper y tener frases y pasos listos. No para “ser perfecta/o”: para dejar de improvisar cuando ya estás al límite.</p>
+        <ul><li>Frases por fase del berrinche</li><li>Checklist de 60 segundos</li><li>Ruta casa + público</li></ul>
+        <blockquote>“La paciencia sin método es solo esperar la próxima explosión.”<footer>— Equipo Berrinche Cero</footer></blockquote>
+        <p class="cta">CTA: <strong>QUIERO ESE CONTROL</strong></p>
+      </article><div class="section-banner block-bridge">Ponte (Bridge)</div><article class="card q" id="es-q25">
+        <div class="card-head">
+          <span class="badge q">Q25 · q25</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-q5.jpg</span>
+        </div>
+        <h3>¿Ya probaste gritos, castigos o amenazas sin resultado duradero?</h3>
+        <p class="help">Justo por eso cambia el enfoque.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sí, muchas veces
+          <span class="meta">peso 4 · tags: Ya probó de todo</span>
+        </li><li><span class="oid">b</span> Sí, a veces
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Poco, pero no funciona
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Aún no, y no quiero llegar ahí
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card q" id="es-q26">
+        <div class="card-head">
+          <span class="badge q">Q26 · q26</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-public.jpg</span>
+        </div>
+        <h3>¿Te bloqueas y te quedas en blanco en plena crisis?</h3>
+        <p class="help">Las frases listas existen para eso.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sí, casi siempre
+          <span class="meta">peso 4 · tags: Bloqueo</span>
+        </li><li><span class="oid">b</span> A veces
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Hablo de más y empeoro
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Improviso y salgo mal
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="es-q27">
+        <div class="card-head">
+          <span class="badge q">Q27 · q27</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>¿Necesitas una secuencia exacta (qué hacer minuto a minuto)?</h3>
+        <p class="help">No más paciencia vacía.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sí, exacta y simple
+          <span class="meta">peso 4 · tags: Protocolo</span>
+        </li><li><span class="oid">b</span> Sí, con frases incluidas
+          <span class="meta">peso 4 · tags: Frases</span>
+        </li><li><span class="oid">c</span> Algo práctico, no teoría
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> Un plan de 14 días
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="es-q28">
+        <div class="card-head">
+          <span class="badge q">Q28 · q28</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-escalation.jpg</span>
+        </div>
+        <h3>¿Estás dispuesta/o a poner límites con método (no con más violencia)?</h3>
+        <p class="help">Contener ≠ ceder.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sí, con método
+          <span class="meta">peso 4 · tags: Método</span>
+        </li><li><span class="oid">b</span> Sí, sin gritos si es posible
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Quiero aprender a no ceder
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> Quiero autoridad calmada
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="es-q29">
+        <div class="card-head">
+          <span class="badge q">Q29 · q29</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-super.jpg</span>
+        </div>
+        <h3>¿El método tiene que servir en casa Y en público?</h3>
+        <p class="help">Si solo sirve en casa, se cae afuera.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sí, los dos
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">b</span> Sobre todo público
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">c</span> Sobre todo casa
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Donde sea que explote
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="es-q30">
+        <div class="card-head">
+          <span class="badge q">Q30 · q30</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>¿Lista/o para recibir tu diagnóstico y el camino de 7 minutos?</h3>
+        <p class="help">Último paso antes del resultado.</p>
+        <ol class="opts"><li><span class="oid">a</span> Sí, muéstrame el diagnóstico
+          <span class="meta">peso 4 · tags: Lista</span>
+        </li><li><span class="oid">b</span> Sí, quiero el protocolo
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">c</span> Sí, necesito actuar ya
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> Sí, aunque me cueste mirarlo
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card micro" id="es-m_bridge">
+        <div class="card-head">
+          <span class="badge micro">MICRO · m_bridge</span>
+          <span class="badge soft">tv</span>
+          <span class="badge stamp">PUENTE</span>
+        </div>
+        <p class="ribbon">Especialista · Puente al protocolo · Puente</p>
+        <p class="paper">INFORME EN VIVO</p>
+        <h3>El niño quiere mandar. Tú vuelves a poner el orden — con método</h3>
+        <p>No es castigo duro ni ceder por paz falsa. Es una secuencia de 7 minutos: qué decir, qué hacer y qué evitar en cada fase.</p>
+        <ul><li>Secuencia exacta</li><li>Frases listas</li><li>Prevención de disparadores</li></ul>
+        <blockquote>“Mientras otros dicen “ten más paciencia”, nosotros te damos el guion.”<footer>— Desescalada en 7 minutos</footer></blockquote>
+        <p class="cta">CTA: <strong>VER MI DIAGNÓSTICO</strong></p>
+      </article><article class="card sys" id="es-eval">
+        <div class="card-head"><span class="badge sys">Diagnóstico (eval) · eval</span></div>
+        <p class="help">Tela de sistema — textos na seção UI abaixo.</p>
+      </article><article class="card sys" id="es-capture">
+        <div class="card-head"><span class="badge sys">Captura de lead · capture</span></div>
+        <p class="help">Tela de sistema — textos na seção UI abaixo.</p>
+      </article><article class="card sys" id="es-loading">
+        <div class="card-head"><span class="badge sys">Loading / Análise · loading</span></div>
+        <p class="help">Tela de sistema — textos na seção UI abaixo.</p>
+      </article><article class="card sys" id="es-pitch">
+        <div class="card-head"><span class="badge sys">Pitch / Resultado + CTA · pitch</span></div>
+        <p class="help">Tela de sistema — textos na seção UI abaixo.</p>
+      </article>
+    <h2>3. Funil pós-compra (obrigado · upsell · downsell)</h2>
+    <article class="card funnel"><div class="card-head"><span class="badge funnel">OBRIGADO</span></div><h3>¡Listo! Ya formas parte de Berrinche Cero</h3><p class="help">metaTitle: ¡Gracias! | Berrinche Cero · badge: Compra confirmada · kicker: —</p><p><strong>Lead:</strong> Tu acceso al protocolo está en camino. En minutos (a veces segundos) recibirás el material en el correo que usaste en Hotmart.</p><p><strong>nextTitle:</strong> Qué hacer ahora</p><h4>steps</h4><ol><li><strong>Revisa tu correo</strong> — Busca el email de Hotmart (también en spam o promociones) con el enlace de acceso.</li><li><strong>Guarda el material en el celular</strong> — Así lo abres en el súper, en la calle o en plena crisis en casa.</li><li><strong>Aplica el protocolo en la próxima crisis</strong> — No esperes el “día perfecto”. El método se entrena en el momento real.</li></ol><p><strong>boxTitle:</strong> Importante</p><p><strong>boxText:</strong> Si no ves el correo en 10–15 minutos, revisa spam o escribe al soporte de Hotmart con el comprobante de compra.</p><h4>pills</h4><ul><li>Protocolo 7 min</li><li>Frases listas</li><li>Casa · súper · calle</li></ul><p><strong>ctaMail:</strong> Abrir mi correo</p><p><strong>footer:</strong> Gracias por confiar en un método práctico, no en más teoría vacía.</p></article><article class="card funnel"><div class="card-head"><span class="badge funnel">UPSELL</span></div><h3>Berrinche Cero: Implementación Rápida</h3><p class="help">metaTitle: Implementación Rápida | Berrinche Cero · badge: Oferta solo ahora · kicker: Complemento exclusivo</p><p><strong>Lead:</strong> Aplica el protocolo mucho más rápido en momentos de berrinche, con menos dudas, menos improvisación y menos esfuerzo emocional desde el primer episodio.</p><p><strong>promiseTitle:</strong> Promesa de resultado</p><p><strong>promise:</strong> Menos dudas en el momento crítico. Menos improvisación. Menos desgaste emocional — con una capa de ejecución lista para usar.</p><p><strong>contentsTitle:</strong> Qué incluye (capa avanzada)</p><h4>contents</h4><ul><li>Guiones de respuesta por situación (casa, súper, calle, pantallas)</li><li>Checklist de preparación para casa y salidas</li><li>Mapa de decisiones en plena crisis</li><li>Plantillas de frases para actuar sin improvisar</li><li>Ejemplos paso a paso para aplicar el protocolo en menos tiempo</li></ul><p><strong>exclusiveTitle:</strong> Sensación de exclusividad</p><p><strong>exclusive:</strong> Accede a la capa de implementación que no se ve en la guía base: el atajo práctico para usar el sistema como si tuvieras una respuesta preparada antes de que empiece la crisis. Es la versión de trabajo interno para quienes quieren ejecutar, no solo entender.</p><p><strong>forWhoTitle:</strong> Es para ti si…</p><h4>forWho</h4><ul><li>Ya tienes (o vas a tener) la guía base y quieres ejecutar más rápido</li><li>Te bloqueas en el momento y necesitas el guion ya escrito</li><li>Quieres menos esfuerzo mental en cada crisis</li></ul><p><strong>cta:</strong> SÍ, QUIERO LA IMPLEMENTACIÓN RÁPIDA</p><p><strong>decline:</strong> No, gracias. Continuar sin este complemento</p><p><strong>priceHint:</strong> Un solo pago · Acceso inmediato</p><p><strong>footer:</strong> Disponible en esta página como complemento. Puedes continuar sin él.</p></article><article class="card funnel"><div class="card-head"><span class="badge funnel">DOWNSELL</span></div><h3>Protocolo Núcleo 7 Minutos</h3><p class="help">metaTitle: Protocolo Núcleo 7 Minutos | Berrinche Cero · badge: Opción más simple · kicker: Si la guía completa no es para ti ahora</p><p><strong>Lead:</strong> Aplica solo el corazón del método para cortar la escalada del berrinche con un protocolo breve, claro y listo para usar en el momento crítico.</p><p><strong>whenTitle:</strong> Cuándo es para ti</p><p><strong>when:</strong> Justo si sentiste que la guía completa es mucha por precio, por falta de tiempo o porque solo necesitas lo básico para salir de una crisis hoy. Ideal para una entrada simple al método sin comprar todo el paquete.</p><p><strong>gainTitle:</strong> Qué ganas</p><p><strong>gain:</strong> Ahorro de tiempo y ejecución inmediata: el núcleo práctico para intervenir sin leer material extenso ni perderte en teoría.</p><p><strong>structureTitle:</strong> Qué incluye</p><h4>structure</h4><ul><li>Señal de entrada: cómo reconocer que el berrinche ya entró en fase de escalada</li><li>Protocolo mínimo de 7 minutos: qué hacer en orden, sin improvisar</li><li>Frases listas: respuestas cortas para bajar tensión sin gritos</li><li>Checklist de crisis: revisión rápida antes de actuar</li><li>Cierre de estabilización: qué observar después para no reiniciar la escalada</li></ul><p><strong>deliveryTitle:</strong> Cómo lo recibes</p><p><strong>delivery:</strong> Descarga digital inmediata en formato ebook corto y directo, optimizado para consulta rápida desde el celular.</p><p><strong>cta:</strong> SÍ, QUIERO EL NÚCLEO DE 7 MINUTOS</p><p><strong>decline:</strong> No, prefiero salir sin el protocolo</p><p><strong>priceHint:</strong> Entrada simple · Acceso inmediato en el celular</p><p><strong>footer:</strong> Es la versión mínima para actuar hoy. Sin relleno, sin teoría larga.</p></article><article class="card funnel"><div class="card-head"><span class="badge funnel">COMMON</span></div>
+      <p><strong>guarantee:</strong> Acceso digital inmediato. Garantía de 7 días según la oferta Hotmart.</p>
+      <p><strong>secure:</strong> Pago seguro · Acceso al instante</p>
+    </article>
+    <h2>4. Copy legada (i18n.js — 12 perguntas)</h2>
+    <p class="help">Versão antiga em <code>js/i18n.js</code> (12 perguntas + 3 “news”). Mantida no repo; o fluxo ativo é <code>quiz-flow.js</code>.</p><h4>Hero legado</h4><ul>
+    <li><strong>Title:</strong> ¿Tu casa ya se volvió un campo de batalla por cada berrinche?</li>
+    <li><strong>Lead:</strong> Responde 12 preguntas honestas. Al final verás si estás perdiendo el control… o si todavía puedes recuperarlo a tiempo.</li>
+    <li><strong>CTA:</strong> EMPEZAR EL TEST AHORA</li>
+  </ul><h4>Perguntas legadas (12)</h4><div class="legacy-q"><strong>L1 · q1:</strong> ¿Cuántas crisis o berrinches intensos vive tu hijo al día?
+      <ul><li>a) 5 o más — estoy al límite</li><li>b) 3 a 4 — el caos es casi diario</li><li>c) 1 a 2, pero muy intensas</li><li>d) Pocas, pero siento que se están volviendo peores</li></ul></div><div class="legacy-q"><strong>L2 · q2:</strong> ¿Qué edad tiene tu hijo o hija?
+      <ul><li>a) 2 años</li><li>b) 3 años</li><li>c) 4 años</li><li>d) Otra edad, pero las crisis son iguales de fuertes</li></ul></div><div class="legacy-q"><strong>L3 · q3:</strong> ¿Dónde explotan más los berrinches?
+      <ul><li>a) En casa, varias veces al día</li><li>b) En el súper o tiendas</li><li>c) En la calle, visitas o lugares públicos</li><li>d) En todos lados — no hay zona segura</li></ul></div><div class="legacy-q"><strong>L4 · q4:</strong> ¿Las pantallas (tablet, celular, TV) disparan berrinches?
+      <ul><li>a) Sí: al quitarla, es guerra total</li><li>b) A veces; depende del día y del cansancio</li><li>c) Poco, pero otros límites sí explotan</li><li>d) Casi siempre hay pelea por “un rato más”</li></ul></div><div class="legacy-q"><strong>L5 · q5:</strong> Cuando empieza el berrinche, ¿qué haces casi siempre?
+      <ul><li>a) Grito, amenazo o castigo… y luego me arrepiento</li><li>b) Cedo para que se calme (aunque no deba)</li><li>c) Me bloqueo: no sé qué decir</li><li>d) Intento calmar, pero la crisis se alarga igual</li></ul></div><div class="legacy-q"><strong>L6 · q6:</strong> Si la crisis es en público, ¿qué te pasa a ti?
+      <ul><li>a) Cedo por vergüenza o para “no hacer escena”</li><li>b) Me paralizo; siento que todos miran</li><li>c) Estallo yo también</li><li>d) Resisto, pero termino agotada/o y sin control real</li></ul></div><div class="legacy-q"><strong>L7 · q7:</strong> ¿Tu pareja, abuelos o cuidadores reaccionan distinto y desordenan todo?
+      <ul><li>a) Sí: uno cede, otro grita, nadie alinea</li><li>b) A veces; hay pelea entre adultos después</li><li>c) Casi siempre estoy sola/o con la crisis</li><li>d) Intentamos alinearnos, pero en el momento falla</li></ul></div><div class="legacy-q"><strong>L8 · q8:</strong> ¿Tu hijo ya pega, empuja, muerde o lanza cosas cuando no se sale con la suya?
+      <ul><li>a) Sí, ya hay golpes o empujones a mí o a otros</li><li>b) Tira objetos, grita a todo volumen, se desborda</li><li>c) Todavía no pega, pero la intensidad sube cada semana</li><li>d) Pasa a veces y no sé cómo cortarlo sin peor pelea</li></ul></div><div class="legacy-q"><strong>L9 · q9:</strong> En la práctica, ¿quién “gana” la negociación del berrinche?
+      <ul><li>a) Él/ella: termino cediendo</li><li>b) Nadie: es una guerra hasta el agotamiento</li><li>c) Yo a veces, pero a un costo de gritos y culpa</li><li>d) Depende del día — no hay regla clara</li></ul></div><div class="legacy-q"><strong>L10 · q10:</strong> Después de una crisis fuerte, ¿qué sientes más?
+      <ul><li>a) Culpa: siento que arruiné el día / lo dañé</li><li>b) Rabia y agotamiento: ya no puedo más</li><li>c) Miedo: “¿y si esto se pone peor?”</li><li>d) Vergüenza si pasó en público</li></ul></div><div class="legacy-q"><strong>L11 · q11:</strong> ¿Hace cuánto vives en modo “apagar incendios”?
+      <ul><li>a) Meses — y cada vez es más pesado</li><li>b) Semanas, pero ya me desbordó</li><li>c) Desde que entró la etapa de 2–4 años</li><li>d) Siempre hubo berrinches, pero ahora mandan ellos</li></ul></div><div class="legacy-q"><strong>L12 · q12:</strong> Si tuvieras un guion claro de 7 minutos para cortar la crisis, ¿lo aplicarías?
+      <ul><li>a) Sí, lo necesito YA</li><li>b) Sí, si es simple y usable en público también</li><li>c) Quiero dejar de improvisar y de gritar</li><li>d) Estoy dispuesta/o a imponer límites con método, no con violencia</li></ul></div><h4>News / alertas legados</h4><div class="legacy-q"><strong>n1</strong> (após Q4): Padres sin mando: el berrinche ya no es “una etapa”, es quien gobierna la casa
+      <p>En miles de hogares se repite el mismo patrón: el adulto cede “solo esta vez”, grita “solo hoy” o se bloquea… y el niño aprende una lección peligrosa: quien explota, decide. Lo que empieza con llanto por una pantalla o un dulce termina con un adulto agotado y un niño que ya no acepta un “no”.</p>
+      <p class="cta">CTA: SEGUIR EL TEST</p></div><div class="legacy-q"><strong>n2</strong> (após Q8): De berrinches a golpes: cuando el niño pega al padre, la crisis ya es un sistema de poder
+      <p>Primero llanto. Después grito. Luego el cuerpo: empujar, pegar, morder, tirar objetos. No porque el niño “nazca violento”, sino porque la explosión le funcionó. Cada vez que la crisis gana una pantalla, un juguete o un “está bien, ya te lo doy”, el cerebro anota: la fuerza manda. Y el adulto, con culpa y vergüenza, cede otra vez.</p>
+      <p class="cta">CTA: CONTINUAR · VER MI NIVEL</p></div><div class="legacy-q"><strong>n3</strong> (após Q12): El niño quiere mandar. El adulto tiene que volver a poner el orden — hoy, no “cuando baje”
+      <p>No se trata de doblegar con castigos duros ni de comprar silencio cediendo. Se trata de recuperar el mando: qué decir, qué hacer y qué evitar en cada fase de la crisis — en casa, en el súper o en la calle — con una secuencia de 7 minutos. La paciencia sin método es solo esperar la próxima explosión.</p>
+      <p class="cta">CTA: VER MI RESULTADO AHORA</p></div>
+  </section>
+<section class="tab-panel" data-panel="en" id="panel-en">
+    <h2>1. Interface / UI (English)</h2>
+    <div class="ui-grid"><div class="ui-item"><strong>heroKicker</strong><div class="val">6–8 min quiz · parents of ages 2–4</div></div><div class="ui-item"><strong>heroTitle</strong><div class="val">Has your home become a battlefield over every tantrum?</div></div><div class="ui-item"><strong>heroLead</strong><div class="val">Answer honestly. At the end you get a personalized diagnosis and the 7-minute path to regain control.</div></div><div class="ui-item"><strong>heroSub</strong><div class="val">Clear reward: diagnosis + de-escalation plan + actionable result. No empty theory.</div></div><div class="ui-item"><strong>trust1</strong><div class="val">Real diagnosis</div></div><div class="ui-item"><strong>trust2</strong><div class="val">7-min protocol</div></div><div class="ui-item"><strong>trust3</strong><div class="val">Home · store · street</div></div><div class="ui-item"><strong>startCta</strong><div class="val">START THE QUIZ AND GET MY DIAGNOSIS</div></div><div class="ui-item"><strong>progressOf</strong><div class="val">{n} / {total}</div></div><div class="ui-item"><strong>analyzeTitle</strong><div class="val">Preparing your diagnosis…</div></div><div class="ui-item"><strong>analyzeText</strong><div class="val">Matching your answers with crisis, authority, and urgency signals.</div></div><div class="ui-item"><strong>analyzeLoading</strong><div class="val">Loading…</div></div><div class="ui-item"><strong>analyzeDone</strong><div class="val">Ready</div></div><div class="ui-item"><strong>continueCta</strong><div class="val">Continue</div></div><div class="ui-item"><strong>evalBadge</strong><div class="val">Your diagnosis</div></div><div class="ui-item"><strong>evalTitle</strong><div class="val">This is what your answers reveal</div></div><div class="ui-item"><strong>evalLead</strong><div class="val">You're not “failing as a parent”. You're reacting late — often with the wrong script.</div></div><div class="ui-item"><strong>evalCta</strong><div class="val">I WANT MY FULL RESULT</div></div><div class="ui-item"><strong>captureTitle</strong><div class="val">Unlock your full result</div></div><div class="ui-item"><strong>captureLead</strong><div class="val">Only after the diagnosis do we ask for your details — in exchange for the full result and protocol access.</div></div><div class="ui-item"><strong>captureName</strong><div class="val">Name</div></div><div class="ui-item"><strong>captureEmail</strong><div class="val">Email</div></div><div class="ui-item"><strong>capturePhone</strong><div class="val">WhatsApp (with country code)</div></div><div class="ui-item"><strong>captureCta</strong><div class="val">SEE MY FULL RESULT</div></div><div class="ui-item"><strong>captureNote</strong><div class="val">No spam. We use this to send your diagnosis and access.</div></div><div class="ui-item"><strong>captureError</strong><div class="val">Fill in name, email, and WhatsApp to continue.</div></div><div class="ui-item"><strong>pitchBadge</strong><div class="val">Your 7-minute protocol</div></div><div class="ui-item"><strong>stickyCta</strong><div class="val">I WANT THE PROTOCOL NOW</div></div><div class="ui-item"><strong>langAria</strong><div class="val">Language</div></div><div class="ui-item"><strong>metaTitle</strong><div class="val">Tantrum Zero Quiz | 7-minute diagnosis</div></div><div class="ui-item"><strong>metaDescription</strong><div class="val">Parent quiz: tantrum diagnosis and 7-minute de-escalation protocol.</div></div><div class="ui-item"><strong>meterLabels</strong><ul><li>Crisis intensity</li><li>Authority loss</li><li>Urgency</li></ul></div><div class="ui-item"><strong>resultTagsDefault</strong><ul><li>Late reaction</li><li>Wrong script</li><li>Loss of control</li></ul></div><div class="ui-item"><strong>resultBadge</strong><div class="val">Result · Critical urgency level</div></div><div class="ui-item"><strong>resultTitle</strong><div class="val">You need a protocol NOW — no more empty patience</div></div><div class="ui-item"><strong>resultLead</strong><div class="val">No matter how hard you try: if you react late with the wrong script, the tantrum grows and your child learns the explosion is in charge.</div></div><div class="ui-item"><strong>resultPoints</strong><ul><li>Every uncontained crisis trains a louder explosion.</li><li>If you give in from shame or yell from exhaustion, chaos becomes normal.</li><li>Screens, stores, and routines without limits turn home into a battlefield.</li><li>There is a 7-minute sequence to cut the escalation and take the lead back.</li></ul></div><div class="ui-item"><strong>priceNote</strong><div class="val">Less than a big grocery run. Far less than another month of yelling.</div></div><div class="ui-item"><strong>footerNote</strong><div class="val">Practical material for parents. Not clinical therapy or medical diagnosis.</div></div><div class="ui-item"><strong>ctaSolution</strong><div class="val">I WANT THE PROTOCOL NOW</div></div></div><h4>Legendas de imagem (qCaption)</h4><ul><li><code>home</code> — Home · meltdown</li><li><code>super</code> — Store · public</li><li><code>screens</code> — Screens</li><li><code>public</code> — Street · shame</li><li><code>guilt</code> — Guilt</li><li><code>escalate</code> — Escalation</li><li><code>calm</code> — Calm control</li></ul><h4>Blocos do pitch (oferta)</h4><table><thead><tr><th>Bloco</th><th>Título</th><th>Texto</th></tr></thead><tbody><tr><td><code>promise</code></td><td>What changes in 14 days</td><td>In 14 days, apply a 7-minute protocol to lower explosions and regain control without yelling or empty threats.</td></tr><tr><td><code>authority</code></td><td>Parents like you already did it</td><td>Already helped hundreds of parents stop living in firefighting mode all day.</td></tr><tr><td><code>mechanism</code></td><td>How the protocol works</td><td>De-escalation protocol: phase sequence, ready phrases, crisis checklist, and trigger prevention (ages 2–4).</td></tr><tr><td><code>anchor</code></td><td>Less than staying in chaos</td><td>Less than a big grocery run. Far less than another month of yelling.</td></tr><tr><td><code>offer</code></td><td>What you get today</td><td>Practical guide + instant access. Phrase, checklist, prevention, and public-tantrum bonuses (per offer).</td></tr><tr><td><code>guarantee</code></td><td>Your peace of mind</td><td>7 days. If you don't see real value, request a refund.</td></tr><tr><td><code>faq</code></td><td>Common questions</td><td>Works mid-crisis? Yes. At the store? Yes. Is it giving in? No. Ages 2–4? Exactly that stage.</td></tr></tbody></table>
+    <h2>2. Fluxo completo — ordem real do quiz</h2>
+    <p class="help">Hero → Quebra-gelo → micro → Dor → micro → Desejo → micro → Ponte → micro → Eval → Captura → Loading → Pitch</p>
+    <div class="section-banner block-ice">Quebra-gelo (Ice)</div><article class="card q" id="en-q1">
+        <div class="card-head">
+          <span class="badge q">Q1 · q1</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q1.jpg</span>
+        </div>
+        <h3>How many intense tantrums does your child have per day?</h3>
+        <p class="help">Be honest. No “right” answers.</p>
+        <ol class="opts"><li><span class="oid">a</span> 5+ — I'm at my limit
+          <span class="meta">peso 4 · tags: Crisis diarias extremas</span>
+        </li><li><span class="oid">b</span> 3–4 — chaos is almost daily
+          <span class="meta">peso 3 · tags: Crisis frecuentes</span>
+        </li><li><span class="oid">c</span> 1–2, but very intense
+          <span class="meta">peso 2 · tags: Crisis intensas</span>
+        </li><li><span class="oid">d</span> Few, but they're getting worse
+          <span class="meta">peso 2 · tags: Escalada</span>
+        </li></ol></article><article class="card q" id="en-q2">
+        <div class="card-head">
+          <span class="badge q">Q2 · q2</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q2.jpg</span>
+        </div>
+        <h3>How old is your child?</h3>
+        <p class="help">Ages 2–4 are the most volatile.</p>
+        <ol class="opts"><li><span class="oid">a</span> 2 years
+          <span class="meta">peso 3 · tags: Etapa 2–4</span>
+        </li><li><span class="oid">b</span> 3 years
+          <span class="meta">peso 3 · tags: Etapa 2–4</span>
+        </li><li><span class="oid">c</span> 4 years
+          <span class="meta">peso 3 · tags: Etapa 2–4</span>
+        </li><li><span class="oid">d</span> Another age, but just as intense
+          <span class="meta">peso 2 · tags: Fuera de etapa</span>
+        </li></ol></article><article class="card q" id="en-q3">
+        <div class="card-head">
+          <span class="badge q">Q3 · q3</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-home.jpg</span>
+        </div>
+        <h3>Who is taking this quiz?</h3>
+        <p class="help">Only to personalize the diagnosis.</p>
+        <ol class="opts"><li><span class="oid">a</span> Mom
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">b</span> Dad
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">c</span> Both / we co-parent
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> Grandparent or other caregiver
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card q" id="en-q4">
+        <div class="card-head">
+          <span class="badge q">Q4 · q4</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q5.jpg</span>
+        </div>
+        <h3>One word for your home today?</h3>
+        <p class="help">Whatever comes first.</p>
+        <ol class="opts"><li><span class="oid">a</span> Chaos
+          <span class="meta">peso 3 · tags: Caos</span>
+        </li><li><span class="oid">b</span> Exhaustion
+          <span class="meta">peso 3 · tags: Agotamiento</span>
+        </li><li><span class="oid">c</span> Guilt
+          <span class="meta">peso 3 · tags: Culpa</span>
+        </li><li><span class="oid">d</span> Hope (but fragile)
+          <span class="meta">peso 2 · tags: Esperanza</span>
+        </li></ol></article><article class="card q" id="en-q5">
+        <div class="card-head">
+          <span class="badge q">Q5 · q5</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q7.jpg</span>
+        </div>
+        <h3>How many adults react differently to tantrums?</h3>
+        <p class="help">Different scripts train more explosions.</p>
+        <ol class="opts"><li><span class="oid">a</span> Only I carry it all
+          <span class="meta">peso 3 · tags: Carga sola</span>
+        </li><li><span class="oid">b</span> Two adults, often misaligned
+          <span class="meta">peso 4 · tags: Desalineados</span>
+        </li><li><span class="oid">c</span> We try to align and sometimes fail
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> Several adults scramble it
+          <span class="meta">peso 4 · tags: Varios adultos</span>
+        </li></ol></article><article class="card q" id="en-q6">
+        <div class="card-head">
+          <span class="badge q">Q6 · q6</span>
+          <span class="badge soft">Quebra-gelo (Ice)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>Will you answer with total honesty?</h3>
+        <p class="help">The diagnosis only works if it's real.</p>
+        <ol class="opts"><li><span class="oid">a</span> Yes, I need clarity NOW
+          <span class="meta">peso 4 · tags: Lista</span>
+        </li><li><span class="oid">b</span> Yes, even if it hurts
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> I'll try
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> I just want a quick fix
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card micro" id="en-m_ice">
+        <div class="card-head">
+          <span class="badge micro">MICRO · m_ice</span>
+          <span class="badge soft">insight</span>
+          <span class="badge stamp">REWARD</span>
+        </div>
+        <p class="ribbon">Before you continue · Tantrum Zero Method · Promise</p>
+        <p class="paper">QUIZ FUNNEL</p>
+        <h3>Nobody answers dozens of questions without a clear reward</h3>
+        <p>Your reward at the end: a diagnosis of where your home stands with tantrums — and the exact next step to regain control in 7 minutes, without empty yelling or threats.</p>
+        <ul><li>Personalized diagnosis</li><li>De-escalation plan</li><li>Actionable result</li></ul>
+        <blockquote>“Based on your answers, we show if you're reacting late, with the wrong script, and which protocol to apply first.”<footer>— Tantrum Zero Protocol</footer></blockquote>
+        <p class="cta">CTA: <strong>CONTINUE THE QUIZ</strong></p>
+      </article><div class="section-banner block-pain">Dor (Pain)</div><article class="card q" id="en-q7">
+        <div class="card-head">
+          <span class="badge q">Q7 · q7</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-super.jpg</span>
+        </div>
+        <h3>Where do tantrums explode most?</h3>
+        <p class="help">Location changes shame, not urgency.</p>
+        <ol class="opts"><li><span class="oid">a</span> At home, several times a day
+          <span class="meta">peso 3 · tags: Caos en casa</span>
+        </li><li><span class="oid">b</span> At the store
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">c</span> Street, visits, public places
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">d</span> Everywhere — no safe zone
+          <span class="meta">peso 4 · tags: Sin zona segura</span>
+        </li></ol></article><article class="card q" id="en-q8">
+        <div class="card-head">
+          <span class="badge q">Q8 · q8</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-screens.jpg</span>
+        </div>
+        <h3>Do screens trigger tantrums?</h3>
+        <p class="help">Turning one off without a script is a classic spark.</p>
+        <ol class="opts"><li><span class="oid">a</span> Yes: taking it away is war
+          <span class="meta">peso 4 · tags: Pantallas</span>
+        </li><li><span class="oid">b</span> Sometimes, depending on fatigue
+          <span class="meta">peso 3 · tags: Pantallas</span>
+        </li><li><span class="oid">c</span> Not much, but other limits explode
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> Always a fight for “one more minute”
+          <span class="meta">peso 4 · tags: Negociación</span>
+        </li></ol></article><article class="card q" id="en-q9">
+        <div class="card-head">
+          <span class="badge q">Q9 · q9</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-q5.jpg</span>
+        </div>
+        <h3>When the tantrum starts, what do you usually do?</h3>
+        <p class="help">Your reaction trains what comes next.</p>
+        <ol class="opts"><li><span class="oid">a</span> I yell, threaten, or punish… then regret it
+          <span class="meta">peso 4 · tags: Gritos</span>
+        </li><li><span class="oid">b</span> I give in so it stops
+          <span class="meta">peso 4 · tags: Ceder</span>
+        </li><li><span class="oid">c</span> I freeze — blank
+          <span class="meta">peso 3 · tags: Bloqueo</span>
+        </li><li><span class="oid">d</span> I try to calm them, but it drags on
+          <span class="meta">peso 3 · tags: Sin secuencia</span>
+        </li></ol></article><article class="card q" id="en-q10">
+        <div class="card-head">
+          <span class="badge q">Q10 · q10</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-public.jpg</span>
+        </div>
+        <h3>If the crisis is public, what happens to you?</h3>
+        <p class="help">Shame is the tantrum's weapon.</p>
+        <ol class="opts"><li><span class="oid">a</span> I give in from shame
+          <span class="meta">peso 4 · tags: Vergüenza</span>
+        </li><li><span class="oid">b</span> I freeze; everyone's staring
+          <span class="meta">peso 3 · tags: Parálisis</span>
+        </li><li><span class="oid">c</span> I explode too
+          <span class="meta">peso 4 · tags: Doble explosión</span>
+        </li><li><span class="oid">d</span> I hold on but leave drained
+          <span class="meta">peso 3 · tags: Agotamiento</span>
+        </li></ol></article><article class="card q" id="en-q11">
+        <div class="card-head">
+          <span class="badge q">Q11 · q11</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-escalation.jpg</span>
+        </div>
+        <h3>Does your child hit, push, bite, or throw things?</h3>
+        <p class="help">Aggression doesn't “just pass” if the crisis wins.</p>
+        <ol class="opts"><li><span class="oid">a</span> Yes — hits or pushes
+          <span class="meta">peso 4 · tags: Agresión</span>
+        </li><li><span class="oid">b</span> Throws objects and screams full volume
+          <span class="meta">peso 3 · tags: Desborde</span>
+        </li><li><span class="oid">c</span> Not hitting yet, but intensity rises weekly
+          <span class="meta">peso 3 · tags: Escalada</span>
+        </li><li><span class="oid">d</span> Sometimes and I can't cut it
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="en-q12">
+        <div class="card-head">
+          <span class="badge q">Q12 · q12</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-q9.jpg</span>
+        </div>
+        <h3>Who usually “wins” the negotiation?</h3>
+        <p class="help">If the explosion wins, it gets trained.</p>
+        <ol class="opts"><li><span class="oid">a</span> Them — I give in
+          <span class="meta">peso 4 · tags: Niño manda</span>
+        </li><li><span class="oid">b</span> No one — war until exhaustion
+          <span class="meta">peso 4 · tags: Guerra</span>
+        </li><li><span class="oid">c</span> Me sometimes, with yelling and guilt
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Depends on the day — no clear rule
+          <span class="meta">peso 3 · tags: Sin autoridad</span>
+        </li></ol></article><article class="card q" id="en-q13">
+        <div class="card-head">
+          <span class="badge q">Q13 · q13</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-guilt.jpg</span>
+        </div>
+        <h3>After a big crisis, what do you feel most?</h3>
+        <p class="help">Guilt doesn't teach. A protocol does.</p>
+        <ol class="opts"><li><span class="oid">a</span> Guilt — I ruined the day
+          <span class="meta">peso 3 · tags: Culpa</span>
+        </li><li><span class="oid">b</span> Anger and exhaustion — I can't take it
+          <span class="meta">peso 4 · tags: Agotamiento extremo</span>
+        </li><li><span class="oid">c</span> Fear — “what if it gets worse?”
+          <span class="meta">peso 4 · tags: Miedo</span>
+        </li><li><span class="oid">d</span> Shame (especially in public)
+          <span class="meta">peso 3 · tags: Vergüenza</span>
+        </li></ol></article><article class="card q" id="en-q14">
+        <div class="card-head">
+          <span class="badge q">Q14 · q14</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-q7.jpg</span>
+        </div>
+        <h3>Do partner/grandparents scramble reactions?</h3>
+        <p class="help">Different scripts = more crises.</p>
+        <ol class="opts"><li><span class="oid">a</span> Yes: one gives in, one yells
+          <span class="meta">peso 4 · tags: Desalineados</span>
+        </li><li><span class="oid">b</span> Sometimes — adults fight after
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> I'm almost always alone
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> We try and fail in the moment
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card q" id="en-q15">
+        <div class="card-head">
+          <span class="badge q">Q15 · q15</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-q11.jpg</span>
+        </div>
+        <h3>How long have you been in firefighting mode?</h3>
+        <p class="help">Time without a protocol hardens the pattern.</p>
+        <ol class="opts"><li><span class="oid">a</span> Months — heavier each week
+          <span class="meta">peso 4 · tags: Patrón instalado</span>
+        </li><li><span class="oid">b</span> Weeks — already flooded
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Since the 2–4 stage
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Always had tantrums; now they run the house
+          <span class="meta">peso 4 · tags: Inversión de mando</span>
+        </li></ol></article><article class="card q" id="en-q16">
+        <div class="card-head">
+          <span class="badge q">Q16 · q16</span>
+          <span class="badge soft">Dor (Pain)</span>
+          <span class="badge soft">img: scene-home.jpg</span>
+        </div>
+        <h3>Worst scene from last week?</h3>
+        <p class="help">Pick the one that weighs most.</p>
+        <ol class="opts"><li><span class="oid">a</span> Tantrum at the store / public
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">b</span> Screen war
+          <span class="meta">peso 4 · tags: Pantallas</span>
+        </li><li><span class="oid">c</span> Explosion at bedtime/routine
+          <span class="meta">peso 3 · tags: Rutina</span>
+        </li><li><span class="oid">d</span> Hits or pushes toward me
+          <span class="meta">peso 4 · tags: Agresión</span>
+        </li></ol></article><article class="card micro" id="en-m_pain">
+        <div class="card-head">
+          <span class="badge micro">MICRO · m_pain</span>
+          <span class="badge soft">paper</span>
+          <span class="badge stamp">URGENT</span>
+        </div>
+        <p class="ribbon">Parenting alert · Home report · Pain</p>
+        <p class="paper">HOME CHRONICLE</p>
+        <h3>When the child runs the house, the tantrum stops being “a phase”</h3>
+        <p>If you give in “just this once”, yell “just today”, or freeze, the child learns: whoever explodes, decides. That gets trained in every crisis.</p>
+        <ul><li>Giving in trains the next explosion</li><li>Yelling without a sequence raises adrenaline</li><li>Public + screens test who is in charge</li></ul>
+        <blockquote>“Authority voids get filled by the crisis. Without method, the tantrum becomes head of the household.”<footer>— Parenting education synthesis</footer></blockquote>
+        <p class="cta">CTA: <strong>CONTINUE</strong></p>
+      </article><div class="section-banner block-desire">Desejo (Desire)</div><article class="card q" id="en-q17">
+        <div class="card-head">
+          <span class="badge q">Q17 · q17</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-calm.jpg</span>
+        </div>
+        <h3>How would you like a normal morning to feel?</h3>
+        <p class="help">The scene you want.</p>
+        <ol class="opts"><li><span class="oid">a</span> More calm, less yelling
+          <span class="meta">peso 3 · tags: Deseo calma</span>
+        </li><li><span class="oid">b</span> Me leading the routine with confidence
+          <span class="meta">peso 4 · tags: Deseo mando</span>
+        </li><li><span class="oid">c</span> Crises lasting minutes, not an hour
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> All of the above
+          <span class="meta">peso 4 · tags: Deseo control total</span>
+        </li></ol></article><article class="card q" id="en-q18">
+        <div class="card-head">
+          <span class="badge q">Q18 · q18</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>What do you want to recover most urgently?</h3>
+        <p class="help">Your 2-week priority.</p>
+        <ol class="opts"><li><span class="oid">a</span> Stop yelling and regretting
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">b</span> Know what to say in each phase
+          <span class="meta">peso 4 · tags: Frases</span>
+        </li><li><span class="oid">c</span> Act in public without giving in from shame
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">d</span> Lower how often crises happen
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="en-q19">
+        <div class="card-head">
+          <span class="badge q">Q19 · q19</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-public.jpg</span>
+        </div>
+        <h3>If you had ready phrases for the store tomorrow, how would you feel?</h3>
+        <p class="help">Imagine the relief.</p>
+        <ol class="opts"><li><span class="oid">a</span> Much more in control
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">b</span> Less shame
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> More secure as the adult in charge
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> Relieved I don't improvise
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="en-q20">
+        <div class="card-head">
+          <span class="badge q">Q20 · q20</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>Is a 7-minute protocol realistic for your day?</h3>
+        <p class="help">Simple and usable under pressure.</p>
+        <ol class="opts"><li><span class="oid">a</span> Yes, if it's step by step
+          <span class="meta">peso 4 · tags: Protocolo</span>
+        </li><li><span class="oid">b</span> Yes, I need it short
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">c</span> Maybe, if it works in public
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> I'd prefer even shorter
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card q" id="en-q21">
+        <div class="card-head">
+          <span class="badge q">Q21 · q21</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-screens.jpg</span>
+        </div>
+        <h3>What do you want to master first?</h3>
+        <p class="help">Pick the battlefront.</p>
+        <ol class="opts"><li><span class="oid">a</span> Cut escalation at home
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">b</span> Screens without war
+          <span class="meta">peso 4 · tags: Pantallas</span>
+        </li><li><span class="oid">c</span> Public crises
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">d</span> Limits without yelling
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="en-q22">
+        <div class="card-head">
+          <span class="badge q">Q22 · q22</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-q2.jpg</span>
+        </div>
+        <h3>In 14 days, what result would make it “worth it”?</h3>
+        <p class="help">Be specific.</p>
+        <ol class="opts"><li><span class="oid">a</span> Fewer crises per day
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">b</span> Shorter crises
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> Me with more control and less guilt
+          <span class="meta">peso 4 · tags: Control adulto</span>
+        </li><li><span class="oid">d</span> A more aligned family
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="en-q23">
+        <div class="card-head">
+          <span class="badge q">Q23 · q23</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-guilt.jpg</span>
+        </div>
+        <h3>Lower guilt first, or raise order at home first?</h3>
+        <p class="help">Both matter; pick the focus.</p>
+        <ol class="opts"><li><span class="oid">a</span> Lower guilt first
+          <span class="meta">peso 3 · tags: Culpa</span>
+        </li><li><span class="oid">b</span> Raise order and limits
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">c</span> Both at once
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> I just want the chaos to stop
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="en-q24">
+        <div class="card-head">
+          <span class="badge q">Q24 · q24</span>
+          <span class="badge soft">Desejo (Desire)</span>
+          <span class="badge soft">img: scene-calm.jpg</span>
+        </div>
+        <h3>If you got an exact script today, would you open it at the next crisis?</h3>
+        <p class="help">Real commitment.</p>
+        <ol class="opts"><li><span class="oid">a</span> Yes, next one for sure
+          <span class="meta">peso 4 · tags: Lista</span>
+        </li><li><span class="oid">b</span> Yes, if it's easy to follow
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> I'd try
+          <span class="meta">peso 2</span>
+        </li><li><span class="oid">d</span> Depends on the day
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card micro" id="en-m_desire">
+        <div class="card-head">
+          <span class="badge micro">MICRO · m_desire</span>
+          <span class="badge soft">magazine</span>
+          <span class="badge stamp">DESIRE</span>
+        </div>
+        <p class="ribbon">Your ideal scene · Control vision · Desire</p>
+        <p class="paper">PROTOCOL BRIEF</p>
+        <h3>Less empty patience. More script in the exact minute</h3>
+        <p>Imagine opening your phone at the store with ready phrases and steps. Not to be perfect — to stop improvising when you're already maxed out.</p>
+        <ul><li>Phrases by tantrum phase</li><li>60-second checklist</li><li>Home + public path</li></ul>
+        <blockquote>“Patience without method is just waiting for the next explosion.”<footer>— Tantrum Zero team</footer></blockquote>
+        <p class="cta">CTA: <strong>I WANT THAT CONTROL</strong></p>
+      </article><div class="section-banner block-bridge">Ponte (Bridge)</div><article class="card q" id="en-q25">
+        <div class="card-head">
+          <span class="badge q">Q25 · q25</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-q5.jpg</span>
+        </div>
+        <h3>Have you tried yelling, punishments, or threats without lasting results?</h3>
+        <p class="help">That's why the approach changes.</p>
+        <ol class="opts"><li><span class="oid">a</span> Yes, many times
+          <span class="meta">peso 4 · tags: Ya probó de todo</span>
+        </li><li><span class="oid">b</span> Yes, sometimes
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> A little, and it doesn't work
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Not yet — and I don't want to go there
+          <span class="meta">peso 2</span>
+        </li></ol></article><article class="card q" id="en-q26">
+        <div class="card-head">
+          <span class="badge q">Q26 · q26</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-public.jpg</span>
+        </div>
+        <h3>Do you freeze and go blank mid-crisis?</h3>
+        <p class="help">Ready phrases exist for that.</p>
+        <ol class="opts"><li><span class="oid">a</span> Yes, almost always
+          <span class="meta">peso 4 · tags: Bloqueo</span>
+        </li><li><span class="oid">b</span> Sometimes
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> I talk too much and make it worse
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> I improvise and it goes badly
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="en-q27">
+        <div class="card-head">
+          <span class="badge q">Q27 · q27</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>Do you need an exact sequence (minute by minute)?</h3>
+        <p class="help">No more empty patience.</p>
+        <ol class="opts"><li><span class="oid">a</span> Yes, exact and simple
+          <span class="meta">peso 4 · tags: Protocolo</span>
+        </li><li><span class="oid">b</span> Yes, with phrases included
+          <span class="meta">peso 4 · tags: Frases</span>
+        </li><li><span class="oid">c</span> Something practical, not theory
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> A 14-day plan
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card q" id="en-q28">
+        <div class="card-head">
+          <span class="badge q">Q28 · q28</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-escalation.jpg</span>
+        </div>
+        <h3>Willing to set limits with method (not more violence)?</h3>
+        <p class="help">Contain ≠ give in.</p>
+        <ol class="opts"><li><span class="oid">a</span> Yes, with method
+          <span class="meta">peso 4 · tags: Método</span>
+        </li><li><span class="oid">b</span> Yes, without yelling if possible
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">c</span> I want to stop giving in
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> I want calm authority
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="en-q29">
+        <div class="card-head">
+          <span class="badge q">Q29 · q29</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-super.jpg</span>
+        </div>
+        <h3>Must the method work at home AND in public?</h3>
+        <p class="help">If it only works at home, it fails outside.</p>
+        <ol class="opts"><li><span class="oid">a</span> Yes, both
+          <span class="meta">peso 4 · tags: Público</span>
+        </li><li><span class="oid">b</span> Especially public
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">c</span> Especially home
+          <span class="meta">peso 3</span>
+        </li><li><span class="oid">d</span> Wherever it explodes
+          <span class="meta">peso 4</span>
+        </li></ol></article><article class="card q" id="en-q30">
+        <div class="card-head">
+          <span class="badge q">Q30 · q30</span>
+          <span class="badge soft">Ponte (Bridge)</span>
+          <span class="badge soft">img: scene-q12.jpg</span>
+        </div>
+        <h3>Ready for your diagnosis and the 7-minute path?</h3>
+        <p class="help">Last step before the result.</p>
+        <ol class="opts"><li><span class="oid">a</span> Yes, show my diagnosis
+          <span class="meta">peso 4 · tags: Lista</span>
+        </li><li><span class="oid">b</span> Yes, I want the protocol
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">c</span> Yes, I need to act now
+          <span class="meta">peso 4</span>
+        </li><li><span class="oid">d</span> Yes, even if it's hard to see
+          <span class="meta">peso 3</span>
+        </li></ol></article><article class="card micro" id="en-m_bridge">
+        <div class="card-head">
+          <span class="badge micro">MICRO · m_bridge</span>
+          <span class="badge soft">tv</span>
+          <span class="badge stamp">BRIDGE</span>
+        </div>
+        <p class="ribbon">Specialist · Bridge to protocol · Bridge</p>
+        <p class="paper">LIVE REPORT</p>
+        <h3>The child wants control. You restore order — with method</h3>
+        <p>Not harsh punishment and not giving in for fake peace. A 7-minute sequence: what to say, what to do, what to avoid in each phase.</p>
+        <ul><li>Exact sequence</li><li>Ready phrases</li><li>Trigger prevention</li></ul>
+        <blockquote>“While others say “be more patient”, we give you the script.”<footer>— 7-minute de-escalation</footer></blockquote>
+        <p class="cta">CTA: <strong>SEE MY DIAGNOSIS</strong></p>
+      </article><article class="card sys" id="en-eval">
+        <div class="card-head"><span class="badge sys">Diagnóstico (eval) · eval</span></div>
+        <p class="help">Tela de sistema — textos na seção UI abaixo.</p>
+      </article><article class="card sys" id="en-capture">
+        <div class="card-head"><span class="badge sys">Captura de lead · capture</span></div>
+        <p class="help">Tela de sistema — textos na seção UI abaixo.</p>
+      </article><article class="card sys" id="en-loading">
+        <div class="card-head"><span class="badge sys">Loading / Análise · loading</span></div>
+        <p class="help">Tela de sistema — textos na seção UI abaixo.</p>
+      </article><article class="card sys" id="en-pitch">
+        <div class="card-head"><span class="badge sys">Pitch / Resultado + CTA · pitch</span></div>
+        <p class="help">Tela de sistema — textos na seção UI abaixo.</p>
+      </article>
+    <h2>3. Funil pós-compra (obrigado · upsell · downsell)</h2>
+    <article class="card funnel"><div class="card-head"><span class="badge funnel">OBRIGADO</span></div><h3>You're in — welcome to Tantrum Zero</h3><p class="help">metaTitle: Thank you! | Tantrum Zero · badge: Purchase confirmed · kicker: —</p><p><strong>Lead:</strong> Your protocol access is on the way. In minutes (sometimes seconds) you'll get the material at the email you used on Hotmart.</p><p><strong>nextTitle:</strong> What to do now</p><h4>steps</h4><ol><li><strong>Check your email</strong> — Look for the Hotmart email (also spam/promotions) with your access link.</li><li><strong>Save it on your phone</strong> — So you can open it at the store, on the street, or mid-crisis at home.</li><li><strong>Use the protocol on the next crisis</strong> — Don't wait for a perfect day. The method is trained in real moments.</li></ol><p><strong>boxTitle:</strong> Important</p><p><strong>boxText:</strong> If you don't see the email in 10–15 minutes, check spam or contact Hotmart support with your receipt.</p><h4>pills</h4><ul><li>7-min protocol</li><li>Ready phrases</li><li>Home · store · street</li></ul><p><strong>ctaMail:</strong> Open my email</p><p><strong>footer:</strong> Thanks for choosing a practical method — not more empty theory.</p></article><article class="card funnel"><div class="card-head"><span class="badge funnel">UPSELL</span></div><h3>Tantrum Zero: Rapid Implementation</h3><p class="help">metaTitle: Rapid Implementation | Tantrum Zero · badge: Offer only now · kicker: Exclusive add-on</p><p><strong>Lead:</strong> Apply the protocol much faster in tantrum moments — fewer doubts, less improvisation, less emotional effort from the first episode.</p><p><strong>promiseTitle:</strong> Result promise</p><p><strong>promise:</strong> Fewer doubts in the critical moment. Less improvisation. Less emotional drain — with an execution layer ready to use.</p><p><strong>contentsTitle:</strong> What's included (advanced layer)</p><h4>contents</h4><ul><li>Response scripts by situation (home, store, street, screens)</li><li>Prep checklist for home and outings</li><li>Decision map mid-crisis</li><li>Phrase templates so you don't improvise</li><li>Step-by-step examples to apply the protocol faster</li></ul><p><strong>exclusiveTitle:</strong> Exclusivity</p><p><strong>exclusive:</strong> Get the implementation layer you don't see in the base guide: the practical shortcut to use the system as if you already had a response ready before the crisis starts. Internal work version for people who want to execute — not only understand.</p><p><strong>forWhoTitle:</strong> It's for you if…</p><h4>forWho</h4><ul><li>You have (or will have) the base guide and want to execute faster</li><li>You freeze in the moment and need the script already written</li><li>You want less mental effort in every crisis</li></ul><p><strong>cta:</strong> YES, I WANT RAPID IMPLEMENTATION</p><p><strong>decline:</strong> No thanks. Continue without this add-on</p><p><strong>priceHint:</strong> One-time payment · Instant access</p><p><strong>footer:</strong> Available on this page as an add-on. You can continue without it.</p></article><article class="card funnel"><div class="card-head"><span class="badge funnel">DOWNSELL</span></div><h3>7-Minute Core Protocol</h3><p class="help">metaTitle: 7-Minute Core Protocol | Tantrum Zero · badge: Simpler option · kicker: If the full guide isn't for you right now</p><p><strong>Lead:</strong> Apply only the heart of the method to cut tantrum escalation with a short, clear protocol ready for the critical moment.</p><p><strong>whenTitle:</strong> When it's for you</p><p><strong>when:</strong> If the full guide felt like too much — price, time, or you only need the basics to handle a crisis today. Ideal simple entry without buying the whole package.</p><p><strong>gainTitle:</strong> What you get</p><p><strong>gain:</strong> Time saved and immediate execution: the practical core to intervene without long reading or theory.</p><p><strong>structureTitle:</strong> What's inside</p><h4>structure</h4><ul><li>Entry signal: how to recognize the tantrum is already escalating</li><li>Minimum 7-minute protocol: what to do in order, no improvising</li><li>Ready phrases: short replies to lower tension without yelling</li><li>Crisis checklist: quick review before you act</li><li>Stabilization close: what to watch so the escalation doesn't restart</li></ul><p><strong>deliveryTitle:</strong> How you receive it</p><p><strong>delivery:</strong> Instant digital download as a short, direct ebook — optimized for quick phone use.</p><p><strong>cta:</strong> YES, I WANT THE 7-MINUTE CORE</p><p><strong>decline:</strong> No, I'll leave without the protocol</p><p><strong>priceHint:</strong> Simple entry · Instant phone access</p><p><strong>footer:</strong> The minimum version to act today. No fluff, no long theory.</p></article><article class="card funnel"><div class="card-head"><span class="badge funnel">COMMON</span></div>
+      <p><strong>guarantee:</strong> Instant digital access. 7-day guarantee per Hotmart offer terms.</p>
+      <p><strong>secure:</strong> Secure checkout · Instant access</p>
+    </article>
+    <h2>4. Copy legada (i18n.js — 12 perguntas)</h2>
+    <p class="help">Versão antiga em <code>js/i18n.js</code> (12 perguntas + 3 “news”). Mantida no repo; o fluxo ativo é <code>quiz-flow.js</code>.</p><h4>Hero legado</h4><ul>
+    <li><strong>Title:</strong> Has your home become a battlefield over every tantrum?</li>
+    <li><strong>Lead:</strong> Answer 12 honest questions. At the end you’ll see if you’re losing control… or if you can still take the lead in time.</li>
+    <li><strong>CTA:</strong> START THE QUIZ NOW</li>
+  </ul><h4>Perguntas legadas (12)</h4><div class="legacy-q"><strong>L1 · q1:</strong> How many intense tantrums does your child have per day?
+      <ul><li>a) 5+ — I’m at my limit</li><li>b) 3–4 — chaos is almost daily</li><li>c) 1–2, but very intense</li><li>d) Few, but I feel they’re getting worse</li></ul></div><div class="legacy-q"><strong>L2 · q2:</strong> How old is your child?
+      <ul><li>a) 2 years old</li><li>b) 3 years old</li><li>c) 4 years old</li><li>d) Another age, but crises are just as strong</li></ul></div><div class="legacy-q"><strong>L3 · q3:</strong> Where do tantrums explode most?
+      <ul><li>a) At home, several times a day</li><li>b) At the store / shops</li><li>c) On the street, visits, or public places</li><li>d) Everywhere — no safe zone</li></ul></div><div class="legacy-q"><strong>L4 · q4:</strong> Do screens (tablet, phone, TV) trigger tantrums?
+      <ul><li>a) Yes: taking it away is total war</li><li>b) Sometimes — depends on the day and fatigue</li><li>c) Not much, but other limits still explode</li><li>d) Almost always a fight for “one more minute”</li></ul></div><div class="legacy-q"><strong>L5 · q5:</strong> When the tantrum starts, what do you usually do?
+      <ul><li>a) I yell, threaten, or punish… then regret it</li><li>b) I give in so it stops (even when I shouldn’t)</li><li>c) I freeze — I don’t know what to say</li><li>d) I try to calm them, but it still drags on</li></ul></div><div class="legacy-q"><strong>L6 · q6:</strong> If the crisis is in public, what happens to you?
+      <ul><li>a) I give in from shame or to “avoid a scene”</li><li>b) I freeze; I feel everyone staring</li><li>c) I explode too</li><li>d) I hold on, but end up drained with no real control</li></ul></div><div class="legacy-q"><strong>L7 · q7:</strong> Do your partner, grandparents, or caregivers react differently and scramble everything?
+      <ul><li>a) Yes: one gives in, one yells, no alignment</li><li>b) Sometimes — then adults fight each other</li><li>c) I’m almost always alone with the crisis</li><li>d) We try to align, but it fails in the moment</li></ul></div><div class="legacy-q"><strong>L8 · q8:</strong> Does your child already hit, push, bite, or throw things when they don’t get their way?
+      <ul><li>a) Yes — hits or pushes me or others</li><li>b) Throws objects, screams at full volume, floods the room</li><li>c) Not hitting yet, but intensity rises every week</li><li>d) It happens sometimes and I don’t know how to cut it</li></ul></div><div class="legacy-q"><strong>L9 · q9:</strong> In practice, who “wins” the tantrum negotiation?
+      <ul><li>a) Them — I end up giving in</li><li>b) No one — war until exhaustion</li><li>c) Me sometimes, at the cost of yelling and guilt</li><li>d) Depends on the day — no clear rule</li></ul></div><div class="legacy-q"><strong>L10 · q10:</strong> After a big crisis, what do you feel most?
+      <ul><li>a) Guilt — I ruined the day / hurt them</li><li>b) Anger and exhaustion — I can’t take it</li><li>c) Fear — “what if this gets worse?”</li><li>d) Shame if it was public</li></ul></div><div class="legacy-q"><strong>L11 · q11:</strong> How long have you been living in “firefighting mode”?
+      <ul><li>a) Months — and it’s getting heavier</li><li>b) Weeks, but I’m already flooded</li><li>c) Since the 2–4 stage started</li><li>d) Tantrums always existed, but now they run the house</li></ul></div><div class="legacy-q"><strong>L12 · q12:</strong> If you had a clear 7-minute script to cut the crisis, would you use it?
+      <ul><li>a) Yes — I need it NOW</li><li>b) Yes, if it’s simple and works in public too</li><li>c) I want to stop improvising and yelling</li><li>d) I’m willing to set limits with method, not violence</li></ul></div><h4>News / alertas legados</h4><div class="legacy-q"><strong>n1</strong> (após Q4): Parents losing control: the tantrum is no longer “a phase” — it runs the house
+      <p>In thousands of homes the same pattern repeats: the adult gives in “just this once”, yells “just today”, or freezes… and the child learns a dangerous lesson: whoever explodes, decides. What starts as crying over a screen or a candy ends with an exhausted adult and a child who no longer accepts “no”.</p>
+      <p class="cta">CTA: CONTINUE THE QUIZ</p></div><div class="legacy-q"><strong>n2</strong> (após Q8): From tantrums to hitting: when a child hits a parent, the crisis is already a power system
+      <p>First tears. Then screaming. Then the body: pushing, hitting, biting, throwing objects. Not because the child was “born violent”, but because the explosion worked. Every time the crisis wins a screen, a toy, or a “fine, you can have it”, the brain logs: force is in charge.</p>
+      <p class="cta">CTA: CONTINUE · SHOW MY LEVEL</p></div><div class="legacy-q"><strong>n3</strong> (após Q12): The child wants to be in charge. The adult must restore order — today, not “when it passes”
+      <p>This isn’t about crushing them with harsh punishment or buying silence by giving in. It’s about taking the lead back: what to say, what to do, and what to avoid in each phase of the crisis — at home, in the store, or on the street — in a 7-minute sequence. Patience without method is just waiting for the next explosion.</p>
+      <p class="cta">CTA: SEE MY RESULT NOW</p></div>
+  </section>
+
+  <footer class="overview-card" style="margin-top:32px">
+    <h2>Notas para análise de copy</h2>
+    <ul>
+      <li><strong>Promessa:</strong> diagnóstico personalizado + protocolo de desescalada de 7 minutos; virada em ~14 dias.</li>
+      <li><strong>Dor dominante:</strong> perda de autoridade, vergonha em público, telas, gritos/culpa, adultos desalinhados, agressão.</li>
+      <li><strong>Mecanismo:</strong> sequência por fase + frases prontas + checklist + prevenção de gatilhos (casa/mercado/rua).</li>
+      <li><strong>Objeção tratada:</strong> “paciência vazia”, teoria sem uso, medo de violência vs. limites com método.</li>
+      <li><strong>CTAs:</strong> urgência + posse (“meu diagnóstico”, “quero o protocolo agora”).</li>
+      <li><strong>Disclaimer:</strong> material prático, não terapia clínica nem diagnóstico médico; garantia 7 dias.</li>
+      <li><strong>Fontes no código:</strong> <code>js/quiz-flow.js</code> (ativo), <code>js/funnel-i18n.js</code>, <code>js/i18n.js</code> (legado), trechos em <code>js/app.js</code>.</li>
+    </ul>
+  </footer>
+</div>
+<script>
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelector('[data-panel="' + btn.dataset.tab + '"]').classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

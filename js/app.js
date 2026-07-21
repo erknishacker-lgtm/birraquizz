@@ -1,6 +1,7 @@
 /**
- * Funil de quiz — método completo:
- * hero → etapas (ice/pain/desire/bridge + micros) → eval → capture → loading → pitch
+ * Funil de quiz — versão 12 perguntas:
+ * hero → ice(2) → micro → pain(4) → micro → social → desire(3) → micro
+ * → bridge(3) → micro → eval → capture → loading → pitch
  */
 (() => {
   const FLOW = window.QUIZ_FLOW;
@@ -119,37 +120,20 @@
    * Foto única e impactante por pergunta (sem repetir a mesma cena).
    * Sobrescreve o image do flow quando existir mapeamento.
    */
+  /** Cenas da versão 12 perguntas (conteúdo reordenado do fluxo longo). */
   const SCENE_BY_Q = {
     q1: "scene-q1.jpg",
     q2: "scene-q2.jpg",
-    q3: "scene-q3-who.jpg",
-    q4: "scene-q4b.jpg",
-    q5: "scene-q5.jpg",
-    q6: "scene-q6-honest.jpg",
-    q7: "scene-super.jpg",
-    q8: "scene-screens.jpg",
-    q9: "scene-q9.jpg",
-    q10: "scene-public.jpg",
-    q11: "scene-escalation.jpg",
-    q12: "scene-q12.jpg",
-    q13: "scene-guilt.jpg",
-    q14: "scene-q14-family.jpg",
-    q15: "scene-q15-exhaust.jpg",
-    q16: "scene-q16-worst.jpg",
-    q17: "scene-calm.jpg",
-    q18: "scene-q18-recover.jpg",
-    q19: "scene-q19-super-ready.jpg",
-    q20: "scene-q20-protocol.jpg",
-    q21: "scene-q21-master.jpg",
-    q22: "scene-q22-14days.jpg",
-    q23: "scene-q23-choice.jpg",
-    q24: "scene-q24-script.jpg",
-    q25: "scene-q25-yelling.jpg",
-    q26: "scene-q26-freeze.jpg",
-    q27: "scene-q27-sequence.jpg",
-    q28: "scene-q28-limits.jpg",
-    q29: "scene-q29-everywhere.jpg",
-    q30: "scene-q30-ready.jpg",
+    q3: "scene-super.jpg",
+    q4: "scene-q9.jpg",
+    q5: "scene-escalation.jpg",
+    q6: "scene-q14-family.jpg",
+    q7: "scene-q18-recover.jpg",
+    q8: "scene-q20-protocol.jpg",
+    q9: "scene-q23-choice.jpg",
+    q10: "scene-q26-freeze.jpg",
+    q11: "scene-q28-limits.jpg",
+    q12: "scene-q15-exhaust.jpg",
   };
 
   const SCENE_BY_MICRO = {
@@ -571,7 +555,8 @@
   }
 
   function attentionLevel() {
-    return Math.min(99, Math.max(86, 88 + Math.min(11, Math.floor((state.score || 24) / 8))));
+    // 12 perguntas com pesos até 5 → score típico ~24–60; divide por 5 para o medidor ir a ~99
+    return Math.min(99, Math.max(86, 88 + Math.min(11, Math.floor((state.score || 24) / 5))));
   }
 
   /** Espelho personalizado (etapa Avaliação do funil): devolve a vida do lead para ele. */
@@ -625,12 +610,28 @@
 
   function renderCapture() {
     const u = ui();
+    const whoOpts = u.captureWhoOptions || [];
+    const whoField =
+      whoOpts.length > 0
+        ? `<fieldset class="lead-who">
+            <legend>${escapeHtml(u.captureWho || "")}</legend>
+            <div class="lead-who-options">
+              ${whoOpts
+                .map(
+                  (o) =>
+                    `<label class="lead-who-opt"><input type="radio" name="who" value="${escapeHtml(o.id)}" /> <span>${escapeHtml(o.text)}</span></label>`
+                )
+                .join("")}
+            </div>
+          </fieldset>`
+        : "";
     el.screen.innerHTML = `
       <article class="hero-card capture-card">
         <div class="hero-body">
           <h1 data-reveal style="font-size:clamp(1.25rem,5vw,1.5rem)">${escapeHtml(u.captureTitle)}</h1>
           <p class="lead" data-reveal>${escapeHtml(u.captureLead)}</p>
           <form id="lead-form" class="lead-form" data-reveal>
+            ${whoField}
             <label><span>${escapeHtml(u.captureName)}</span>
               <input name="name" type="text" autocomplete="name" required /></label>
             <label><span>${escapeHtml(u.captureEmail)}</span>
@@ -650,17 +651,26 @@
       const name = String(fd.get("name") || "").trim();
       const email = String(fd.get("email") || "").trim();
       const phone = String(fd.get("phone") || "").trim();
+      const who = String(fd.get("who") || "").trim();
       const err = document.getElementById("lead-error");
-      if (!name || !email || !phone) {
-        if (err) err.hidden = false;
+      const needWho = whoOpts.length > 0;
+      if (!name || !email || !phone || (needWho && !who)) {
+        if (err) {
+          err.hidden = false;
+          if (needWho && !who && u.captureWhoError) err.textContent = u.captureWhoError;
+          else if (u.captureError) err.textContent = u.captureError;
+        }
         return;
       }
+      const whoLabel = whoOpts.find((o) => o.id === who)?.text || who;
       const tags = tagsFromAnswers();
       const level = attentionLevel();
       state.lead = {
         name,
         email,
         phone,
+        who,
+        whoLabel,
         ts: Date.now(),
         lang: state.lang,
         score: state.score,

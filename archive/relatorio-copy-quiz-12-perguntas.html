@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Relatório de copy — Quiz Birra Zero (versão 12 perguntas)</title>
+<style>
+  :root {
+    --ink: #0f172a;
+    --muted: #475569;
+    --line: #e2e8f0;
+    --bg: #f8fafc;
+    --card: #fff;
+    --accent: #0369a1;
+    --ice: #0ea5e9;
+    --pain: #dc2626;
+    --desire: #16a34a;
+    --bridge: #9333ea;
+    --micro: #d97706;
+    --cut: #b91c1c;
+    --keep: #15803d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: var(--ink); background: var(--bg); line-height: 1.55;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 24px 18px 80px; }
+  header.report {
+    background: linear-gradient(135deg, #0c4a6e, #0369a1);
+    color: #fff; border-radius: 16px; padding: 28px 24px; margin-bottom: 24px;
+  }
+  header.report h1 { margin: 0 0 8px; font-size: 1.55rem; }
+  header.report p { margin: 4px 0; opacity: .95; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .chip {
+    background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25);
+    padding: 4px 10px; border-radius: 999px; font-size: .82rem;
+  }
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px; margin-bottom: 20px;
+  }
+  .stat {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px; text-align: center;
+  }
+  .stat b { display: block; font-size: 1.5rem; color: var(--accent); }
+  .stat span { font-size: .8rem; color: var(--muted); }
+  .overview-card, .map, .changelog {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 20px;
+  }
+  .map pre {
+    background: #0f172a; color: #e2e8f0; padding: 14px; border-radius: 10px;
+    overflow-x: auto; font-size: .85rem; line-height: 1.45;
+  }
+  h2 { font-size: 1.2rem; margin: 28px 0 12px; border-bottom: 2px solid var(--line); padding-bottom: 6px; }
+  h3 { font-size: 1.05rem; margin: 0 0 8px; }
+  h4 { font-size: .95rem; margin: 14px 0 6px; color: var(--muted); }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 12px;
+  }
+  .card.micro { border-left: 4px solid var(--micro); }
+  .card.q { border-left: 4px solid var(--accent); }
+  .card.sys { border-left: 4px solid #94a3b8; opacity: .95; }
+  .card.funnel { border-left: 4px solid #0f766e; }
+  .card-head { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .badge {
+    font-size: .72rem; font-weight: 700; letter-spacing: .02em;
+    padding: 3px 8px; border-radius: 6px; background: #e0f2fe; color: #075985;
+  }
+  .badge.q { background: #e0f2fe; color: #075985; }
+  .badge.micro { background: #ffedd5; color: #9a3412; }
+  .badge.sys { background: #f1f5f9; color: #475569; }
+  .badge.funnel { background: #ccfbf1; color: #115e59; }
+  .badge.soft { background: #f1f5f9; color: #64748b; font-weight: 600; }
+  .badge.origin { background: #fef9c3; color: #854d0e; }
+  .help { color: var(--muted); font-size: .9rem; margin: 0 0 8px; }
+  .opts { margin: 0; padding-left: 0; list-style: none; }
+  .opts li {
+    padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px;
+    margin-bottom: 6px; background: #fafafa;
+  }
+  .oid {
+    display: inline-flex; width: 1.4rem; height: 1.4rem; align-items: center; justify-content: center;
+    background: var(--accent); color: #fff; border-radius: 50%; font-size: .75rem; font-weight: 700;
+    margin-right: 6px;
+  }
+  .meta { display: block; font-size: .78rem; color: var(--muted); margin-top: 2px; }
+  .section-banner {
+    margin: 22px 0 12px; padding: 10px 14px; border-radius: 10px;
+    font-weight: 800; color: #fff; letter-spacing: .02em;
+  }
+  .block-ice { background: var(--ice); }
+  .block-pain { background: var(--pain); }
+  .block-desire { background: var(--desire); }
+  .block-bridge { background: var(--bridge); }
+  .ui-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px; margin-bottom: 12px;
+  }
+  .ui-item {
+    border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: #fff;
+    font-size: .88rem;
+  }
+  .ui-item strong { display: block; font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+  .ui-item .val { margin-top: 2px; }
+  .ui-item ul { margin: 4px 0 0; padding-left: 1.1rem; }
+  blockquote {
+    margin: 10px 0; padding: 10px 14px; border-left: 3px solid var(--micro);
+    background: #fffbeb; border-radius: 0 8px 8px 0; font-style: italic;
+  }
+  blockquote footer { font-style: normal; font-size: .85rem; color: var(--muted); margin-top: 6px; }
+  .cta { margin: 8px 0 0; }
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; margin: 8px 0 14px; }
+  th, td { border: 1px solid var(--line); padding: 8px; text-align: left; vertical-align: top; }
+  th { background: #f1f5f9; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 20px; }
+  .actions button, .actions a {
+    border: 1px solid var(--line); background: #fff; border-radius: 8px;
+    padding: 8px 12px; cursor: pointer; text-decoration: none; color: var(--ink); font-weight: 600;
+  }
+  .cutrow td { color: var(--cut); text-decoration: line-through; opacity: .7; }
+  .keeprow td:first-child { font-weight: 700; color: var(--keep); }
+  @media print {
+    .actions { display: none !important; }
+    .card { break-inside: avoid; }
+    body { background: #fff; }
+    header.report { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="report">
+    <h1>Relatório de copy — Quiz Birra Zero (versão 12 perguntas)</h1>
+    <p>Redesenho do fluxo ativo (30 perguntas) para uma versão enxuta de 12, mantendo pontuação, tags e arco emocional Ice → Pain → Desire → Bridge.</p>
+    <p>Produto: <strong>Birra Zero</strong> · Pais de crianças 2–4 anos</p>
+    <div class="meta-row">
+      <span class="chip">Baseado em: quiz-flow.js (30 perguntas)</span>
+      <span class="chip">Idioma desta versão: PT</span>
+      <span class="chip">Gerado: 2026-07-20</span>
+    </div>
+  </header>
+
+  <div class="actions">
+    <button type="button" onclick="window.print()">Imprimir / Salvar como PDF</button>
+    <a href="#changelog">Ver o que mudou</a>
+    <a href="#perguntas">Ir às 12 perguntas</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b>12</b><span>Perguntas (era 30)</span></div>
+    <div class="stat"><b>2·4·3·3</b><span>Ice · Pain · Desire · Bridge</span></div>
+    <div class="stat"><b>4</b><span>Micros mantidos</span></div>
+    <div class="stat"><b>~3–4 min</b><span>Tempo estimado (era 6–8 min)</span></div>
+  </div>
+
+  <section class="map" id="mapa">
+    <h2>Mapa do funil (versão enxuta)</h2>
+    <pre>HERO (kicker + título + lead + CTA)
+  │
+  ├─ QUEBRA-GELO (2)      →  MICRO m_ice (recompensa clara)
+  │
+  ├─ DOR (4)              →  MICRO m_pain (alerta parental)
+  │                         →  PROVA SOCIAL (vídeo Valentina)
+  │
+  ├─ DESEJO (3)           →  MICRO m_desire (cenário ideal)
+  │
+  ├─ PONTE (3)            →  MICRO m_bridge (protocolo 7 min)
+  │
+  ├─ EVAL (diagnóstico com meters)      ← sem mudanças
+  ├─ CAPTURE (nome + e-mail + WhatsApp) ← sem mudanças
+  ├─ LOADING (análise animada)          ← sem mudanças
+  └─ PITCH / RESULTADO + CTA checkout   ← sem mudanças
+        │
+        ├─ (pós-compra) OBRIGADO   ← sem mudanças
+        ├─ UPSELL                 ← sem mudanças
+        └─ DOWNSELL                ← sem mudanças</pre>
+    <p class="help">Só o bloco de perguntas foi redesenhado. UI de sistema (eval/capture/loading/pitch) e funil pós-compra continuam iguais ao fluxo ativo — copy completa está na seção 3.</p>
+  </section>
+
+  <section class="changelog" id="changelog">
+    <h2>O que mudou vs. as 30 perguntas originais</h2>
+    <table>
+      <thead><tr><th>Original</th><th>Decisão</th><th>Motivo</th></tr></thead>
+      <tbody>
+        <tr class="keeprow"><td>Q1, Q2 (Ice)</td><td>Mantidas</td><td>Sinal insubstituível: frequência e idade alimentam os 3 medidores</td></tr>
+        <tr class="cutrow"><td>Q3 (quem responde)</td><td>Movida para a tela de captura</td><td>Personaliza pronome sem contar como fricção do quiz</td></tr>
+        <tr class="cutrow"><td>Q4, Q6 (Ice)</td><td>Cortadas</td><td>Baixo sinal de pontuação; efeito emocional recriado no texto do hero/micro</td></tr>
+        <tr class="cutrow"><td>Q5 (Ice)</td><td>Cortada — sinal absorvido por Q14→Q6 nova</td><td>Redundante com pergunta de dor sobre adultos desalinhados</td></tr>
+        <tr class="keeprow"><td>Q7, Q9, Q11, Q14 (Pain)</td><td>Mantidas</td><td>Cobrem local, reação, agressão e desalinhamento — sem overlap de tag entre elas</td></tr>
+        <tr class="keeprow"><td>Q15 (Pain)</td><td>Mantida</td><td>Única fonte de duração/tempo, direto pro medidor de urgência</td></tr>
+        <tr class="cutrow"><td>Q8, Q10, Q12, Q13, Q16 (Pain)</td><td>Cortadas</td><td>Repetiam o território de vergonha/culpa já coberto 4x nas 10 originais</td></tr>
+        <tr class="keeprow"><td>Q18, Q20, Q23 (Desire)</td><td>Mantidas</td><td>Geram as tags do resultado, testam fricção de compra e ângulo de mensagem (culpa vs. autoridade)</td></tr>
+        <tr class="cutrow"><td>Q17, Q19, Q21, Q22, Q24 (Desire)</td><td>Cortadas</td><td>Reafirmavam o inverso do que já foi capturado na dor</td></tr>
+        <tr class="keeprow"><td>Q26, Q28 (Bridge)</td><td>Mantidas</td><td>Conectam direto com a oferta ("frases prontas", "método") e fecham o compromisso pré-eval</td></tr>
+        <tr class="cutrow"><td>Q25, Q27, Q29, Q30 (Bridge)</td><td>Cortadas</td><td>Reforçavam o mesmo compromisso já capturado em Q26/Q28</td></tr>
+      </tbody>
+    </table>
+    <p class="help">Pesos das opções "a" nas 12 perguntas mantidas foram elevados de 4 para 5 para compensar a menor quantidade de dados — o medidor final continua parecendo preciso com menos perguntas.</p>
+  </section>
+
+  <section id="perguntas">
+    <h2>1. UI / Hero / Sistema (sem mudanças)</h2>
+    <div class="ui-grid">
+      <div class="ui-item"><strong>heroKicker</strong><div class="val">Teste de 3–4 min · pais de 2 a 4 anos</div></div>
+      <div class="ui-item"><strong>heroTitle</strong><div class="val">Sua casa virou um campo de batalha a cada birra?</div></div>
+      <div class="ui-item"><strong>heroLead</strong><div class="val">Responda com honestidade. No final você recebe um diagnóstico personalizado e o caminho de 7 minutos para recuperar o controle.</div></div>
+      <div class="ui-item"><strong>startCta</strong><div class="val">COMEÇAR O TESTE E RECEBER MEU DIAGNÓSTICO</div></div>
+      <div class="ui-item"><strong>captureWho (novo — vinha da Q3 antiga)</strong><div class="val">Quem responde este teste? Mãe/mamãe · Pai/papai · Ambos · Avô/avó ou outro cuidador</div></div>
+    </div>
+    <p class="help">Demais textos de UI, eval, capture, loading e pitch permanecem idênticos ao relatório original — não reproduzidos aqui para não duplicar conteúdo sem mudança.</p>
+
+    <h2>2. Fluxo completo — 12 perguntas</h2>
+    <p class="help">Hero → Quebra-gelo → micro → Dor → micro → Prova social → Desejo → micro → Ponte → micro → Eval → Captura → Loading → Pitch</p>
+
+    <div class="section-banner block-ice">Quebra-gelo (Ice) — 2 perguntas</div>
+
+    <article class="card q" id="q1">
+      <div class="card-head"><span class="badge q">Q1 · q1</span><span class="badge soft">Quebra-gelo (Ice)</span><span class="badge origin">origem: Q1 original</span></div>
+      <h3>Quantas crises ou birras intensas seu filho tem por dia?</h3>
+      <p class="help">Seja honesta/o. Não há resposta "certa".</p>
+      <ol class="opts">
+        <li><span class="oid">a</span> 5 ou mais — estou no limite<span class="meta">peso 5 · tags: Crisis diarias extremas</span></li>
+        <li><span class="oid">b</span> 3 a 4 — o caos é quase diário<span class="meta">peso 3 · tags: Crisis frecuentes</span></li>
+        <li><span class="oid">c</span> 1 a 2, mas muito intensas<span class="meta">peso 2 · tags: Crisis intensas</span></li>
+        <li><span class="oid">d</span> Poucas, mas sinto que pioram<span class="meta">peso 2 · tags: Escalada</span></li>
+      </ol>
+    </article>
+
+    <article class="card q" id="q2">
+      <div class="card-head"><span class="badge q">Q2 · q2</span><span class="badge soft">Quebra-gelo (Ice)</span><span class="badge origin">origem: Q2 original</span></div>
+      <h3>Qual a idade do seu filho ou filha?</h3>
+      <p class="help">A fase de 2 a 4 anos é a mais volátil.</p>
+      <ol class="opts">
+        <li><span class="oid">a</span> 2 anos<span class="meta">peso 3 · tags: Etapa 2–4</span></li>
+        <li><span class="oid">b</span> 3 anos<span class="meta">peso 3 · tags: Etapa 2–4</span></li>
+        <li><span class="oid">c</span> 4 anos<span class="meta">peso 3 · tags: Etapa 2–4</span></li>
+        <li><span class="oid">d</span> Outra idade, mas igualmente forte<span class="meta">peso 2 · tags: Fuera de etapa</span></li>
+      </ol>
+    </article>
+
+    <article class="card micro" id="m_ice">
+      <div class="card-head"><span class="badge micro">MICRO · m_ice</span><span class="badge soft">insight</span></div>
+      <p class="help">Sem mudanças em relação ao original.</p>
+      <h3>Ninguém responde perguntas sem uma recompensa clara</h3>
+      <p>Sua recompensa ao terminar: um diagnóstico de em que ponto está sua casa com as birras e o próximo passo exato para recuperar o controle em 7 minutos — sem gritos nem ameaças vazias.</p>
+      <p class="cta">CTA: <strong>SEGUIR O TESTE</strong></p>
+    </article>
+
+    <div class="section-banner block-pain">Dor (Pain) — 4 perguntas</div>
+
+    <article class="card q" id="q3">
+      <div class="card-head"><span class="badge q">Q3 · q3</span><span class="badge soft">Dor (Pain)</span><span class="badge origin">origem: Q7 original</span></div>
+      <h3>Onde as birras explodem mais?</h3>
+      <p class="help">O lugar muda a vergonha, não a urgência.</p>
+      <ol class="opts">
+        <li><span class="oid">a</span> Em casa, várias vezes ao dia<span class="meta">peso 3 · tags: Caos en casa</span></li>
+        <li><span class="oid">b</span> No mercado ou lojas<span class="meta">peso 5 · tags: Público</span></li>
+        <li><span class="oid">c</span> Rua, visitas ou lugares públicos<span class="meta">peso 5 · tags: Público</span></li>
+        <li><span class="oid">d</span> Em todo lugar — sem zona segura<span class="meta">peso 5 · tags: Sin zona segura</span></li>
+      </ol>
+    </article>
+
+    <article class="card q" id="q4">
+      <div class="card-head"><span class="badge q">Q4 · q4</span><span class="badge soft">Dor (Pain)</span><span class="badge origin">origem: Q9 original</span></div>
+      <h3>Quando a birra começa, o que você faz na maioria das vezes?</h3>
+      <p class="help">Sua reação treina o que vem depois.</p>
+      <ol class="opts">
+        <li><span class="oid">a</span> Grito, ameaço ou castigo… e me arrependo<span class="meta">peso 5 · tags: Gritos</span></li>
+        <li><span class="oid">b</span> Cedo para acalmar<span class="meta">peso 5 · tags: Ceder</span></li>
+        <li><span class="oid">c</span> Travo: não sei o que dizer<span class="meta">peso 3 · tags: Bloqueo</span></li>
+        <li><span class="oid">d</span> Tento acalmar, mas se alonga igual<span class="meta">peso 3 · tags: Sin secuencia</span></li>
+      </ol>
+    </article>
+
+    <article class="card q" id="q5">
+      <div class="card-head"><span class="badge q">Q5 · q5</span><span class="badge soft">Dor (Pain)</span><span class="badge origin">origem: Q11 original</span></div>
+      <h3>Seu filho já bate, empurra, morde ou joga coisas?</h3>
+      <p class="help">Isso costuma ser comum nessa fase. Se acontece com frequência crescente, o protocolo trabalha bastante essa contenção — mas se for algo além de um episódio pontual, vale conversar também com o pediatra.</p>
+      <ol class="opts">
+        <li><span class="oid">a</span> Sim, já tem tapa ou empurrão<span class="meta">peso 5 · tags: Agresión</span></li>
+        <li><span class="oid">b</span> Joga objetos e grita no talo<span class="meta">peso 3 · tags: Desborde</span></li>
+        <li><span class="oid">c</span> Ainda não bate, mas sobe toda semana<span class="meta">peso 3 · tags: Escalada</span></li>
+        <li><span class="oid">d</span> Às vezes e não sei cortar<span class="meta">peso 3</span></li>
+      </ol>
+    </article>
+
+    <article class="card q" id="q6">
+      <div class="card-head"><span class="badge q">Q6 · q6</span><span class="badge soft">Dor (Pain)</span><span class="badge origin">origem: Q14 original</span></div>
+      <h3>Seu parceiro ou avós bagunçam com outra reação?</h3>
+      <p class="help">Roteiro diferente = mais crise.</p>
+      <ol class="opts">
+        <li><span class="oid">a</span> Sim: um cede, outro grita<span class="meta">peso 5 · tags: Desalineados</span></li>
+        <li><span class="oid">b</span> Às vezes; vira briga entre adultos<span class="meta">peso 3</span></li>
+        <li><span class="oid">c</span> Quase sempre estou sozinha/o<span class="meta">peso 3</span></li>
+        <li><span class="oid">d</span> Tentamos e na hora falha<span class="meta">peso 2</span></li>
+      </ol>
+    </article>
+
+    <article class="card micro" id="m_pain">
+      <div class="card-head"><span class="badge micro">MICRO · m_pain</span><span class="badge soft">paper</span></div>
+      <p class="help">Sem mudanças em relação ao original.</p>
+      <h3>Quando a criança manda em casa, a birra deixa de ser "fase"</h3>
+      <p>Se você cede "só dessa vez", grita "só hoje" ou trava, a criança aprende: quem explode, decide. Isso se treina a cada crise.</p>
+      <p class="cta">CTA: <strong>CONTINUAR</strong></p>
+    </article>
+
+    <article class="card sys">
+      <div class="card-head"><span class="badge sys">Prova social</span></div>
+      <p class="help">Vídeo Valentina, inserido dinamicamente após m_pain — sem mudanças.</p>
+    </article>
+
+    <div class="section-banner block-desire">Desejo (Desire) — 3 perguntas</div>
+
+    <article class="card q" id="q7">
+      <div class="card-head"><span class="badge q">Q7 · q7</span><span class="badge soft">Desejo (Desire)</span><span class="badge origin">origem: Q18 original</span></div>
+      <h3>O que você quer recuperar com mais urgência?</h3>
+      <p class="help">Sua prioridade nas próximas 2 semanas.</p>
+      <ol class="opts">
+        <li><span class="oid">a</span> Parar de gritar e me arrepender<span class="meta">peso 5</span></li>
+        <li><span class="oid">b</span> Saber o que dizer em cada fase<span class="meta">peso 5 · tags: Frases</span></li>
+        <li><span class="oid">c</span> Agir em público sem ceder por vergonha<span class="meta">peso 5 · tags: Público</span></li>
+        <li><span class="oid">d</span> Diminuir a frequência de crises<span class="meta">peso 3</span></li>
+      </ol>
+    </article>
+
+    <article class="card q" id="q8">
+      <div class="card-head"><span class="badge q">Q8 · q8</span><span class="badge soft">Desejo (Desire)</span><span class="badge origin">origem: Q20 original</span></div>
+      <h3>Um protocolo de 7 minutos parece realista no seu dia?</h3>
+      <p class="help">Simples e usável sob pressão.</p>
+      <ol class="opts">
+        <li><span class="oid">a</span> Sim, se for passo a passo<span class="meta">peso 5 · tags: Protocolo</span></li>
+        <li><span class="oid">b</span> Sim, preciso curto<span class="meta">peso 5</span></li>
+        <li><span class="oid">c</span> Talvez, se funcionar em público<span class="meta">peso 3</span></li>
+        <li><span class="oid">d</span> Prefiro ainda mais curto<span class="meta">peso 2</span></li>
+      </ol>
+    </article>
+
+    <article class="card q" id="q9">
+      <div class="card-head"><span class="badge q">Q9 · q9</span><span class="badge soft">Desejo (Desire)</span><span class="badge origin">origem: Q23 original</span></div>
+      <h3>Prefere baixar a culpa ou subir a ordem em casa primeiro?</h3>
+      <p class="help">As duas importam; escolha o foco.</p>
+      <ol class="opts">
+        <li><span class="oid">a</span> Baixar a culpa primeiro<span class="meta">peso 3 · tags: Culpa</span></li>
+        <li><span class="oid">b</span> Subir a ordem e os limites<span class="meta">peso 5</span></li>
+        <li><span class="oid">c</span> As duas ao mesmo tempo<span class="meta">peso 5</span></li>
+        <li><span class="oid">d</span> Só quero que o caos pare já<span class="meta">peso 5</span></li>
+      </ol>
+    </article>
+
+    <article class="card micro" id="m_desire">
+      <div class="card-head"><span class="badge micro">MICRO · m_desire</span><span class="badge soft">magazine</span></div>
+      <p class="help">Sem mudanças em relação ao original.</p>
+      <h3>Menos paciência vazia. Mais roteiro no minuto exato</h3>
+      <p>Imagine abrir o celular no mercado e ter frases e passos prontos. Não para ser perfeita/o: para parar de improvisar quando já está no limite.</p>
+      <p class="cta">CTA: <strong>QUERO ESSE CONTROLE</strong></p>
+    </article>
+
+    <div class="section-banner block-bridge">Ponte (Bridge) — 3 perguntas</div>
+
+    <article class="card q" id="q10">
+      <div class="card-head"><span class="badge q">Q10 · q10</span><span class="badge soft">Ponte (Bridge)</span><span class="badge origin">origem: Q26 original</span></div>
+      <h3>Você trava e fica em branco em plena crise?</h3>
+      <p class="help">Frases prontas existem para isso.</p>
+      <ol class="opts">
+        <li><span class="oid">a</span> Sim, quase sempre<span class="meta">peso 5 · tags: Bloqueo</span></li>
+        <li><span class="oid">b</span> Às vezes<span class="meta">peso 3</span></li>
+        <li><span class="oid">c</span> Falo demais e pioro<span class="meta">peso 3</span></li>
+        <li><span class="oid">d</span> Improviso e saio mal<span class="meta">peso 3</span></li>
+      </ol>
+    </article>
+
+    <article class="card q" id="q11">
+      <div class="card-head"><span class="badge q">Q11 · q11</span><span class="badge soft">Ponte (Bridge)</span><span class="badge origin">origem: Q28 original</span></div>
+      <h3>Está disposta/o a pôr limites com método (não com mais violência)?</h3>
+      <p class="help">Conter ≠ ceder.</p>
+      <ol class="opts">
+        <li><span class="oid">a</span> Sim, com método<span class="meta">peso 5 · tags: Método</span></li>
+        <li><span class="oid">b</span> Sim, sem gritos se possível<span class="meta">peso 3</span></li>
+        <li><span class="oid">c</span> Quero aprender a não ceder<span class="meta">peso 5</span></li>
+        <li><span class="oid">d</span> Quero autoridade calma<span class="meta">peso 5</span></li>
+      </ol>
+    </article>
+
+    <article class="card q" id="q12">
+      <div class="card-head"><span class="badge q">Q12 · q12</span><span class="badge soft">Ponte (Bridge)</span><span class="badge origin">origem: Q15 original</span></div>
+      <h3>Há quanto tempo você vive no modo "apagar incêndio"?</h3>
+      <p class="help">Tempo sem protocolo endurece o padrão. Última pergunta antes do seu diagnóstico.</p>
+      <ol class="opts">
+        <li><span class="oid">a</span> Meses — cada vez mais pesado<span class="meta">peso 5 · tags: Patrón instalado</span></li>
+        <li><span class="oid">b</span> Semanas, já me desbordou<span class="meta">peso 3</span></li>
+        <li><span class="oid">c</span> Desde a fase 2–4<span class="meta">peso 3</span></li>
+        <li><span class="oid">d</span> Sempre teve birra; agora eles mandam<span class="meta">peso 5 · tags: Inversión de mando</span></li>
+      </ol>
+    </article>
+
+    <article class="card micro" id="m_bridge">
+      <div class="card-head"><span class="badge micro">MICRO · m_bridge</span><span class="badge soft">tv</span></div>
+      <p class="help">Sem mudanças em relação ao original.</p>
+      <h3>A criança quer mandar. Você volta a pôr ordem — com método</h3>
+      <p>Não é castigo duro nem ceder por paz falsa. É uma sequência de 7 minutos: o que dizer, o que fazer e o que evitar em cada fase.</p>
+      <p class="cta">CTA: <strong>VER MEU DIAGNÓSTICO</strong></p>
+    </article>
+
+    <article class="card sys">
+      <div class="card-head"><span class="badge sys">Eval · Capture · Loading · Pitch</span></div>
+      <p class="help">Sem mudanças em relação ao fluxo ativo original — ver relatório completo para a copy integral dessas telas e do funil pós-compra (obrigado, upsell, downsell).</p>
+    </article>
+  </section>
+
+  <footer class="overview-card" style="margin-top:32px">
+    <h2>Notas para implementação</h2>
+    <ul>
+      <li><strong>Nova pergunta de captura:</strong> "Quem responde este teste?" migrou da Q3 original para a tela de captura de lead, sem contar como pergunta do quiz.</li>
+      <li><strong>Pesos recalibrados:</strong> respostas de maior sinal passaram de peso 4 para 5, compensando a redução de 30 para 12 perguntas nos 3 medidores (Intensidade, Perda de autoridade, Urgência).</li>
+      <li><strong>Tags preservadas:</strong> Crisis diarias extremas, Etapa 2–4, Público, Gritos, Ceder, Agresión, Desalineados, Frases, Protocolo, Bloqueo, Método, Patrón instalado — cobrem os principais ângulos usados no resultado personalizado.</li>
+      <li><strong>Sem mudanças:</strong> UI de hero/eval/capture/loading/pitch, prova social, funil pós-compra (obrigado/upsell/downsell) e os 4 micros (m_ice, m_pain, m_desire, m_bridge).</li>
+      <li><strong>Pendente:</strong> versões ES/EN desta mesma redução de 12 perguntas, caso queira estender para os outros idiomas.</li>
+    </ul>
+  </footer>
+</div>
+</body>
+</html>
