@@ -2,7 +2,7 @@
 
 Quiz interativo (mobile-first) + páginas de funil (obrigado, upsell, downsell).
 
-**Produção:** https://birraquizz.vercel.app
+**Produção:** https://birraquizzz.vercel.app
 
 ## Como abrir
 
