@@ -643,8 +643,8 @@
   }
 
   function attentionLevel() {
-    // 12 perguntas com pesos até 5 → score típico ~24–60; divide por 5 para o medidor ir a ~99
-    return Math.min(99, Math.max(86, 88 + Math.min(11, Math.floor((state.score || 24) / 5))));
+    // 12 perguntas com pesos até 5 → urgência alta; teto fixo em 97% (não 98/99)
+    return Math.min(97, Math.max(86, 87 + Math.min(10, Math.floor((state.score || 24) / 5))));
   }
 
   /** Espelho personalizado (etapa Avaliação do funil): devolve a vida do lead para ele. */
