@@ -166,6 +166,12 @@ button:disabled {
   white-space: nowrap;
 }
 
+/* Contador numérico desligado em todo o quiz — só a barra */
+body[data-hide-progress-count="true"] .progress-count,
+.progress-count[hidden] {
+  display: none !important;
+}
+
 /* Screens + JS motion */
 .screen {
   display: none;
