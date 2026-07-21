@@ -1046,6 +1046,308 @@ body[data-theme="designer"] * {
   --shadow: none;
 }
 
+/* ——— Micros advertoriais (HTML novo em app.js) ——— */
+body[data-theme="designer"] .adv-micro {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0 8px;
+  background: #fff;
+  color: #000;
+  text-align: left;
+}
+
+body[data-theme="designer"] .adv-micro-media {
+  margin: 0 -16px 4px;
+  width: calc(100% + 32px);
+  max-height: 140px;
+  overflow: hidden;
+  background: #f3f3f3;
+}
+
+body[data-theme="designer"] .adv-micro-media img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+}
+
+body[data-theme="designer"] .adv-micro-kicker {
+  margin: 0;
+  display: inline-block;
+  align-self: flex-start;
+  background: #faa70d;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+}
+
+body[data-theme="designer"] .adv-micro-title,
+body[data-theme="designer"] .adv-micro .paper-headline {
+  margin: 0 !important;
+  font-family: var(--font) !important;
+  font-size: clamp(1.35rem, 5vw, 1.7rem) !important;
+  line-height: 1.18 !important;
+  font-weight: 700 !important;
+  color: #000 !important;
+  text-align: left !important;
+  min-height: 0 !important;
+}
+
+body[data-theme="designer"] .adv-micro-body,
+body[data-theme="designer"] .adv-micro .paper-lead {
+  margin: 0 !important;
+  font-size: 1rem !important;
+  line-height: 1.45 !important;
+  color: #000 !important;
+}
+
+body[data-theme="designer"] .adv-micro-bullets {
+  margin: 2px 0 4px !important;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+body[data-theme="designer"] .adv-micro-bullets li {
+  padding: 4px 0 4px 22px !important;
+  margin: 0 !important;
+  border: none !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  color: #000 !important;
+  background: transparent !important;
+}
+
+body[data-theme="designer"] .adv-micro-bullets li::before {
+  content: "✓";
+  color: #ff0000;
+  top: 4px !important;
+}
+
+body[data-theme="designer"] .adv-micro .paper-quote {
+  margin: 4px 0 !important;
+  padding: 10px 12px !important;
+  background: #f9f6f2 !important;
+  border: none !important;
+}
+
+body[data-theme="designer"] .adv-micro .btn-primary {
+  margin-top: 6px;
+}
+
+/* Última matéria (m_bridge): bem curta, sem scroll */
+body[data-theme="designer"] .adv-micro--compact {
+  gap: 8px;
+  padding: 12px 0 4px;
+  min-height: auto;
+  justify-content: flex-start;
+}
+
+body[data-theme="designer"] .adv-micro--compact .adv-micro-title,
+body[data-theme="designer"] .adv-micro--compact .paper-headline {
+  font-size: clamp(1.25rem, 4.8vw, 1.5rem) !important;
+  text-align: center !important;
+}
+
+body[data-theme="designer"] .adv-micro--compact .adv-micro-kicker {
+  align-self: center;
+  background: #ff0000;
+}
+
+body[data-theme="designer"] .adv-micro--compact .adv-micro-body {
+  text-align: center;
+  font-size: 0.98rem !important;
+}
+
+body[data-theme="designer"] .adv-micro--compact .adv-micro-bullets {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 10px;
+  margin: 4px 0 8px !important;
+}
+
+body[data-theme="designer"] .adv-micro--compact .adv-micro-bullets li {
+  padding: 6px 10px 6px 26px !important;
+  background: #fff5f5 !important;
+  font-size: 0.85rem !important;
+  border: 1px solid #ffd0d0 !important;
+}
+
+body[data-theme="designer"] .adv-micro--compact .adv-micro-bullets li::before {
+  left: 8px;
+  top: 50% !important;
+  transform: translateY(-50%);
+}
+
+/* ——— Cores antigas (azul / laranja) — forçar paleta designer ——— */
+body[data-theme="designer"] .btn-primary,
+body[data-theme="designer"] .btn-accent,
+body[data-theme="designer"] a.btn-primary,
+body[data-theme="designer"] a.btn-accent,
+body[data-theme="designer"] button.btn-primary,
+body[data-theme="designer"] button.btn-accent,
+body[data-theme="designer"] .btn-primary.btn-accent,
+body[data-theme="designer"] .btn-urgent-cta,
+body[data-theme="designer"] .sticky-cta .btn-primary,
+body[data-theme="designer"] .sticky-cta a {
+  background: #ff0000 !important;
+  background-image: none !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+body[data-theme="designer"] .btn-primary:hover,
+body[data-theme="designer"] .btn-accent:hover,
+body[data-theme="designer"] .btn-urgent-cta:hover {
+  background: #d90000 !important;
+  background-image: none !important;
+  filter: none !important;
+}
+
+/* TV / magazine (caso algum residual apareça) */
+body[data-theme="designer"] .tv-card,
+body[data-theme="designer"] .tv-panel,
+body[data-theme="designer"] .tv-bezel,
+body[data-theme="designer"] .mag-card,
+body[data-theme="designer"] .mag-body {
+  background: #fff !important;
+  color: #000 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+body[data-theme="designer"] .tv-panel .paper-headline,
+body[data-theme="designer"] .tv-panel .paper-lead,
+body[data-theme="designer"] .tv-panel .paper-bullets li,
+body[data-theme="designer"] .tv-panel .paper-quote p,
+body[data-theme="designer"] .mag-body .paper-headline {
+  color: #000 !important;
+  background: transparent !important;
+}
+
+body[data-theme="designer"] .tv-panel .paper-quote,
+body[data-theme="designer"] .tv-panel .paper-bullets li {
+  background: #f9f6f2 !important;
+  border: none !important;
+}
+
+body[data-theme="designer"] .tv-panel .paper-stat strong,
+body[data-theme="designer"] .mag-body .paper-stat strong {
+  color: #ff0000 !important;
+}
+
+body[data-theme="designer"] .tv-bezel {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+body[data-theme="designer"] .tv-screen {
+  max-height: 120px !important;
+  aspect-ratio: auto !important;
+}
+
+/* Loading / hero / textos que usavam azul oklch */
+body[data-theme="designer"] .loading-screen {
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: #fff !important;
+}
+
+body[data-theme="designer"] .loading-spinner {
+  border-color: #eee !important;
+  border-top-color: #ff0000 !important;
+  border-right-color: #ff0000 !important;
+}
+
+body[data-theme="designer"] .loading-kicker,
+body[data-theme="designer"] .loading-screen h2,
+body[data-theme="designer"] .loading-sub,
+body[data-theme="designer"] .loading-bar-pct {
+  color: #000 !important;
+}
+
+body[data-theme="designer"] .loading-bar-fill {
+  background: #ff0000 !important;
+  background-image: none !important;
+}
+
+body[data-theme="designer"] .q-body h2,
+body[data-theme="designer"] .hero-body h1,
+body[data-theme="designer"] .hero-body .lead,
+body[data-theme="designer"] .hero-body .sub,
+body[data-theme="designer"] .q-help,
+body[data-theme="designer"] .option,
+body[data-theme="designer"] .result-card h2,
+body[data-theme="designer"] .result-card p,
+body[data-theme="designer"] .eval-mirror,
+body[data-theme="designer"] .pitch-block h3,
+body[data-theme="designer"] .pitch-block p,
+body[data-theme="designer"] .capture-card h1,
+body[data-theme="designer"] .capture-card .lead {
+  color: #000 !important;
+}
+
+body[data-theme="designer"] .trust-row span {
+  color: #000 !important;
+  background: transparent !important;
+}
+
+body[data-theme="designer"] .analyze-meter-top span {
+  color: #000 !important;
+}
+
+body[data-theme="designer"] .analyze-meter-val {
+  color: #ff0000 !important;
+}
+
+body[data-theme="designer"] .price-note {
+  color: #ff0000 !important;
+}
+
+body[data-theme="designer"] .footer-note {
+  color: #555 !important;
+}
+
+/* Result hero / badges sem azul ou laranja residual */
+body[data-theme="designer"] .result-hero,
+body[data-theme="designer"] .result-hero-urgent,
+body[data-theme="designer"] .pitch-card .result-hero-urgent,
+body[data-theme="designer"] .eval-card .result-hero {
+  background: #fff !important;
+  background-image: none !important;
+  color: #000 !important;
+}
+
+body[data-theme="designer"] .badge-critical,
+body[data-theme="designer"] .badge-urgent {
+  background: #ff0000 !important;
+  color: #fff !important;
+  background-image: none !important;
+}
+
+/* Social residual */
+body[data-theme="designer"] .social-card h2,
+body[data-theme="designer"] .social-name,
+body[data-theme="designer"] .social-quote {
+  color: #000 !important;
+}
+
+body[data-theme="designer"] .social-badge {
+  background: #faa70d !important;
+  color: #fff !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   body[data-theme="designer"] .progress-bar > span {
     transition: none;

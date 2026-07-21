@@ -454,7 +454,66 @@
     });
   }
 
+  function isDesignerTheme() {
+    return (
+      document.body.dataset.theme === "designer" ||
+      document.body.dataset.page === "quiz2"
+    );
+  }
+
+  /** Quiz 2.0: micro em formato advertorial (sem TV/revista); m_bridge bem compacto. */
+  function renderMicroDesigner(s) {
+    const photo = sceneFor(s);
+    const compact = s.id === "m_bridge";
+    const bullets = s.bullets || [];
+    const kicker = s.ribbon || s.stamp || s.category || "";
+
+    el.screen.innerHTML = `
+      <article class="adv-micro${compact ? " adv-micro--compact" : ""}" id="news-root">
+        ${
+          compact
+            ? ""
+            : `<div class="adv-micro-media" data-reveal>
+                <img src="${img(photo)}" alt="" width="800" height="320" loading="eager" />
+              </div>`
+        }
+        ${kicker ? `<p class="adv-micro-kicker" data-reveal>${escapeHtml(kicker)}</p>` : ""}
+        <h2 class="paper-headline adv-micro-title" id="paper-headline" data-reveal></h2>
+        <p class="paper-lead adv-micro-body" data-reveal>${escapeHtml(s.body || "")}</p>
+        ${
+          bullets.length
+            ? `<ul class="paper-bullets adv-micro-bullets">${bullets
+                .map((b) => `<li data-reveal>${escapeHtml(b)}</li>`)
+                .join("")}</ul>`
+            : ""
+        }
+        ${
+          compact || !s.quote
+            ? ""
+            : `<blockquote class="paper-quote" data-reveal><p>${escapeHtml(s.quote)}</p>
+               <cite>${escapeHtml(s.quoteBy || "")}</cite></blockquote>`
+        }
+        <button type="button" class="btn-primary btn-accent" id="btn-micro" data-reveal>${escapeHtml(
+          s.cta || ui().continueCta
+        )}</button>
+      </article>`;
+
+    const headline = document.getElementById("paper-headline");
+    if (headline) headline.textContent = s.title || "";
+
+    document.getElementById("btn-micro").addEventListener("click", (e) => {
+      M.ripple(e.currentTarget, e);
+      nextAfterAnswer();
+    });
+  }
+
   function renderMicro(s) {
+    // Quiz 2.0 designer: layout editorial, última matéria (m_bridge) compacta
+    if (isDesignerTheme()) {
+      renderMicroDesigner(s);
+      return;
+    }
+
     // Reuse news card styles by layout
     const photo = sceneFor(s);
     const dateShort = new Date().toLocaleDateString(localeTag(), {
@@ -550,13 +609,17 @@
     const s = currentStep();
     const root = document.getElementById("news-root");
     const headline = document.getElementById("paper-headline");
+    // Designer compact (m_bridge): sem typewriter longo — título já no HTML
+    const compactDesigner = isDesignerTheme() && s?.id === "m_bridge";
     if (headline && s?.title) {
-      if (M.typewriter) await M.typewriter(headline, s.title, 12);
+      if (!compactDesigner && M.typewriter) await M.typewriter(headline, s.title, 12);
       else headline.textContent = s.title;
     }
-    if (root && M.stamp && s?.stamp) M.stamp(root, s.stamp);
-    if (root && M.pageFlash) M.pageFlash(root);
-    M.stagger?.(el.screen, "[data-reveal]", 80);
+    if (!isDesignerTheme()) {
+      if (root && M.stamp && s?.stamp) M.stamp(root, s.stamp);
+      if (root && M.pageFlash) M.pageFlash(root);
+    }
+    M.stagger?.(el.screen, "[data-reveal]", compactDesigner ? 40 : 80);
     M.pulseCta?.(document.getElementById("btn-micro"));
   }
 
