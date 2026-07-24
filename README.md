@@ -29,17 +29,17 @@ python3 -m http.server 8877
 
 Ambos usam o mesmo funil, copy, leads, pixel e checkout Hotmart.
 
-## Fluxo quiz (versão 12 perguntas)
+## Fluxo quiz (versão 7 perguntas — otimizado)
 
-1. Hero + seletor ES / PT / EN (~3–4 min)  
-2. **Quebra-gelo** (2 perguntas) → micro recompensa  
-3. **Dor** (4 perguntas) → micro alerta → prova social (vídeo)  
-4. **Desejo** (3 perguntas) → micro cenário ideal  
-5. **Ponte** (3 perguntas) → micro protocolo  
-6. Diagnóstico → captura de lead (inclui “quem responde”) → loading  
-7. Pitch / resultado + CTA Hotmart  
+1. Hero + seletor ES / PT / EN (~2 min)  
+2. **ICP** (2 perguntas: idade + frequência)  
+3. **Hyperframe** de conexão com a audiência  
+4. **Dor** (3 perguntas) → prova social (vídeo)  
+5. **Desejo** (1) + **Ponte** (1: protocolo 7 min)  
+6. **Hyperframe** de visão (Vision Companion)  
+7. Diagnóstico → captura de lead → loading → pitch + CTA  
 
-Versão longa (30 perguntas) arquivada em `archive/quiz-flow-30-perguntas.js`.
+Arquivos legados: `archive/quiz-flow-12-perguntas.js`, `archive/quiz-flow-30-perguntas.js`.
 
 ## Funil (pós-compra / oferta)
 

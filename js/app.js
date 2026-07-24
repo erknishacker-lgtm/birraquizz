@@ -1,7 +1,7 @@
 /**
- * Funil de quiz — versão 12 perguntas:
- * hero → ice(2) → micro → pain(4) → micro → social → desire(3) → micro
- * → bridge(3) → micro → eval → capture → loading → pitch
+ * Funil de quiz — versão 7 perguntas (otimizado):
+ * hero → ICP(2) → hyperframe conexão → pain(3) → social → desire(1) → bridge(1)
+ * → hyperframe visão → eval → capture → loading → pitch
  */
 (() => {
   const FLOW = window.QUIZ_FLOW;
@@ -92,8 +92,8 @@
     const out = [];
     for (const s of raw) {
       out.push(s);
-      // No meio do funil: depois da micro de dor (antes do bloco desejo)
-      if (s.id === "m_pain") out.push(socialStep());
+      // Após última dor (q5): prova social antes do desejo
+      if (s.id === "q5" || s.id === "m_pain") out.push(socialStep());
     }
     return out;
   }
@@ -120,23 +120,20 @@
    * Foto única e impactante por pergunta (sem repetir a mesma cena).
    * Sobrescreve o image do flow quando existir mapeamento.
    */
-  /** Cenas da versão 12 perguntas (conteúdo reordenado do fluxo longo). */
+  /** Cenas da versão 7 perguntas (ICP + dor + desejo + ponte). */
   const SCENE_BY_Q = {
-    q1: "scene-q1.jpg",
-    q2: "scene-q2.jpg",
+    q1: "scene-q2.jpg",
+    q2: "scene-q1.jpg",
     q3: "scene-super.jpg",
     q4: "scene-q9.jpg",
-    q5: "scene-escalation.jpg",
-    q6: "scene-q14-family.jpg",
-    q7: "scene-q18-recover.jpg",
-    q8: "scene-q20-protocol.jpg",
-    q9: "scene-q23-choice.jpg",
-    q10: "scene-q26-freeze.jpg",
-    q11: "scene-q28-limits.jpg",
-    q12: "scene-q15-exhaust.jpg",
+    q5: "scene-q15-exhaust.jpg",
+    q6: "scene-q18-recover.jpg",
+    q7: "scene-q20-protocol.jpg",
   };
 
   const SCENE_BY_MICRO = {
+    m_connect: "scene-news.jpg",
+    m_vision: "scene-calm.jpg",
     m_ice: "scene-news.jpg",
     m_pain: "scene-news3.jpg",
     m_desire: "scene-home.jpg",
@@ -380,6 +377,7 @@
       </article>`;
     M.stagger(el.screen, "[data-reveal]", 60);
     document.getElementById("btn-social").addEventListener("click", (e) => {
+      playClickSound();
       M.ripple(e.currentTarget, e);
       nextAfterAnswer();
     });
@@ -408,6 +406,7 @@
     M.stagger(el.screen, "[data-reveal]", 70);
     M.pulseCta(document.getElementById("btn-start"));
     document.getElementById("btn-start").addEventListener("click", (e) => {
+      playClickSound();
       M.ripple(e.currentTarget, e);
       trackFunnel("start");
       goStep(0, "slide");
@@ -442,6 +441,7 @@
       btn.addEventListener("click", (e) => {
         if (state.transitioning) return;
         const opt = s.options[Number(btn.dataset.opt)];
+        playClickSound();
         M.ripple(btn, e);
         M.pickPop?.(btn);
         btn.classList.add("is-picked");
@@ -458,10 +458,40 @@
     return document.body.dataset.theme === "designer";
   }
 
-  /** Quiz 2.0: micro em formato advertorial (sem TV/revista); m_bridge bem compacto. */
+  /** Som de clique sintético (Web Audio — sem arquivo externo). */
+  let _audioCtx = null;
+  function playClickSound() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!_audioCtx) _audioCtx = new AC();
+      if (_audioCtx.state === "suspended") _audioCtx.resume();
+      const t0 = _audioCtx.currentTime;
+      const osc = _audioCtx.createOscillator();
+      const gain = _audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(880, t0);
+      osc.frequency.exponentialRampToValueAtTime(220, t0 + 0.06);
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(0.12, t0 + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.07);
+      osc.connect(gain);
+      gain.connect(_audioCtx.destination);
+      osc.start(t0);
+      osc.stop(t0 + 0.08);
+    } catch (_) {
+      /* autoplay / unsupported */
+    }
+  }
+
+  /** Micro/hyperframe advertorial; hyperframes e m_bridge compactos (menos scroll). */
   function renderMicroDesigner(s) {
     const photo = sceneFor(s);
-    const compact = s.id === "m_bridge";
+    const compact =
+      s.id === "m_bridge" ||
+      s.id === "m_connect" ||
+      s.id === "m_vision" ||
+      s.paper === "HYPERFRAME";
     const bullets = s.bullets || [];
     const kicker = s.ribbon || s.stamp || s.category || "";
 
@@ -499,6 +529,7 @@
     if (headline) headline.textContent = s.title || "";
 
     document.getElementById("btn-micro").addEventListener("click", (e) => {
+      playClickSound();
       M.ripple(e.currentTarget, e);
       nextAfterAnswer();
     });
@@ -597,6 +628,7 @@
         </article>`;
     }
     document.getElementById("btn-micro").addEventListener("click", (e) => {
+      playClickSound();
       M.ripple(e.currentTarget, e);
       nextAfterAnswer();
     });
@@ -606,8 +638,13 @@
     const s = currentStep();
     const root = document.getElementById("news-root");
     const headline = document.getElementById("paper-headline");
-    // Designer compact (m_bridge): sem typewriter longo — título já no HTML
-    const compactDesigner = isDesignerTheme() && s?.id === "m_bridge";
+    // Hyperframes / compact: sem typewriter longo — título já no HTML
+    const compactDesigner =
+      isDesignerTheme() &&
+      (s?.id === "m_bridge" ||
+        s?.id === "m_connect" ||
+        s?.id === "m_vision" ||
+        s?.paper === "HYPERFRAME");
     if (headline && s?.title) {
       if (!compactDesigner && M.typewriter) await M.typewriter(headline, s.title, 12);
       else headline.textContent = s.title;
@@ -640,8 +677,8 @@
   }
 
   function attentionLevel() {
-    // 12 perguntas com pesos até 5 → urgência alta; teto fixo em 97% (não 98/99)
-    return Math.min(97, Math.max(86, 87 + Math.min(10, Math.floor((state.score || 24) / 5))));
+    // 7 perguntas com pesos até 5 → score típico ~14–35; teto 97%
+    return Math.min(97, Math.max(86, 87 + Math.min(10, Math.floor((state.score || 18) / 3))));
   }
 
   /** Espelho personalizado (etapa Avaliação do funil): devolve a vida do lead para ele. */
@@ -688,6 +725,7 @@
     M.stagger(el.screen, "[data-reveal]", 70);
     M.urgencyMeter?.(document.getElementById("urgency-meter-eval"), level, { duration: 1500 });
     document.getElementById("btn-eval").addEventListener("click", (e) => {
+      playClickSound();
       M.ripple(e.currentTarget, e);
       nextAfterAnswer();
     });
