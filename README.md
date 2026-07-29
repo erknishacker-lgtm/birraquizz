@@ -15,6 +15,7 @@ python3 -m http.server 8877
 |--------|-----------|----------|
 | **Quiz principal (advertorial)** | http://127.0.0.1:8877/ | https://birraquizzz.vercel.app/ |
 | Quiz clássico (legado) | http://127.0.0.1:8877/quiz2/ | https://birraquizzz.vercel.app/quiz2/ |
+| **Quiz Sono (clone inlead)** | http://127.0.0.1:8877/quiz-sono/ | /quiz-sono/ |
 | Obrigado | http://127.0.0.1:8877/obrigado/ | /obrigado/ |
 | Upsell | http://127.0.0.1:8877/upsell/ | /upsell/ |
 | Downsell | http://127.0.0.1:8877/downsell/ | /downsell/ |
