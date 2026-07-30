@@ -101,25 +101,35 @@
     }).catch(() => null);
   }
 
+  // Toda escrita espera a sessão existir de fato no banco antes de sair
+  // (funnel_events tem FK pra funnel_sessions; sem isso a 1ª etapa se perdia).
+  let sessionReady = Promise.resolve();
+
   function insertEvent(evt, keepalive) {
-    const body = JSON.stringify([
-      {
-        session_id: state.sessionId,
-        funnel: FUNNEL,
-        created_at: new Date().toISOString(),
-        ...evt,
-      },
-    ]);
-    return supaFetch('funnel_events', { method: 'POST', body }, keepalive);
+    const send = () => {
+      const body = JSON.stringify([
+        {
+          session_id: state.sessionId,
+          funnel: FUNNEL,
+          created_at: new Date().toISOString(),
+          ...evt,
+        },
+      ]);
+      return supaFetch('funnel_events', { method: 'POST', body }, keepalive);
+    };
+    return sessionReady.then(send, send);
   }
 
   function patchSession(fields, keepalive) {
-    const body = JSON.stringify(fields);
-    return supaFetch(
-      `funnel_sessions?session_id=eq.${state.sessionId}`,
-      { method: 'PATCH', body },
-      keepalive
-    );
+    const send = () => {
+      const body = JSON.stringify(fields);
+      return supaFetch(
+        `funnel_sessions?session_id=eq.${state.sessionId}`,
+        { method: 'PATCH', body },
+        keepalive
+      );
+    };
+    return sessionReady.then(send, send);
   }
 
   const state = {
@@ -160,12 +170,11 @@
       screen_h: screen.height || null,
       ...utm,
     });
-    // upsert: se a mesma aba re-executar o boot, não duplica a sessão
-    supaFetch('funnel_sessions?on_conflict=session_id', {
-      method: 'POST',
-      body,
-      prefer: 'resolution=merge-duplicates,return=minimal',
-    });
+    // insert simples: on_conflict/upsert exige permissão implícita de SELECT
+    // que a role anon não tem (de propósito). Se a mesma aba re-executar o
+    // boot, a 2ª tentativa dá 409 (chave duplicada) e é ignorada — sem problema,
+    // a sessão já existe.
+    sessionReady = supaFetch('funnel_sessions', { method: 'POST', body, prefer: 'return=minimal' });
     insertEvent({ event_type: 'session_start' });
 
     document.addEventListener('visibilitychange', () => {
