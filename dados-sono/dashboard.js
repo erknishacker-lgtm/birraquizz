@@ -18,8 +18,11 @@
     err: document.getElementById('auth-err'),
     status: document.getElementById('load-status'),
     summary: document.getElementById('summary-cards'),
-    worst: document.getElementById('worst-drop'),
+    bottleneck: document.getElementById('bottleneck-callout'),
+    funnelChart: document.getElementById('funnel-chart'),
+    timeChart: document.getElementById('time-chart'),
     funnelTable: document.getElementById('funnel-table'),
+    btnToggleFunnelTable: document.getElementById('btn-toggle-funnel-table'),
     sessionsTable: document.getElementById('sessions-table'),
     sessionsMeta: document.getElementById('sessions-meta'),
     btnRefresh: document.getElementById('btn-refresh'),
@@ -38,6 +41,8 @@
 
   let currentRange = { mode: 'all', from: null, to: null };
   let lastSessions = [];
+  let sessionSort = { key: 'started_at', dir: 'desc' };
+  const tooltip = document.getElementById('viz-tooltip');
 
   function isAuthed() {
     return sessionStorage.getItem(AUTH_KEY) === '1';
@@ -181,8 +186,7 @@
     ]);
 
     renderSummary(summary && summary[0]);
-    renderFunnelTable(steps || []);
-    renderWorst(steps || []);
+    renderFunnelSection(steps || []);
     lastSessions = sessions || [];
     renderSessions(lastSessions);
 
@@ -218,83 +222,228 @@
       .join('');
   }
 
-  function renderFunnelTable(steps) {
-    if (!el.funnelTable) return;
-    const sorted = steps.slice().sort((a, b) => a.step_index - b.step_index);
-    const base = sorted.length ? sorted[0].sessions_reached : 0;
-    let rows = '';
-    let prev = null;
-    sorted.forEach((st) => {
-      const n = Number(st.sessions_reached) || 0;
-      const reach = pct(n, base || 1);
-      let drop = '—';
-      let dropCls = '';
-      if (prev !== null && prev > 0) {
-        const lost = Math.max(0, prev - n);
-        const d = pct(lost, prev);
-        drop = `${d}% (−${lost})`;
-        if (d >= 25) dropCls = 'is-bad';
-        else if (d >= 12) dropCls = 'is-warn';
-      }
-      rows += `
-        <tr>
-          <td class="col-step"><span class="step-idx">${st.step_index + 1}</span> ${escapeHtml(st.step_title || st.step_id || '')}</td>
-          <td class="col-num">${n}</td>
-          <td class="col-pct">
-            <div class="mini-bar"><i style="width:${Math.min(100, reach)}%"></i></div>
-            <span>${reach}%</span>
-          </td>
-          <td class="col-num">${fmtMs(st.avg_time_ms)}</td>
-          <td class="col-drop ${dropCls}">${drop}</td>
-        </tr>`;
-      prev = n;
-    });
-    el.funnelTable.innerHTML = `
-      <thead>
-        <tr>
-          <th>Etapa</th>
-          <th>Pessoas</th>
-          <th>% que chegou</th>
-          <th>Tempo médio na etapa</th>
-          <th>Queda vs anterior</th>
-        </tr>
-      </thead>
-      <tbody>${rows || '<tr><td colspan="5">Sem dados no período.</td></tr>'}</tbody>`;
+  /* ---------------- tooltip compartilhado ---------------- */
+  function showTooltip(target, html) {
+    if (!tooltip) return;
+    tooltip.innerHTML = html;
+    tooltip.hidden = false;
+    const r = target.getBoundingClientRect();
+    const tw = tooltip.offsetWidth;
+    let left = r.left + r.width / 2 - tw / 2;
+    left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+    let top = r.top - tooltip.offsetHeight - 10;
+    if (top < 8) top = r.bottom + 10;
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+  }
+  function hideTooltip() {
+    if (tooltip) tooltip.hidden = true;
   }
 
-  function renderWorst(steps) {
-    if (!el.worst) return;
-    const sorted = steps.slice().sort((a, b) => a.step_index - b.step_index);
-    let worst = null;
-    let prev = null;
-    let prevLabel = '';
-    sorted.forEach((st) => {
-      const n = Number(st.sessions_reached) || 0;
-      if (prev !== null && prev > 0) {
-        const lost = Math.max(0, prev - n);
-        const d = lost / prev;
-        if (!worst || d > worst.d) worst = { from: prevLabel, to: st.step_title || st.step_id, d, lost };
-      }
-      prevLabel = st.step_title || st.step_id;
-      prev = n;
-    });
-    if (!worst || worst.d <= 0) {
-      el.worst.innerHTML = `<p class="funnel-muted">Ainda não há queda relevante (poucos dados no período).</p>`;
+  /* ---------------- gráfico de barras horizontal (etapas) ---------------- */
+  function renderBarChart(container, rows, opts) {
+    if (!container) return;
+    container.innerHTML = '';
+    if (!rows.length) {
+      container.innerHTML = '<p class="funnel-muted">Sem dados no período.</p>';
       return;
     }
-    const p = Math.round(worst.d * 1000) / 10;
-    el.worst.innerHTML = `
-      <div class="funnel-box is-warn">
-        <h3>Maior gargalo</h3>
-        <p>Entre <strong>${escapeHtml(worst.from)}</strong> e <strong>${escapeHtml(worst.to)}</strong>:
-        <strong>${p}%</strong> saíram (−${worst.lost} pessoas).</p>
-      </div>`;
+    const max = Math.max(...rows.map((r) => r.value), 1);
+    rows.forEach((r) => {
+      const row = document.createElement('div');
+      row.className = 'viz-bar-row';
+      row.tabIndex = 0;
+
+      const label = document.createElement('div');
+      label.className = 'viz-bar-label';
+      const idx = document.createElement('span');
+      idx.className = 'viz-bar-idx';
+      idx.textContent = String(r.index + 1);
+      label.appendChild(idx);
+      label.appendChild(document.createTextNode(r.label));
+      row.appendChild(label);
+
+      const trackWrap = document.createElement('div');
+      trackWrap.className = 'viz-bar-trackwrap';
+
+      const track = document.createElement('div');
+      track.className = 'viz-bar-track';
+      const widthPct = Math.max((r.value / max) * 100, r.value > 0 ? 1.5 : 0);
+      const fill = document.createElement('div');
+      fill.className = 'viz-bar-fill' + (widthPct >= 92 ? ' is-full' : '');
+      fill.style.width = `${widthPct}%`;
+      track.appendChild(fill);
+      trackWrap.appendChild(track);
+
+      const valueEl = document.createElement('span');
+      const insideFits = widthPct > 22;
+      valueEl.className = 'viz-bar-value' + (insideFits ? ' is-inside' : ' is-outside');
+      valueEl.textContent = r.valueLabel;
+      (insideFits ? fill : trackWrap).appendChild(valueEl);
+
+      row.appendChild(trackWrap);
+
+      const onEnter = () => showTooltip(track, r.tooltip);
+      row.addEventListener('pointerenter', onEnter);
+      row.addEventListener('focus', onEnter);
+      row.addEventListener('pointerleave', hideTooltip);
+      row.addEventListener('blur', hideTooltip);
+
+      container.appendChild(row);
+
+      if (r.dropLabel) {
+        const dropRow = document.createElement('div');
+        dropRow.className = `viz-bar-drop ${r.dropClass || 'is-mild'}`;
+        dropRow.textContent = r.dropLabel;
+        container.appendChild(dropRow);
+      }
+    });
+  }
+
+  function dropSeverity(d) {
+    if (d >= 25) return 'is-critical';
+    if (d >= 12) return 'is-serious';
+    return 'is-mild';
+  }
+
+  function renderFunnelSection(steps) {
+    const sorted = steps.slice().sort((a, b) => a.step_index - b.step_index);
+    const base = sorted.length ? Number(sorted[0].sessions_reached) || 0 : 0;
+
+    // -------- gráfico de alcance --------
+    let prev = null;
+    let worst = null;
+    const funnelRows = sorted.map((st) => {
+      const n = Number(st.sessions_reached) || 0;
+      const reach = pct(n, base || 1);
+      let dropLabel = null;
+      let dropClass = null;
+      if (prev !== null && prev.n > 0) {
+        const lost = Math.max(0, prev.n - n);
+        const d = pct(lost, prev.n);
+        if (d > 0) {
+          dropClass = dropSeverity(d);
+          dropLabel = `▼ ${d}% saíram entre "${prev.label}" e "${st.step_title || st.step_id}" (−${lost})`;
+          if (!worst || d > worst.d) worst = { from: prev.label, to: st.step_title || st.step_id, d, lost };
+        }
+      }
+      const row = {
+        index: st.step_index,
+        label: st.step_title || st.step_id || `Etapa ${st.step_index + 1}`,
+        value: n,
+        valueLabel: `${n} · ${reach}%`,
+        tooltip: `<strong>${n} sessões</strong><span class="viz-tooltip-label">${escapeHtml(st.step_title || st.step_id || '')} — ${reach}% de quem começou</span>`,
+        dropLabel,
+        dropClass,
+      };
+      prev = { n, label: st.step_title || st.step_id };
+      return row;
+    });
+    renderBarChart(el.funnelChart, funnelRows, {});
+
+    // -------- gráfico de tempo médio --------
+    const timeRows = sorted.map((st) => ({
+      index: st.step_index,
+      label: st.step_title || st.step_id || `Etapa ${st.step_index + 1}`,
+      value: Number(st.avg_time_ms) || 0,
+      valueLabel: fmtMs(st.avg_time_ms),
+      tooltip: `<strong>${fmtMs(st.avg_time_ms)}</strong><span class="viz-tooltip-label">tempo médio — ${escapeHtml(st.step_title || st.step_id || '')}</span>`,
+    }));
+    renderBarChart(el.timeChart, timeRows, {});
+
+    // -------- callout de gargalo --------
+    if (el.bottleneck) {
+      if (!worst || worst.d <= 0) {
+        el.bottleneck.innerHTML = `
+          <div class="viz-callout is-ok">
+            <span class="viz-callout-icon">✓</span>
+            <div><h3>Sem gargalo relevante</h3><p>Ainda não há queda significativa entre etapas neste período (ou poucos dados).</p></div>
+          </div>`;
+      } else {
+        const p = worst.d; // worst.d já vem em % (via pct()), não multiplicar de novo
+        const sev = p >= 25 ? 'is-critical' : 'is-serious';
+        const icon = p >= 25 ? '⚠' : '!';
+        el.bottleneck.innerHTML = `
+          <div class="viz-callout ${sev}">
+            <span class="viz-callout-icon">${icon}</span>
+            <div>
+              <h3>Maior gargalo do funil</h3>
+              <p>Entre <strong>${escapeHtml(worst.from)}</strong> e <strong>${escapeHtml(worst.to)}</strong>:
+              <strong class="viz-num">${p}%</strong> das pessoas saíram (−${worst.lost}). É o primeiro lugar pra melhorar.</p>
+            </div>
+          </div>`;
+      }
+    }
+
+    // -------- tabela (twin de acessibilidade, alternável) --------
+    if (el.funnelTable) {
+      let rows = '';
+      let prevN = null;
+      sorted.forEach((st) => {
+        const n = Number(st.sessions_reached) || 0;
+        const reach = pct(n, base || 1);
+        let drop = '—';
+        let dropCls = '';
+        if (prevN !== null && prevN > 0) {
+          const lost = Math.max(0, prevN - n);
+          const d = pct(lost, prevN);
+          drop = `${d}% (−${lost})`;
+          if (d >= 25) dropCls = 'is-bad';
+          else if (d >= 12) dropCls = 'is-warn';
+        }
+        rows += `
+          <tr>
+            <td class="col-step"><span class="step-idx">${st.step_index + 1}</span> ${escapeHtml(st.step_title || st.step_id || '')}</td>
+            <td class="col-num">${n}</td>
+            <td class="col-pct">${reach}%</td>
+            <td class="col-num">${fmtMs(st.avg_time_ms)}</td>
+            <td class="col-drop ${dropCls}">${drop}</td>
+          </tr>`;
+        prevN = n;
+      });
+      el.funnelTable.innerHTML = `
+        <thead>
+          <tr>
+            <th>Etapa</th>
+            <th>Pessoas</th>
+            <th>% que chegou</th>
+            <th>Tempo médio na etapa</th>
+            <th>Queda vs anterior</th>
+          </tr>
+        </thead>
+        <tbody>${rows || '<tr><td colspan="5">Sem dados no período.</td></tr>'}</tbody>`;
+    }
   }
 
   function statusBadge(s) {
     if (s.converted) return '<span class="badge is-ok">Converteu</span>';
     if (s.completed) return '<span class="badge is-mid">Completou</span>';
     return '<span class="badge is-bad">Abandonou</span>';
+  }
+
+  function progressOf(s) {
+    const total = s.total_steps || 1;
+    return Math.min(1, ((s.max_step_index || 0) + 1) / total);
+  }
+
+  function sortSessions(sessions) {
+    const { key, dir } = sessionSort;
+    const mul = dir === 'asc' ? 1 : -1;
+    return sessions.slice().sort((a, b) => {
+      let va;
+      let vb;
+      if (key === 'progress') {
+        va = progressOf(a);
+        vb = progressOf(b);
+      } else if (key === 'time_on_site_ms') {
+        va = a.time_on_site_ms || 0;
+        vb = b.time_on_site_ms || 0;
+      } else {
+        va = new Date(a.started_at).getTime() || 0;
+        vb = new Date(b.started_at).getTime() || 0;
+      }
+      return (va - vb) * mul;
+    });
   }
 
   function renderSessions(sessions) {
@@ -308,26 +457,37 @@
       el.sessionsTable.innerHTML = '<tbody><tr><td>Sem visitantes neste período.</td></tr></tbody>';
       return;
     }
-    const rows = sessions
+    const sorted = sortSessions(sessions);
+    const rows = sorted
       .map((s) => {
-        const step = s.total_steps ? `${(s.max_step_index || 0) + 1}/${s.total_steps}` : `${(s.max_step_index || 0) + 1}`;
+        const total = s.total_steps || 0;
+        const reached = (s.max_step_index || 0) + 1;
+        const p = Math.round(progressOf(s) * 100);
         return `<tr data-session="${escapeHtml(s.session_id)}">
-          <td class="col-num">${fmtDate(s.started_at)}</td>
+          <td class="col-num viz-num">${fmtDate(s.started_at)}</td>
           <td>${escapeHtml(s.device_type || '—')} · ${escapeHtml(s.browser || '—')}</td>
-          <td>${escapeHtml(s.current_step_title || s.current_step_id || '—')} <span class="funnel-muted">(${step})</span></td>
-          <td class="col-num">${fmtMs(s.time_on_site_ms)}</td>
+          <td>
+            <div class="viz-meter-cell">
+              <div class="viz-meter-track"><div class="viz-meter-fill${p >= 100 ? ' is-complete' : ''}" style="width:${p}%"></div></div>
+              <span class="viz-meter-label viz-num">${reached}${total ? '/' + total : ''}</span>
+            </div>
+            <div class="funnel-muted" style="font-size:.74rem; margin-top:2px;">${escapeHtml(s.current_step_title || s.current_step_id || '—')}</div>
+          </td>
+          <td class="col-num viz-num">${fmtMs(s.time_on_site_ms)}</td>
           <td>${escapeHtml(s.utm_source || s.referrer || 'direto')}</td>
           <td>${statusBadge(s)}</td>
         </tr>`;
       })
       .join('');
+
+    const caret = (key) => (sessionSort.key === key ? (sessionSort.dir === 'asc' ? '▲' : '▼') : '');
     el.sessionsTable.innerHTML = `
       <thead>
         <tr>
-          <th>Entrou em</th>
+          <th class="is-sortable" data-sort="started_at">Entrou em <span class="sort-caret">${caret('started_at')}</span></th>
           <th>Dispositivo</th>
-          <th>Última etapa</th>
-          <th>Tempo no site</th>
+          <th class="is-sortable" data-sort="progress">Progresso <span class="sort-caret">${caret('progress')}</span></th>
+          <th class="is-sortable" data-sort="time_on_site_ms">Tempo no site <span class="sort-caret">${caret('time_on_site_ms')}</span></th>
           <th>Origem</th>
           <th>Status</th>
         </tr>
@@ -335,6 +495,14 @@
       <tbody>${rows}</tbody>`;
     el.sessionsTable.querySelectorAll('tr[data-session]').forEach((tr) => {
       tr.addEventListener('click', () => openSessionDetail(tr.getAttribute('data-session')));
+    });
+    el.sessionsTable.querySelectorAll('th.is-sortable').forEach((th) => {
+      th.addEventListener('click', () => {
+        const key = th.dataset.sort;
+        if (sessionSort.key === key) sessionSort.dir = sessionSort.dir === 'asc' ? 'desc' : 'asc';
+        else sessionSort = { key, dir: key === 'started_at' ? 'desc' : 'desc' };
+        renderSessions(lastSessions);
+      });
     });
   }
 
@@ -370,13 +538,18 @@
       </div>`
       : '';
 
+    const maxDwell = Math.max(1, ...events.filter((e) => e.event_type === 'step_exit').map((e) => e.time_on_step_ms || 0));
+
     const items = events
       .map((e) => {
         let detail = '';
+        let bar = '';
         if (e.event_type === 'answer' && e.payload) {
           detail = `${escapeHtml(e.payload.option_label || '')}${e.payload.selected === false ? ' (desmarcou)' : ''}`;
         } else if (e.event_type === 'step_exit' && e.time_on_step_ms != null) {
           detail = `ficou ${fmtMs(e.time_on_step_ms)} nesta etapa`;
+          const w = Math.max(4, Math.round((e.time_on_step_ms / maxDwell) * 100));
+          bar = `<div class="t-time-bar-track"><div class="t-time-bar-fill" style="width:${w}%"></div></div>`;
         } else if (e.event_type === 'button_click' && e.payload) {
           detail = escapeHtml(e.payload.label || '');
         }
@@ -386,6 +559,7 @@
           <div class="t-time">${fmtDate(e.created_at)}</div>
           <div class="t-label">${EVENT_LABEL[e.event_type] || e.event_type}${stepLabel}</div>
           ${detail ? `<div class="t-detail">${detail}</div>` : ''}
+          ${bar}
         </div>`;
       })
       .join('');
@@ -455,6 +629,12 @@
       if (btn) applyRange(btn.dataset.range);
     });
   if (el.btnApplyRange) el.btnApplyRange.addEventListener('click', applyCustomRange);
+  if (el.btnToggleFunnelTable)
+    el.btnToggleFunnelTable.addEventListener('click', () => {
+      const showing = !el.funnelTable.hidden;
+      el.funnelTable.hidden = showing;
+      el.btnToggleFunnelTable.textContent = showing ? 'Ver tabela' : 'Ver gráfico';
+    });
   if (el.btnExport) el.btnExport.addEventListener('click', exportCsv);
   if (el.modalClose) el.modalClose.addEventListener('click', () => (el.modal.hidden = true));
   if (el.modal)

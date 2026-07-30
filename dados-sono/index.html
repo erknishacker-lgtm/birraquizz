@@ -57,11 +57,26 @@
 
         <p class="load-status" id="load-status">—</p>
         <div class="summary-grid" id="summary-cards"></div>
-        <div id="worst-drop"></div>
+
+        <div id="bottleneck-callout"></div>
 
         <div class="dash-panel">
-          <h2>Etapas · alcance · tempo médio · queda</h2>
-          <table class="funnel-table" id="funnel-table"></table>
+          <div class="panel-head">
+            <h2>Onde o lead trava</h2>
+            <button type="button" class="btn-sm" id="btn-toggle-funnel-table">Ver tabela</button>
+          </div>
+
+          <div class="viz-chart-block">
+            <p class="viz-chart-title">Alcance por etapa <span class="viz-chart-sub">— quantas sessões chegaram em cada uma</span></p>
+            <div id="funnel-chart" class="viz-bars" role="img" aria-label="Gráfico de alcance por etapa do funil"></div>
+          </div>
+
+          <div class="viz-chart-block">
+            <p class="viz-chart-title">Tempo médio por etapa <span class="viz-chart-sub">— onde a pessoa demora (pode ser dúvida ou interesse)</span></p>
+            <div id="time-chart" class="viz-bars viz-bars-time" role="img" aria-label="Gráfico de tempo médio por etapa"></div>
+          </div>
+
+          <table class="funnel-table" id="funnel-table" hidden></table>
         </div>
 
         <div class="dash-panel leads-panel">
@@ -76,7 +91,8 @@
             <table class="funnel-table leads-table" id="sessions-table"></table>
           </div>
           <p class="dash-note" style="margin-top: 12px">
-            Clique em uma sessão para ver a jornada completa: cada etapa, o que respondeu e quanto tempo ficou em cada uma.
+            Clique em uma sessão pra ver a jornada completa: cada etapa, o que respondeu e quanto tempo ficou em cada uma.
+            Clique no cabeçalho de "Progresso" ou "Tempo no site" pra ordenar.
           </p>
         </div>
 
@@ -97,6 +113,9 @@
         <div id="session-modal-body" class="sono-modal-body"></div>
       </div>
     </div>
+
+    <!-- Tooltip compartilhado dos gráficos -->
+    <div id="viz-tooltip" class="viz-tooltip" hidden></div>
 
     <script src="../js/sono-tracking-config.js"></script>
     <script src="./dashboard.js"></script>

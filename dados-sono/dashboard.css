@@ -1,5 +1,33 @@
 /* Painel /dados-sono — extras sobre css/analytics.css + css/funnel.css */
 
+:root {
+  --viz-surface: #fcfcfb;
+  --viz-ink: #0b0b0b;
+  --viz-ink-secondary: #52514e;
+  --viz-ink-muted: #898781;
+  --viz-grid: #e1e0d9;
+  --viz-blue: #2a78d6;
+  --viz-blue-track: rgba(42, 120, 214, 0.14);
+  --viz-orange: #eb6834;
+  --viz-orange-track: rgba(235, 104, 52, 0.14);
+  --viz-good: #0ca30c;
+  --viz-warning: #b45309;
+  --viz-warning-bg: rgba(250, 178, 25, 0.18);
+  --viz-serious: #b23a1f;
+  --viz-serious-bg: rgba(236, 131, 90, 0.18);
+  --viz-critical: #d03b3b;
+  --viz-critical-bg: rgba(208, 59, 59, 0.14);
+  --viz-good-bg: rgba(12, 163, 12, 0.14);
+}
+
+.dash-wrap {
+  width: min(100%, 980px);
+}
+
+.viz-num {
+  font-variant-numeric: tabular-nums;
+}
+
 .sono-filter-bar {
   display: flex;
   flex-wrap: wrap;
@@ -58,19 +86,25 @@
   font-weight: 700;
 }
 
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .badge.is-ok {
-  background: rgba(22, 163, 74, 0.14);
-  color: #15803d;
+  background: var(--viz-good-bg);
+  color: var(--viz-good);
 }
 
 .badge.is-mid {
-  background: rgba(217, 119, 6, 0.16);
-  color: #b45309;
+  background: var(--viz-warning-bg);
+  color: var(--viz-warning);
 }
 
 .badge.is-bad {
-  background: rgba(220, 38, 38, 0.14);
-  color: #b91c1c;
+  background: var(--viz-critical-bg);
+  color: var(--viz-critical);
 }
 
 /* Modal de jornada da sessão */
@@ -176,4 +210,285 @@
 .sono-timeline-item .t-detail {
   font-size: 0.82rem;
   color: var(--muted);
+}
+
+.sono-timeline-item .t-time-bar-track {
+  margin-top: 4px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--viz-blue-track);
+  overflow: hidden;
+  max-width: 220px;
+}
+
+.sono-timeline-item .t-time-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--viz-blue);
+}
+
+/* ---------------- callout de gargalo ---------------- */
+
+.viz-callout {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid var(--line);
+}
+
+.viz-callout.is-critical {
+  background: var(--viz-critical-bg);
+  border-color: rgba(208, 59, 59, 0.3);
+}
+
+.viz-callout.is-serious {
+  background: var(--viz-serious-bg);
+  border-color: rgba(178, 58, 31, 0.28);
+}
+
+.viz-callout.is-ok {
+  background: var(--viz-good-bg);
+  border-color: rgba(12, 163, 12, 0.25);
+}
+
+.viz-callout-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.viz-callout h3 {
+  margin: 0 0 2px;
+  font-family: var(--font);
+  font-size: 0.95rem;
+  color: var(--primary-deep);
+}
+
+.viz-callout p {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--ink, #1f2937);
+}
+
+/* ---------------- gráficos de barra ---------------- */
+
+.viz-chart-block {
+  margin-bottom: 22px;
+}
+
+.viz-chart-title {
+  margin: 0 0 10px;
+  font-family: var(--font);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--primary-deep);
+}
+
+.viz-chart-sub {
+  font-family: var(--font-body, inherit);
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.viz-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.viz-bar-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 220px) 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.viz-bar-label {
+  font-size: 0.8rem;
+  color: var(--viz-ink-secondary);
+  line-height: 1.25;
+}
+
+.viz-bar-label .viz-bar-idx {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--viz-grid);
+  color: var(--viz-ink-secondary);
+  font-size: 0.68rem;
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+.viz-bar-trackwrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.viz-bar-track {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 24px;
+  background: var(--viz-blue-track);
+  border-radius: 4px;
+}
+
+.viz-bars-time .viz-bar-track {
+  background: var(--viz-orange-track);
+}
+
+.viz-bar-fill {
+  position: relative;
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  background: var(--viz-blue);
+  min-width: 2px;
+  transition: width 0.25s ease;
+}
+
+.viz-bars-time .viz-bar-fill {
+  background: var(--viz-orange);
+}
+
+.viz-bar-fill.is-full {
+  border-radius: 4px;
+}
+
+.viz-bar-value {
+  white-space: nowrap;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--viz-ink);
+  font-variant-numeric: tabular-nums;
+  flex: 0 0 auto;
+}
+
+.viz-bar-value.is-inside {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  color: #fff;
+}
+
+.viz-bar-row:focus-visible .viz-bar-track,
+.viz-bar-row:hover .viz-bar-track {
+  outline: 2px solid var(--viz-blue);
+  outline-offset: 2px;
+}
+
+.viz-bar-drop {
+  grid-column: 2 / 3;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  width: fit-content;
+}
+
+.viz-bar-drop.is-critical {
+  background: var(--viz-critical-bg);
+  color: var(--viz-critical);
+}
+
+.viz-bar-drop.is-serious {
+  background: var(--viz-serious-bg);
+  color: var(--viz-serious);
+}
+
+.viz-bar-drop.is-mild {
+  background: var(--viz-grid);
+  color: var(--viz-ink-secondary);
+}
+
+/* ---------------- tooltip ---------------- */
+
+.viz-tooltip {
+  position: fixed;
+  z-index: 80;
+  background: var(--viz-ink);
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  pointer-events: none;
+  max-width: 240px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.viz-tooltip[hidden] {
+  display: none;
+}
+
+.viz-tooltip strong {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.86rem;
+}
+
+.viz-tooltip .viz-tooltip-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.72);
+  margin-top: 2px;
+}
+
+/* ---------------- medidor de progresso (tabela de sessões) ---------------- */
+
+.viz-meter-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-meter-track {
+  width: 64px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--viz-blue-track);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.viz-meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--viz-blue);
+}
+
+.viz-meter-fill.is-complete {
+  background: var(--viz-good);
+}
+
+.viz-meter-label {
+  font-size: 0.76rem;
+  color: var(--viz-ink-secondary);
+  white-space: nowrap;
+}
+
+th.is-sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+th.is-sortable:hover {
+  color: var(--primary-deep);
+}
+
+th.is-sortable .sort-caret {
+  font-size: 0.65rem;
+  margin-left: 3px;
+  opacity: 0.55;
 }
