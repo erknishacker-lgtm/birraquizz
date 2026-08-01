@@ -60,7 +60,12 @@
   function redirectToCheckout() {
     track('InitiateCheckout');
     if (window.FunnelTracker) window.FunnelTracker.trackCheckoutClick(steps[current]);
-    window.open(CONFIG.checkoutUrl, '_blank');
+    // Modelo 3.0: o quiz leva para a página de oferta (que leva ao checkout),
+    // repassando os parâmetros da URL (utm, src, sck...)
+    const base = CONFIG.offerUrl || CONFIG.checkoutUrl;
+    const qs = window.location.search || '';
+    const sep = base.includes('?') ? '&' : '?';
+    window.location.href = qs ? base + sep + qs.slice(1) : base;
   }
 
   /* ---------------- renderers por tipo de camada ---------------- */

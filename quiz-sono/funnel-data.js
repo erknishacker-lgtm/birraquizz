@@ -4,6 +4,8 @@
 const CONFIG = {
   // Checkout original do funil clonado: https://pay.hotmart.com/X71620859G?off=ya5dy8cq&checkoutMode=10
   checkoutUrl: "https://lastlink.com/p/CE7085910/checkout-payment/",
+  // Página de oferta (modelo 3.0) — para onde o quiz redireciona ao final
+  offerUrl: "../landing/",
   // Pixel do Facebook original do funil clonado: 387041248925811 (deixe "" para desativar)
   fbPixelId: "1692279998539511",
 };

@@ -2,230 +2,594 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<base href="/landing/">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Camilla Petterson</title>
-<meta name="description" content="Tenha filhos que dormem a noite toda com um método validado!">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Como Fazer Seu Filho Dormir — Camilla Petterson</title>
+<meta name="description" content="Aprenda e aplique o passo a passo que milhares de mães já utilizaram para dar autonomia de sono aos seus filhos e recuperar o sono restaurador.">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./styles.css">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,700;6..12,800;6..12,900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple: #8f8fc8;          /* roxo principal (blocos) */
+    --purple-deep: #70547d;     /* roxo escuro (títulos / pill / faq aberto) */
+    --yellow: #ffcd7d;          /* cards amarelos */
+    --band: #f0bf58;            /* faixa amarela */
+    --green: #11a82c;           /* CTA verde */
+    --green-hover: #0c8522;
+    --orange: #d9742f;          /* CTA laranja */
+    --orange-hover: #b85f22;
+    --gray: #f3f3f6;            /* fundo cinza claro */
+    --ink: #141414;
+    --body: #333333;
+    --radius: 16px;
+    --font-head: "Nunito Sans", system-ui, sans-serif;
+    --font-body: "Roboto", system-ui, sans-serif;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    font-family:var(--font-body);
+    color:var(--body);
+    background:#fff;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img{ max-width:100%; height:auto; display:block; }
+  h1,h2,h3{ font-family:var(--font-head); text-wrap:balance; }
+
+  .wrap{ width:min(1100px, 100% - 40px); margin-inline:auto; }
+  section{ padding:56px 0; }
+
+  /* ---------- CTA ---------- */
+  .cta{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-height:52px; padding:14px 28px;
+    font-family:var(--font-head); font-weight:800; font-size:17px;
+    letter-spacing:.02em; text-transform:uppercase; text-align:center;
+    color:#fff; background:var(--green);
+    border:0; border-radius:8px; text-decoration:none; cursor:pointer;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .cta:hover{ background:var(--green-hover); transform:translateY(-1px); }
+  .cta--orange{ background:var(--orange); }
+  .cta--orange:hover{ background:var(--orange-hover); }
+  .cta--yellow{ background:var(--yellow); color:var(--purple-deep); }
+  .cta--yellow:hover{ background:#f5bc61; }
+  .cta--block{ display:flex; width:100%; }
+
+  /* ---------- 1. HERO ---------- */
+  .hero{
+    position:relative;
+    padding:calc(20px + env(safe-area-inset-top)) 0 0;
+    background:var(--purple) url("assets/img/hero-mobile.webp") no-repeat center bottom / cover;
+    min-height:max(620px, 92svh);
+    display:flex; flex-direction:column;
+  }
+  .hero::before{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(112,84,125,.38) 0%, rgba(112,84,125,.12) 34%, rgba(112,84,125,0) 55%);
+    pointer-events:none;
+  }
+  .hero .wrap{ position:relative; z-index:1; flex:1; display:flex; flex-direction:column; }
+  .hero__logo{ width:132px; margin:4px 0 28px; }
+  .hero h1{
+    color:var(--yellow);
+    font-size:clamp(1.65rem, 6.4vw, 3rem);
+    font-weight:900; line-height:1.22; letter-spacing:-0.01em;
+    text-transform:uppercase;
+    max-width:22ch;
+  }
+  .hero__sub{
+    color:#fff; font-size:1.06rem; line-height:1.45;
+    margin:16px 0 26px; max-width:34ch; font-weight:500;
+  }
+  .hero .cta{ max-width:340px; }
+  .hero__trust{
+    color:#fff; font-size:.8rem; margin-top:14px; opacity:.95;
+    display:flex; flex-wrap:wrap; gap:6px 10px;
+  }
+  .hero__trust span{ display:flex; align-items:center; gap:6px; }
+  .hero__trust svg{ flex:none; }
+
+  /* ---------- 2. FAIXA AMARELA ---------- */
+  .band{
+    background:var(--band);
+    padding:34px 0;
+  }
+  .band p{
+    font-family:var(--font-head); font-weight:900; color:#fff;
+    font-size:clamp(1.05rem, 4.4vw, 1.6rem); line-height:1.35;
+    text-transform:uppercase; text-align:center;
+    text-shadow:0 1px 2px rgba(90,60,0,.25);
+    max-width:60ch; margin-inline:auto;
+  }
+
+  /* ---------- 3. DOR ---------- */
+  .pain h2, .learn h2{
+    color:var(--purple-deep);
+    font-size:clamp(1.35rem, 5.4vw, 2rem);
+    font-weight:900; line-height:1.28; text-transform:uppercase;
+    text-align:center; max-width:26ch; margin:0 auto 18px;
+  }
+  .pain__text{ text-align:center; max-width:56ch; margin:0 auto 26px; font-size:1.02rem; }
+  .pain__lead{
+    color:var(--purple-deep); font-family:var(--font-head); font-weight:800;
+    font-size:1.15rem; text-align:center; margin:0 0 22px;
+  }
+  .pain__after{ text-align:center; max-width:52ch; margin:26px auto 0; font-size:1.02rem; }
+  .drag-hint{
+    text-align:right; font-size:.86rem; color:#555; margin-top:10px;
+  }
+
+  /* ---------- carrossel ---------- */
+  .carousel{
+    display:flex; gap:14px;
+    overflow-x:auto; scroll-snap-type:x mandatory;
+    padding:4px 20px 14px;
+    margin-inline:-20px;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+  .carousel::-webkit-scrollbar{ display:none; }
+  .carousel > *{ scroll-snap-align:center; flex:none; }
+  .carousel img{ border-radius:var(--radius); }
+
+  .carousel--dor img{ width:min(74vw, 300px); }
+  .carousel--mod img{ width:min(52vw, 220px); }
+
+  /* ---------- 4. PERGUNTAS ---------- */
+  .ask{ background:var(--gray); }
+  .ask h2{
+    color:var(--purple-deep);
+    font-size:clamp(1.3rem, 5.2vw, 1.9rem); font-weight:900;
+    text-transform:uppercase; text-align:center; margin-bottom:26px;
+  }
+  .ask__grid{ display:grid; gap:14px; }
+  .ask__card{
+    background:var(--yellow); border-radius:var(--radius);
+    padding:26px 22px;
+    font-family:var(--font-head); font-weight:800; font-size:1.08rem;
+    color:var(--ink); text-align:center;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ---------- 5. PARA VOCÊ ---------- */
+  .foryou{ background:var(--purple); color:#fff; }
+  .foryou h2{
+    font-size:clamp(1.35rem, 5.4vw, 2rem); font-weight:900;
+    text-transform:uppercase; text-align:center; line-height:1.28;
+    max-width:24ch; margin:0 auto 18px;
+  }
+  .foryou__text{ text-align:center; font-size:1.08rem; font-weight:500; max-width:52ch; margin:0 auto 28px; }
+  .foryou__grid{ display:grid; gap:14px; margin-bottom:28px; }
+  .foryou__card{
+    background:var(--yellow); color:var(--ink); border-radius:var(--radius);
+    padding:24px 22px;
+  }
+  .foryou__num{
+    font-family:var(--font-head); font-weight:900; font-size:2.6rem; line-height:1;
+    display:block; margin-bottom:10px;
+  }
+  .foryou__card p{ font-family:var(--font-head); font-weight:800; font-size:1.12rem; line-height:1.35; }
+  .foryou__guarantee{ text-align:center; font-size:1.08rem; font-weight:500; max-width:48ch; margin:0 auto; }
+
+  /* ---------- 6. DEPOIMENTOS ---------- */
+  .social h2{
+    color:var(--ink);
+    font-size:clamp(1.3rem, 5.2vw, 1.9rem); font-weight:900;
+    text-align:center; max-width:24ch; margin:0 auto 26px;
+  }
+  .tcard{
+    width:min(84vw, 420px);
+    background:#fff; border-radius:var(--radius);
+    box-shadow:0 2px 8px rgba(20,20,40,.14);
+    padding:22px;
+  }
+  .tcard__head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .tcard__avatar{
+    width:48px; height:48px; border-radius:50%; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--purple); color:#fff;
+    font-family:var(--font-head); font-weight:800; font-size:1.05rem;
+  }
+  .tcard__name{ font-family:var(--font-head); font-weight:800; font-size:1.1rem; color:var(--ink); }
+  .tcard__text{ font-size:.98rem; line-height:1.5; color:#2b2b2b; }
+  .social .cta{ margin:8px auto 0; display:flex; max-width:340px; }
+
+  /* ---------- 7. O QUE APRENDERÁ ---------- */
+  .learn{ background:var(--gray); }
+  .learn__text{ text-align:center; max-width:56ch; margin:0 auto 26px; font-size:1.02rem; }
+  .learn .cta{ margin:14px auto 0; display:flex; max-width:360px; }
+
+  /* ---------- 8. OFERTA ---------- */
+  .offer h2{
+    color:var(--purple-deep);
+    font-size:clamp(1.3rem, 5.2vw, 1.9rem); font-weight:900;
+    text-transform:uppercase; text-align:center; line-height:1.3;
+    max-width:26ch; margin:0 auto 26px;
+  }
+  .offer__mockup{ width:min(78vw, 420px); margin:0 auto 26px; }
+  .offer__bullets{ list-style:none; max-width:46ch; margin:0 auto 30px; display:grid; gap:14px; }
+  .offer__bullets li{ display:flex; gap:12px; font-size:1.02rem; line-height:1.45; }
+  .offer__bullets svg{ flex:none; margin-top:3px; }
+  .offer__price-label{ text-align:center; font-size:1.05rem; margin-bottom:6px; }
+  .offer__price{
+    text-align:center; font-family:var(--font-head); color:var(--ink);
+    font-weight:900; font-size:clamp(2.6rem, 11vw, 4rem); line-height:1;
+  }
+  .offer__price small{ font-size:.38em; font-weight:800; vertical-align:super; }
+  .offer__pill{
+    display:table; margin:14px auto 26px; padding:9px 22px;
+    background:var(--purple-deep); color:#fff;
+    font-family:var(--font-head); font-weight:800; font-size:1rem;
+    border-radius:999px;
+  }
+  .offer .cta{ margin:0 auto; display:flex; max-width:360px; }
+
+  /* ---------- 9. GARANTIA ---------- */
+  .guarantee{ background:var(--purple); color:#fff; text-align:center; }
+  .guarantee__seal{ width:104px; margin:0 auto 18px; }
+  .guarantee h2{ font-size:clamp(1.5rem, 6vw, 2.1rem); font-weight:900; margin-bottom:14px; }
+  .guarantee p{ font-size:1.08rem; font-weight:500; max-width:48ch; margin:0 auto 26px; }
+  .guarantee .cta{ margin:0 auto; display:flex; max-width:380px; }
+
+  /* ---------- 10. CAMILLA ---------- */
+  .about h2{
+    color:var(--purple-deep);
+    font-size:clamp(1.35rem, 5.4vw, 2rem); font-weight:900;
+    text-align:center; margin-bottom:22px;
+  }
+  .about__photo{ width:min(74vw, 380px); margin:0 auto 24px; border-radius:var(--radius); }
+  .about__bio{ max-width:58ch; margin:0 auto; display:grid; gap:14px; font-size:1.04rem; }
+
+  /* ---------- 11. FAQ ---------- */
+  .faq{ background:var(--gray); }
+  .faq h2{
+    color:var(--purple-deep);
+    font-size:clamp(1.35rem, 5.4vw, 2rem); font-weight:900;
+    text-transform:uppercase; text-align:center; margin-bottom:26px;
+  }
+  .faq__list{ max-width:720px; margin:0 auto; display:grid; gap:12px; }
+  .faq details{
+    background:var(--yellow); border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .faq details[open]{ background:var(--purple-deep); color:#fff; }
+  .faq summary{
+    list-style:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    padding:18px 20px; min-height:56px;
+    font-family:var(--font-head); font-weight:800; font-size:1.05rem; color:inherit;
+  }
+  .faq summary::-webkit-details-marker{ display:none; }
+  .faq summary .ico{
+    flex:none; width:28px; height:28px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem; font-weight:800; line-height:1;
+    background:rgba(0,0,0,.08);
+  }
+  .faq details[open] summary .ico{ background:rgba(255,255,255,.16); }
+  .faq details[open] summary .ico::before{ content:"–"; }
+  .faq details:not([open]) summary .ico::before{ content:"+"; }
+  .faq__answer{ padding:0 20px 20px; font-size:1rem; line-height:1.5; }
+
+  /* ---------- 12. DÚVIDAS / FOOTER ---------- */
+  .doubts{ background:var(--purple); color:#fff; text-align:center; }
+  .doubts h2{
+    font-size:clamp(2.2rem, 10vw, 3.4rem); font-weight:900; letter-spacing:-0.01em;
+    margin-bottom:12px;
+  }
+  .doubts p{ font-size:1.08rem; font-weight:500; max-width:44ch; margin:0 auto 26px; }
+  .doubts .cta{ margin:0 auto; display:flex; max-width:420px; }
+  footer{
+    padding:26px 20px calc(26px + env(safe-area-inset-bottom));
+    text-align:center; font-size:.85rem; color:#666; background:#fff;
+  }
+
+  /* ---------- reveal (nunca esconde conteúdo por padrão) ---------- */
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{ animation:rise .55s cubic-bezier(.16,1,.3,1) both; }
+    @keyframes rise{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
+  }
+
+  /* ---------- desktop ---------- */
+  @media (min-width:760px){
+    section{ padding:76px 0; }
+    .hero{
+      background-image:url("assets/img/hero-desktop.webp");
+      background-position:right center;
+      min-height:640px;
+    }
+    .hero::before{ background:linear-gradient(90deg, rgba(112,84,125,.30) 0%, rgba(112,84,125,0) 55%); }
+    .hero__logo{ width:160px; }
+    .hero__content{ max-width:480px; }
+    .hero__sub{ font-size:1.15rem; }
+    .ask__grid{ grid-template-columns:repeat(2, 1fr); }
+    .foryou__grid{ grid-template-columns:repeat(3, 1fr); }
+    .carousel{ margin-inline:0; padding-inline:4px; }
+    .carousel--dor img{ width:260px; }
+    .carousel--mod img{ width:200px; }
+    .offer__row{ display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center; }
+    .offer__mockup{ margin:0; width:100%; }
+    .about__row{ display:grid; grid-template-columns:340px 1fr; gap:44px; align-items:center; }
+    .about__photo{ margin:0; width:100%; }
+    .about h2{ text-align:left; }
+  }
+</style>
 </head>
 <body>
 
-<!-- ============ HERO ============ -->
+<!-- ============ 1. HERO ============ -->
 <header class="hero">
-  <div class="hero-inner">
-    <h1>Tenha filhos que dormem a noite toda com um método validado!</h1>
-    <p class="hero-sub">Aprenda e aplique o passo a passo que milhares de mães já utilizaram para dar autonomia de sono aos seus filhos e recuperar o sono restaurador, mesmo com um bebê pequeno!</p>
-    <a href="https://lastlink.com/p/CE7085910/checkout-payment/" class="btn btn-green btn-lg" target="_blank" rel="noopener">Quero fazer meu bebê dormir</a>
-    <p class="hero-trust">Acesso imediato &middot; + de mil alunos &middot; Compra segura &middot; Versão 2026</p>
-    <img class="hero-photo" src="./assets/images/3098966_1_17513810466863f43699cf1.webp" alt="Mãe segurando bebê no colo">
+  <div class="wrap">
+    <img class="hero__logo" src="assets/img/logo.svg" alt="Como Fazer Seu Filho Dormir" width="275" height="129" fetchpriority="high">
+    <div class="hero__content">
+      <h1>Tenha filhos que dormem a noite toda com um método validado!</h1>
+      <p class="hero__sub">Aprenda e aplique o passo a passo que milhares de mães já utilizaram para dar autonomia de sono aos seus filhos e recuperar o sono restaurador, mesmo com um bebê pequeno!</p>
+      <a class="cta" data-checkout href="#">Quero fazer meu bebê dormir</a>
+      <p class="hero__trust">
+        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Acesso imediato</span>
+        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>+ de mil alunos</span>
+        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Compra segura</span>
+        <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>Versão 2026</span>
+      </p>
+    </div>
   </div>
 </header>
 
-<!-- ============ FAIXA LARANJA ============ -->
-<section class="band band-orange">
-  <p>Com o método <strong>Sono Profundo</strong>, você saberá o que precisa ajustar na rotina de sono do seu bebê, para que ele seja capaz de entrar em um sono profundo e não acordar durante a noite.</p>
-</section>
-
-<!-- ============ DOR / EMPATIA ============ -->
-<section class="section">
-  <div class="wrap wrap-narrow">
-    <h2 class="h-purple">O sono do seu filho ainda pode ser ajustado, mesmo que você já tenha se dado por vencida.</h2>
-    <p>Todos os dias, recebo diversas perguntas sobre como eu faço cada um dos meus filhos aprenderem a dormir a noite inteira desde que nasceram, de modo que consigo tempo para cuidar de todas as minhas tarefas e ainda descansar mesmo com recém-nascido em casa.</p>
-    <h3 class="h-purple-sm">Geralmente, essas mães já tentaram de tudo e:</h3>
+<!-- ============ 2. FAIXA AMARELA ============ -->
+<div class="band">
+  <div class="wrap">
+    <p>Com o método Sono Profundo, você saberá o que precisa ajustar na rotina de sono do seu bebê, para que ele seja capaz de entrar em um sono profundo e não acordar durante a noite.</p>
   </div>
+</div>
 
-  <div class="carousel" data-carousel>
-    <div class="carousel-track">
-      <img class="pain-card" src="./assets/images/3098966_1_17513810466863f436bfffa059740147.webp" alt="Não aguentam mais fazer cama compartilhada">
-      <img class="pain-card" src="./assets/images/3098966_1_17513810466863f436c013c708485074.webp" alt="Acordam toda noite com o filho te chamando">
-      <img class="pain-card" src="./assets/images/3098966_1_17513810466863f436c029e481152696.webp" alt="Não conseguem fazer com que seu filho durma de tarde">
-      <img class="pain-card" src="./assets/images/3098966_1_17513810466863f436c0429094741985.webp" alt="Nunca fizeram uma Rotina de Sono para os filhos">
+<!-- ============ 3. DOR ============ -->
+<section class="pain">
+  <div class="wrap">
+    <h2>O sono do seu filho ainda pode ser ajustado, mesmo que você já tenha se dado por vencida.</h2>
+    <p class="pain__text">Todos os dias, recebo diversas perguntas sobre como eu faço cada um dos meus filhos aprenderem a dormir a noite inteira desde que nasceram, de modo que consigo tempo para cuidar de todas as minhas tarefas e ainda descansar mesmo com recém-nascido em casa.</p>
+    <p class="pain__lead">Geralmente, essas mães já tentaram de tudo e:</p>
+    <div class="carousel carousel--dor" aria-label="Situações comuns das mães">
+      <img src="assets/img/dor-1.webp" alt="01 — Não aguentam mais fazer cama compartilhada" width="340" height="562" loading="lazy">
+      <img src="assets/img/dor-2.webp" alt="02 — Acordam toda noite com o filho te chamando" width="340" height="562" loading="lazy">
+      <img src="assets/img/dor-3.webp" alt="03 — Não conseguem fazer com que seu filho durma de tarde" width="340" height="562" loading="lazy">
+      <img src="assets/img/dor-4.webp" alt="04 — Tentam de tudo e nada resolve o sono do filho" width="340" height="562" loading="lazy">
     </div>
-  </div>
-  <p class="carousel-hint">Arraste para o lado.</p>
-
-  <div class="wrap wrap-narrow">
-    <p class="muted center">Nesse cenário, é normal que sintam que nada que façam vai resolver o problema de sono do filho</p>
-    <p class="center" style="margin-top:18px">Mas, acredite: é possível! Tanto no meu Instagram, quanto nos comentários do meu YouTube, você encontra relatos espontâneos como esses daqui:</p>
+    <p class="drag-hint">Arraste para o lado.</p>
+    <p class="pain__after">Nesse cenário, é normal que sintam que nada que façam vai resolver o problema de sono do filho.<br><br><strong>Mas, acredite: é possível!</strong> Tanto no meu Instagram, quanto nos comentários do meu YouTube, você encontra relatos espontâneos de mães que transformaram as noites da família.</p>
   </div>
 </section>
 
-<!-- ============ PERGUNTAS ============ -->
-<section class="section section-gray">
-  <div class="wrap wrap-narrow">
-    <h2 class="h-dark center">Então se você se pergunta&hellip;</h2>
-    <div class="question-stack">
-      <div class="question-card">Se precisa deixar o bebê chorando?</div>
-      <div class="question-card">O que fazer quando ele não quer dormir de jeito nenhum?</div>
-      <div class="question-card">Até quantos anos ele pode ficar na cama compartilhada?</div>
-      <div class="question-card">E como resolver episódios de terror noturno?</div>
+<!-- ============ 4. PERGUNTAS ============ -->
+<section class="ask">
+  <div class="wrap">
+    <h2>Então se você se pergunta…</h2>
+    <div class="ask__grid">
+      <div class="ask__card">O que fazer quando ele não quer dormir de jeito nenhum?</div>
+      <div class="ask__card">Até quantos anos ele pode ficar na cama compartilhada?</div>
+      <div class="ask__card">Se precisa deixar o bebê chorando?</div>
+      <div class="ask__card">E como resolver episódios de terror noturno?</div>
     </div>
   </div>
 </section>
 
-<!-- ============ APRESENTAÇÃO DO CURSO ============ -->
-<section class="band band-purple">
-  <div class="wrap wrap-narrow">
-    <h2 class="h-yellow center">O curso Como Fazer Seu Filho Dormir é para você!</h2>
-    <p class="on-purple center">Nele, eu reuni todo o meu conhecimento sobre Rotina de Sono Infantil e todos os passos que eu sigo, a cada filho que chega, para implementá-la. Pode ter certeza que você vai conseguir:</p>
-
-    <div class="benefit-stack">
-      <div class="benefit-card"><span class="benefit-num">01</span><p>Montar uma Rotina de Sono adequada para a idade do seu filho.</p></div>
-      <div class="benefit-card"><span class="benefit-num">02</span><p>Entender as causas e aprender a lidar com o Terror Noturno</p></div>
-      <div class="benefit-card"><span class="benefit-num">03</span><p>Fazer o Treinamento de Sono no seu filho</p></div>
-    </div>
-
-    <p class="on-purple center" style="margin-top:28px">Eu te garanto que quando você começar a implementar o que está nesse curso, a rotina na sua casa nunca mais será a mesma e você, finalmente, vai conseguir ter uma boa noite de sono!</p>
-  </div>
-</section>
-
-<!-- ============ DEPOIMENTOS ============ -->
-<section class="section section-gray">
-  <div class="wrap wrap-narrow">
-    <h2 class="h-dark center">Veja o que as alunas estão dizendo sobre o conteúdo do curso</h2>
-  </div>
-
-  <div class="carousel" data-carousel>
-    <div class="carousel-track">
-      <img class="testi-card" src="./assets/images/3098966_1_17513810466863f436e02184690999566876139.webp" alt="Depoimento de Laisa da Silva">
-      <img class="testi-card" src="./assets/images/3098966_1_17513810466863f436e02184690999567992694.webp" alt="Depoimento de Thamires de Moura">
-      <img class="testi-card" src="./assets/images/3098966_1_17513810466863f436e02184690999569210943.webp" alt="Depoimento de Jahyne Serraglio">
-      <img class="testi-card" src="./assets/images/3098966_1_17513810466863f436e0218469099956995926.webp" alt="Depoimento de Leandra Lake">
-    </div>
-  </div>
-  <p class="carousel-hint">Arraste para o lado.</p>
-
-  <p class="center" style="margin-top:22px">
-    <a href="https://lastlink.com/p/CE7085910/checkout-payment/" class="btn btn-yellow" target="_blank" rel="noopener">Quero fazer parte agora!</a>
-  </p>
-</section>
-
-<!-- ============ O QUE VOCÊ APRENDERÁ ============ -->
-<section class="section">
-  <div class="wrap wrap-narrow">
-    <h2 class="h-dark center">O que você aprenderá</h2>
-    <p class="center">Eu sei como é se sentir frustrada por não conseguir fazer seu filho dormir. Você até tenta, mas o choro parece que não tem fim. E aí o stress aumenta, o cansaço emocional aparece e você fica cada vez mais cansada. Pensando em te ajudar, organizei as aulas da seguinte forma:</p>
-  </div>
-
-  <div class="carousel" data-carousel>
-    <div class="carousel-track">
-      <img class="aula-card" src="./assets/images/3098966_1_17513810466863f436e0a8a327414048.webp" alt="Aula 01 — Fatos básicos sobre o sono, Parte I (Relógio Biológico)">
-      <img class="aula-card" src="./assets/images/3098966_1_17513810466863f436e2588404619600.webp" alt="Aula 02 — Fatos básicos sobre o sono, Parte II (Sonos REM/NREM)">
-      <img class="aula-card" src="./assets/images/3098966_1_17513810466863f436e2b64362205163.webp" alt="Aula 03 — O que é um Ritual Noturno">
-      <img class="aula-card" src="./assets/images/3098966_1_17513810466863f436e3145993765342.webp" alt="Aula 04 — Técnicas para retirar as associações do sono">
-      <img class="aula-card" src="./assets/images/3098966_1_17513810466863f436e3724904585216.webp" alt="Aula 05 — Educação de sono nos bebês de 0-3 meses">
-      <img class="aula-card" src="./assets/images/3098966_1_17513810466863f436e8331732065201.webp" alt="Aula 06 — Transição de Sonecas">
-      <img class="aula-card" src="./assets/images/3098966_1_17513810466863f436e8bf0643034729.webp" alt="Aula 07 — Técnicas para sono de recém-nascidos">
-      <img class="aula-card" src="./assets/images/3098966_1_17513810466863f436e934d122823597.webp" alt="Aula 08 — Causa de despertares antes das 6AM">
-      <img class="aula-card" src="./assets/images/3098966_1_17513810466863f436e9a92787793352.webp" alt="Aula 09 — Ensinando ao filho a esperar">
-      <img class="aula-card" src="./assets/images/3098966_1_17513810466863f436ea218834459929.webp" alt="Aula 10 — Ajuste de expectativa: a realidade">
-    </div>
-  </div>
-  <p class="carousel-hint">Arraste para o lado.</p>
-
-  <p class="center" style="margin-top:22px">
-    <a href="https://lastlink.com/p/CE7085910/checkout-payment/" class="btn btn-orange" target="_blank" rel="noopener">Quero uma maternidade mais leve</a>
-  </p>
-</section>
-
-<!-- ============ OFERTA ============ -->
-<section class="section section-white-alt">
-  <div class="wrap wrap-narrow">
-    <h2 class="h-dark center">Receba todo o conteúdo do Como Fazer Seu Filho Dormir agora:</h2>
-    <img class="offer-shot" src="./assets/images/3098966_1_17513810466863f436c1fac871981099.webp" alt="Prévia das aulas do curso">
-    <p class="center">Ao se inscrever no <strong>curso</strong>, você receberá:</p>
-
-    <ul class="check-list">
-      <li>O conteúdo completo do Método Sono Profundo, para seu filho dormir a noite toda.</li>
-      <li>Com instruções para diferentes faixas-etárias (que funcionam tanto com os recém-nascidos, quanto com filhos crescidos).</li>
-    </ul>
-
-    <p class="center strike-hint">Tudo isso para perceber algumas melhorias e resultados <u>ainda nesta semana</u>.</p>
-
-    <div class="price-box">
-      <p class="price-label">Tudo isso por:</p>
-      <p class="price-value">R$39,90</p>
-      <p class="price-sub">pagamento único</p>
-      <a href="https://lastlink.com/p/CE7085910/checkout-payment/" class="btn btn-green btn-lg" target="_blank" rel="noopener">Quero começar agora</a>
-    </div>
-  </div>
-</section>
-
-<!-- ============ GARANTIA ============ -->
-<section class="band band-purple band-guarantee">
-  <div class="wrap wrap-narrow center">
-    <div class="badge-7">7</div>
-    <h2 class="h-white">Garantia de 7 Dias</h2>
-    <p class="on-purple"><strong>Não se preocupe, sua compra é totalmente sem riscos.</strong></p>
-    <p class="on-purple">Se em até 7 dias você perceber que o curso não é para você, basta nos avisar que devolvemos 100% do seu investimento. Sem perguntas, sem burocracia.</p>
-  </div>
-</section>
-
-<!-- ============ AUTORA ============ -->
-<section class="section">
-  <div class="wrap author-wrap">
-    <img class="author-photo" src="./assets/images/autora-camilla.webp" alt="Camilla Petterson">
-    <div class="author-text">
-      <h2 class="h-dark">Quem é Camilla Petterson</h2>
-      <p>Camilla Petterson é médica e fundadora da Comunidade Camilla Petterson, a maior comunidade para mães do Brasil.</p>
-      <p>Ao longo de mais de 15 anos, já ajudou mais de 101 mil mães a educar filhos com valores sólidos, amor e propósito.</p>
-      <p>Seja através de suas aulas, palestras ou da Comunidade Camilla Petterson, sua missão é clara: formar mães que desejam aprender sobre maternidade, educação dos filhos e o papel da mulher na família.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ============ FAQ ============ -->
-<section class="section section-gray">
-  <div class="wrap wrap-narrow">
-    <h2 class="h-navy center">Perguntas frequentes</h2>
-    <div class="faq" data-faq>
-      <div class="faq-item is-open">
-        <button class="faq-q" type="button">Como recebo o acesso?<span class="faq-icon">&minus;</span></button>
-        <div class="faq-a"><p>Você receberá o acesso imediatamente após a sua compra via e-mail e poderá ter acesso ao conteúdo do curso.</p></div>
+<!-- ============ 5. PARA VOCÊ ============ -->
+<section class="foryou">
+  <div class="wrap">
+    <h2>O guia digital Como Fazer Seu Filho Dormir é para você!</h2>
+    <p class="foryou__text">Nele, eu reuni todo o meu conhecimento sobre Rotina de Sono Infantil e todos os passos que eu sigo, a cada filho que chega, para implementá-la. Pode ter certeza que você vai conseguir:</p>
+    <div class="foryou__grid">
+      <div class="foryou__card">
+        <span class="foryou__num">01</span>
+        <p>Montar uma Rotina de Sono adequada para a idade do seu filho.</p>
       </div>
-      <div class="faq-item">
-        <button class="faq-q" type="button">Em quanto tempo verei resultados?<span class="faq-icon">+</span></button>
-        <div class="faq-a"><p>Você começará a perceber mudanças ainda essa semana. A transformação é progressiva e se revela conforme seu filho aprende a seguir a rotina ideal de sono.</p></div>
+      <div class="foryou__card">
+        <span class="foryou__num">02</span>
+        <p>Entender as causas e aprender a lidar com o Terror Noturno.</p>
       </div>
-      <div class="faq-item">
-        <button class="faq-q" type="button">O curso é aplicável para filhos de todas as idades?<span class="faq-icon">+</span></button>
-        <div class="faq-a"><p>Sim!</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" type="button">Por quanto tempo terei acesso ao conteúdo?<span class="faq-icon">+</span></button>
-        <div class="faq-a"><p>Você terá acesso ao curso por 1 ano, podendo revisitar o material sempre que precisar e acompanhar as atualizações do método.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" type="button">Quais são as formas de pagamento?<span class="faq-icon">+</span></button>
-        <div class="faq-a"><p>Você pode adquirir o Como Fazer Seu Filho Dormir através do cartão de crédito, pix ou boleto bancário.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" type="button">E se eu não gostar do curso?<span class="faq-icon">+</span></button>
-        <div class="faq-a"><p>Nossa garantia de 7 dias assegura que, se o curso não atender às suas expectativas, você terá o reembolso total do seu investimento, sem complicações.</p></div>
+      <div class="foryou__card">
+        <span class="foryou__num">03</span>
+        <p>Fazer o Treinamento de Sono no seu filho.</p>
       </div>
     </div>
-    <p class="center" style="margin-top:26px">
-      <a href="https://lastlink.com/p/CE7085910/checkout-payment/" class="btn btn-green btn-lg" target="_blank" rel="noopener">Quero começar agora</a>
-    </p>
+    <p class="foryou__guarantee">Eu te garanto que quando você começar a implementar o que está nesse guia, a rotina na sua casa nunca mais será a mesma e você, finalmente, vai conseguir ter uma boa noite de sono!</p>
   </div>
 </section>
 
-<!-- ============ SUPORTE ============ -->
-<section class="section support">
-  <div class="wrap wrap-narrow center">
-    <h2 class="h-support">Dúvidas?</h2>
-    <p>Fale com o meu time de suporte! Eles vão te ajudar a entender melhor sobre a sua dúvida.</p>
-    <a href="#" class="btn btn-green btn-lg">Quero falar com o time de suporte</a>
+<!-- ============ 6. DEPOIMENTOS ============ -->
+<section class="social">
+  <div class="wrap">
+    <h2>Veja o que as mães estão dizendo sobre o conteúdo do guia</h2>
+    <div class="carousel carousel--social" aria-label="Depoimentos de mães">
+      <article class="tcard">
+        <div class="tcard__head">
+          <span class="tcard__avatar" aria-hidden="true">LL</span>
+          <span class="tcard__name">Leandra Lake</span>
+        </div>
+        <p class="tcard__text">Fiz a técnica com meu filho de 3 anos, retirei a associação de presença e ele dorme lindamente sozinho! Com minha bebê, segui a risca tudo, e ela dorme 12 horas seguidas!!! […] Obrigada, vocês são necessárias. Eu já havia feito outros cursos e não consegui êxito, aprendi muito mas não conseguia executar, aqui eu me achei.</p>
+      </article>
+      <article class="tcard">
+        <div class="tcard__head">
+          <span class="tcard__avatar" aria-hidden="true">LS</span>
+          <span class="tcard__name">Laisa da Silva</span>
+        </div>
+        <p class="tcard__text">[…] meu filho estava toda noite chorando para dormir, fiz o ajuste e não teve choro, ficou no quarto dele. […] Fiquei refletindo como a comunidade e os profissionais que estão aqui dentro nos ajudam no nosso dia a dia. Se todos pudessem ter a consciência e assinar, algumas “lutas” seriam vencidas tranquilamente.</p>
+      </article>
+      <article class="tcard">
+        <div class="tcard__head">
+          <span class="tcard__avatar" aria-hidden="true">JS</span>
+          <span class="tcard__name">Jahyne Serraglio</span>
+        </div>
+        <p class="tcard__text">Que conteúdo necessário! Minha bebê tinha autonomia e, após o início do terrible two, acabei introduzindo algumas associações… graças às suas orientações estou retirando uma por uma!</p>
+      </article>
+      <article class="tcard">
+        <div class="tcard__head">
+          <span class="tcard__avatar" aria-hidden="true">TM</span>
+          <span class="tcard__name">Thamires de Moura</span>
+        </div>
+        <p class="tcard__text">Conteúdo maravilhoso, muito importante para nós!</p>
+      </article>
+    </div>
+    <p class="drag-hint">Arraste para o lado.</p>
+    <a class="cta cta--yellow" data-checkout href="#">Quero fazer parte agora!</a>
   </div>
 </section>
 
-<footer class="footer">
-  <p>Camilla Petterson &copy; <span id="year"></span>. Todos os direitos reservados.</p>
+<!-- ============ 7. O QUE VOCÊ APRENDERÁ ============ -->
+<section class="learn">
+  <div class="wrap">
+    <h2>O que você vai encontrar no guia</h2>
+    <p class="learn__text">Eu sei como é se sentir frustrada por não conseguir fazer seu filho dormir. Você até tenta, mas o choro parece que não tem fim. E aí o stress aumenta, o cansaço emocional aparece e você fica cada vez mais cansada. Pensando em te ajudar, organizei o conteúdo da seguinte forma:</p>
+    <div class="carousel carousel--mod" aria-label="Conteúdo do guia">
+      <img src="assets/img/modulo-01.webp" alt="Módulo 01 — Fatos básicos sobre o sono, parte I (relógio biológico)" width="242" height="339" loading="lazy">
+      <img src="assets/img/modulo-02.webp" alt="Módulo 02 — Fatos básicos sobre o sono, parte II (sonos REM/NREM)" width="242" height="339" loading="lazy">
+      <img src="assets/img/modulo-03.webp" alt="Módulo 03 do guia" width="242" height="339" loading="lazy">
+      <img src="assets/img/modulo-04.webp" alt="Módulo 04 do guia" width="242" height="339" loading="lazy">
+      <img src="assets/img/modulo-05.webp" alt="Módulo 05 — Educação de sono nos bebês de 0 a 3 meses" width="242" height="339" loading="lazy">
+      <img src="assets/img/modulo-06.webp" alt="Módulo 06 do guia" width="242" height="339" loading="lazy">
+      <img src="assets/img/modulo-07.webp" alt="Módulo 07 do guia" width="242" height="339" loading="lazy">
+      <img src="assets/img/modulo-08.webp" alt="Módulo 08 do guia" width="242" height="339" loading="lazy">
+      <img src="assets/img/modulo-09.webp" alt="Módulo 09 do guia" width="242" height="339" loading="lazy">
+      <img src="assets/img/modulo-10.webp" alt="Módulo 10 do guia" width="242" height="339" loading="lazy">
+    </div>
+    <p class="drag-hint">Arraste para o lado.</p>
+    <a class="cta cta--orange" data-checkout href="#">Quero uma maternidade mais leve</a>
+  </div>
+</section>
+
+<!-- ============ 8. OFERTA ============ -->
+<section class="offer">
+  <div class="wrap">
+    <h2>Receba todo o conteúdo do Como Fazer Seu Filho Dormir agora:</h2>
+    <div class="offer__row">
+      <img class="offer__mockup" src="assets/img/mockup-novo.png" alt="Guia digital no notebook" width="1134" height="1029" loading="lazy">
+      <div>
+        <ul class="offer__bullets">
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#11a82c" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg><span>O guia digital completo com o <strong>Método Sono Profundo</strong>, para seu filho dormir a noite toda.</span></li>
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#11a82c" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg><span>Com instruções para <strong>diferentes faixas-etárias</strong> (que funcionam tanto com os recém-nascidos, quanto com filhos crescidos).</span></li>
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#11a82c" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg><span><strong>Acesso imediato</strong> após a compra, para ler e aplicar direto do seu celular, tablet ou computador.</span></li>
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#11a82c" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg><span>Tudo isso para perceber algumas melhorias e resultados <strong>ainda nesta semana</strong>.</span></li>
+        </ul>
+        <p class="offer__price-label">Tudo isso por:</p>
+        <p class="offer__price">R$ 39,90</p>
+        <span class="offer__pill">pagamento único</span>
+        <a class="cta" data-checkout href="#">Quero começar agora</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9. GARANTIA ============ -->
+<section class="guarantee">
+  <div class="wrap">
+    <img class="guarantee__seal" src="assets/img/garantia-7.webp" alt="Selo de garantia de 7 dias" width="428" height="412" loading="lazy">
+    <h2>Garantia de 7 Dias</h2>
+    <p>Não se preocupe, sua compra é totalmente sem riscos. Se em até 7 dias você perceber que o guia não é para você, basta nos avisar que devolvemos 100% do seu investimento. Sem perguntas, sem burocracia.</p>
+    <a class="cta" data-checkout href="#">Quero educar com maior facilidade</a>
+  </div>
+</section>
+
+<!-- ============ 10. CAMILLA ============ -->
+<section class="about">
+  <div class="wrap">
+    <div class="about__row">
+      <picture>
+        <img class="about__photo" src="assets/img/camilla.webp" alt="Camilla Petterson" width="860" height="1290" loading="lazy">
+      </picture>
+      <div>
+        <h2>Quem é Camilla Petterson</h2>
+        <div class="about__bio">
+          <p>Camilla Petterson é médica e fundadora da Comunidade Camilla Petterson, a maior comunidade para mães do Brasil.</p>
+          <p>Ao longo de mais de 15 anos, já ajudou mais de 101 mil mães a educar filhos com valores sólidos, amor e propósito.</p>
+          <p>Seja através de suas aulas, palestras ou da Comunidade Camilla Petterson, sua missão é clara: formar mães que desejam aprender sobre maternidade, educação dos filhos e o papel da mulher na família.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11. FAQ ============ -->
+<section class="faq">
+  <div class="wrap">
+    <h2>Perguntas frequentes</h2>
+    <div class="faq__list">
+      <details open>
+        <summary>Como recebo o acesso?<span class="ico" aria-hidden="true"></span></summary>
+        <p class="faq__answer">Você receberá o acesso imediatamente após a sua compra via e-mail e poderá acessar o guia digital direto do seu celular, tablet ou computador.</p>
+      </details>
+      <details>
+        <summary>Em quanto tempo verei resultados?<span class="ico" aria-hidden="true"></span></summary>
+        <p class="faq__answer">Você começará a perceber mudanças ainda essa semana. A transformação é progressiva e se revela conforme seu filho aprende a seguir a rotina ideal de sono.</p>
+      </details>
+      <details>
+        <summary>O guia é aplicável para filhos de todas as idades?<span class="ico" aria-hidden="true"></span></summary>
+        <p class="faq__answer">Sim!</p>
+      </details>
+      <details>
+        <summary>Por quanto tempo terei acesso ao conteúdo?<span class="ico" aria-hidden="true"></span></summary>
+        <p class="faq__answer">Você terá acesso ao guia por 1 ano, podendo revisitar o material sempre que precisar e acompanhar as atualizações do método.</p>
+      </details>
+      <details>
+        <summary>Quais são as formas de pagamento?<span class="ico" aria-hidden="true"></span></summary>
+        <p class="faq__answer">Você pode adquirir o Como Fazer Seu Filho Dormir através do cartão de crédito, pix ou boleto bancário.</p>
+      </details>
+      <details>
+        <summary>E se eu não gostar do guia?<span class="ico" aria-hidden="true"></span></summary>
+        <p class="faq__answer">Nossa garantia de 7 dias assegura que, se o guia não atender às suas expectativas, você terá o reembolso total do seu investimento, sem complicações.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 12. CTA FINAL ============ -->
+<section class="doubts">
+  <div class="wrap">
+    <h2>Pronta para começar?</h2>
+    <p>Garanta agora o seu acesso ao guia e comece hoje mesmo a transformar as noites da sua família.</p>
+    <a class="cta" data-checkout href="#">Quero garantir meu acesso agora</a>
+  </div>
+</section>
+
+<footer>
+  Camilla Petterson © 2026. Todos os direitos reservados.
 </footer>
 
-<script src="./app.js"></script>
+<script>
+/* ============================================================
+   CONFIGURAÇÃO — edite aqui os destinos dos botões
+   ============================================================ */
+const CONFIG = {
+  checkoutUrl: "https://lastlink.com/p/CE7085910/checkout-payment/",   // mesmo checkout do funil (funnel-data.js)
+};
+
+(function(){
+  // Repassa os parâmetros da URL (utm, src, sck...) para o checkout
+  const qs = window.location.search;
+  const withParams = (url) => {
+    if (!qs) return url;
+    return url + (url.includes("?") ? "&" : "?") + qs.slice(1);
+  };
+  document.querySelectorAll("[data-checkout]").forEach(a => a.href = withParams(CONFIG.checkoutUrl));
+
+  // FAQ: apenas um item aberto por vez
+  const items = document.querySelectorAll(".faq details");
+  items.forEach(d => d.addEventListener("toggle", () => {
+    if (d.open) items.forEach(o => { if (o !== d) o.open = false; });
+  }));
+
+  // Reveal suave por seção (conteúdo sempre visível por padrão)
+  if (window.matchMedia("(prefers-reduced-motion: no-preference)").matches && "IntersectionObserver" in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add("reveal"); io.unobserve(e.target); }
+      });
+    }, { threshold: .12 });
+    document.querySelectorAll("section h2, .band p").forEach(el => io.observe(el));
+  }
+})();
+</script>
 </body>
 </html>
