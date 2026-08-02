@@ -10,6 +10,25 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,700;6..12,800;6..12,900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- Meta Pixel Code -->
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1692279998539511');
+  fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=1692279998539511&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
 <style>
   :root{
     --purple: #8f8fc8;          /* roxo principal (blocos) */
@@ -573,7 +592,10 @@ const CONFIG = {
     if (!qs) return url;
     return url + (url.includes("?") ? "&" : "?") + qs.slice(1);
   };
-  document.querySelectorAll("[data-checkout]").forEach(a => a.href = withParams(CONFIG.checkoutUrl));
+  document.querySelectorAll("[data-checkout]").forEach(a => {
+    a.href = withParams(CONFIG.checkoutUrl);
+    a.addEventListener("click", () => { if (window.fbq) fbq("track", "InitiateCheckout"); });
+  });
 
   // FAQ: apenas um item aberto por vez
   const items = document.querySelectorAll(".faq details");
